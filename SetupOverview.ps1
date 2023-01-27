@@ -76,13 +76,13 @@ Number of mailboxes
 " -ForegroundColor Green
 
 Write-Host "UserMailboxes"
-(Get-Mailbox -RecipientTypeDetails UserMailbox).count
+(Get-Mailbox -RecipientTypeDetails UserMailbox -Resultsize Unlimited).count
 
 Write-Host "SharedMailboxes"
-(Get-Mailbox -RecipientTypeDetails SharedMailbox).count
+(Get-Mailbox -RecipientTypeDetails SharedMailbox -Resultsize Unlimited).count
 
 Write-Host "RoomMailboxes"
-(Get-Mailbox -RecipientTypeDetails RoomMailbox).count
+(Get-Mailbox -RecipientTypeDetails RoomMailbox -Resultsize Unlimited).count
 
 Write-Host "PublicFolders"
 (Get-PublicFolder "\" -Recurse -ErrorAction SilentlyContinue).count

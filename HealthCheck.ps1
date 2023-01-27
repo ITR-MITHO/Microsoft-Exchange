@@ -1,0 +1,127 @@
+<# 
+
+.DESCRIPTION  
+Version 1.0
+The script is designed to help you check how Exchange is feeling today.
+
+* Can be run without editing
+* Sends e-mail to test the mailflow
+* Exchange ServerComponents
+* MessageQueue higher than 100
+* DAG Replication Test
+* Microsoft Exchange Services
+* MAPI Connectivity
+
+.NOTES
+* Run in a elevated Exchange Shell
+* Enter EXTERNAL e-mailaddress when prompted
+* Run on each server individually. The script doesn't check every Exchange Server there is automatically.
+
+
+#>
+
+$Recipient = Read-Host "Enter EXTERNAL e-mailaddress (e.g. email@gmail.com)"
+$mydomain = (Get-ADDomain).DNSRoot
+Send-MailMessage -To $Recipient -From ExchangeHealth@$mydomain -Subject "Testing mailflow" -Body "
+
+If you have rececived this e-mail, the mail-flow from your on-premises Exchange is working.
+Best regards, 
+$env:computername.$mydomain
+" -SmtpServer "$env:computername.$mydomain"
+
+
+# MessageQueue
+$Queue = (Get-ExchangeServer | Get-Message -ErrorAction SilentlyContinue).count
+$Date = Get-Date -Format "dd-MM-yy HH:mm"
+If ($Queue -GT 100)
+{
+Write-Host "Over 100 e-mails are in queue!" -ForegroundColor Red
+}
+Else
+{
+Write-Host "Exchange Message queue is healthy.
+
+" -ForegroundColor Green
+}
+
+
+# ComponentState
+$Component = Get-ServerComponentState -Identity $env:computername | Where {$_.Component -NE "ForwardSyncDaemon" -and $_.Component -NE "ProvisioningRps"}
+if ($Component | Where {$_.State -eq "inactive"})
+{
+Write-Host "Exchange componenets are inactive!" -ForegroundColor Red
+$Component
+}
+Else
+{
+Write-Host "Exchange Server Components is running
+
+" -ForegroundColor Green
+}
+
+
+# ServiceHealth
+$ServiceHealth = Test-ServiceHealth $env:computername
+if ($ServiceHealth | Where {$_.RequiredServicesRunning -NE $true})
+{
+Write-Host "Microsoft Exchange Services are not running!" -ForegroundColor Red
+$ServiceHealth
+}
+else
+{
+Write-Host "Microsoft Exchange Services are running
+
+" -ForegroundColor Green
+}
+
+
+# MapiConnectivity
+$MAPIConnectivity = Test-MAPIConnectivity
+If ($MAPIConnectivity | Where {$_.Result -EQ "Failed"})
+{
+Write-Host "MapiConnectivity failed." -ForegroundColor Red
+$MapiConnectivity
+}
+Else
+{
+Write-Host "MAPIConnectivityTest passed
+
+" -ForegroundColor Green
+}
+
+
+# DAGReplicationHealth
+$DAGTest = Test-ReplicationHealth $env:computername | Where {$_.Result -like "*failed*"} | Select Server, Check, Result
+$DAG = Get-DatabaseAvailabilityGroup
+If ($DAG)
+{
+
+Write-Host "Exchange DAG Found.. Testing replication" -ForegroundColor Yellow
+If (-Not $DagTEST)
+{
+Write-Host "DAG Replication test passed" -ForegroundColor Green
+}
+{
+
+}
+}
+Else
+{
+Write-Host "No Exchange DAG found, skipping replication check.
+" -ForegroundColor Yellow
+}
+
+sleep 5
+
+If ($DAG -ne $null)
+{
+
+if ($DAGTest -ne $null)
+{
+cls
+    Write-Host "Exchange DAG replication is unhealthy! (Test-ReplicationHealth)
+    
+    " -ForegroundColor Red
+}
+
+}

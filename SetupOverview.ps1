@@ -8,7 +8,6 @@ There will be two output files "ExchangeReport.txt" & "Mailbox.csv". Both files 
 ExchangeReport.txt contains all Exchange configuration
 Mailbox.csv contains all the relevant information about mailboxes.
 
-Made by: MTossen - https://github.com/MTossen/
 #>
 
 

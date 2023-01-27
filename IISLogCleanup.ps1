@@ -1,5 +1,5 @@
 <#
-
+IMPORTANT: Must be run in elevated Powershell
 Will delete Exchange IIS-logs older then 14-days
 
 #>

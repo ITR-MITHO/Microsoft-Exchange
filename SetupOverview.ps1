@@ -53,7 +53,7 @@ MailBox Databases
 
 " -ForegroundColor Green
 
-Get-MailboxDatabase -Status | fl Name, DatabaseSize, Server, EDBFilePath, LogFolderPath, MasterServerOrAvailabilityGroup
+Get-MailboxDatabase -Status | fl Name, DatabaseSize, Server, EDBFilePath, LogFolderPath, MasterServerOrAvailabilityGroup, DeletedItemRetention
 
 
 Write-Host "
@@ -117,7 +117,7 @@ RetentionPolicy
 
 " -ForegroundColor Green
 
-Get-Retentionpolicy | fl Name
+Get-Retentionpolicy | fl Name, RetentionPolicyTagLinks
 
 
 Write-Host "
@@ -128,7 +128,7 @@ Send Connectors
 
 " -ForegroundColor Green
 
-Get-SendConnector | fl name, Smarthosts
+Get-SendConnector | fl name, Smarthosts, AddressSpaces, Enabled
 
 
 Write-Host "
@@ -155,6 +155,20 @@ Exchange Certificates
 
 Get-ExchangeCertificate | fl Thumbprint, IsSelfSigned, Subject, Services, Notafter, NotBefore
 
+
+Write-Host "
+
+###########################################################################
+OrganizationConfig
+###########################################################################
+
+" -ForegroundColor Green
+
+Get-OrganizationConfig | fl OAuth2ClientProfileEnabled
+
+Get-OrganizationConfig | fl MitigationsEnabled
+
+Get-OrganizationConfig | fl MapiHttpEnabled
 
 Write-Host "
 

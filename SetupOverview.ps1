@@ -117,7 +117,7 @@ RetentionPolicy
 
 " -ForegroundColor Green
 
-Get-Retentionpolicy | fl Name, RetentionPolicyTagLinks
+Get-Retentionpolicy | fl Name, IsDefault, RetentionPolicyTagLinks
 
 
 Write-Host "

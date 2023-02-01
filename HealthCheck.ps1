@@ -5,6 +5,7 @@ Version 1.0
 The script is designed to help you check how Exchange is feeling today.
 
 * Can be run without editing
+* Free space on C-drive
 * Sends e-mail to test the mailflow
 * Exchange ServerComponents
 * MessageQueue higher than 100
@@ -28,6 +29,22 @@ If you have rececived this e-mail, the mail-flow from your on-premises Exchange 
 Best regards, 
 $env:computername.$mydomain
 " -SmtpServer "$env:computername.$mydomain"
+
+
+# Free space on C:\
+$Space = get-psdrive c | % { $_.free/($_.used + $_.free) } | % tostring p
+If ($Space -lt "20 %")
+{
+
+Write-Host "There is $space left on the C-drive. It have to be atleaast 20%" -ForegroundColor Red
+
+}
+Else
+{
+
+Write-Host "Free space on C-drive passed!" -ForegroundColor Green
+
+}
 
 
 # MessageQueue

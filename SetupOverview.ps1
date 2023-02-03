@@ -178,6 +178,21 @@ OrganizationConfig
 
 " -ForegroundColor Green
 
+$Kerb = Get-ClientAccessServer $env:COMPUTERNAME -IncludeAlternateServiceAccountCredentialStatus -ErrorAction SilentlyContinue| Select AlternateServiceAccountConfiguration
+
+If ($Kerb.AlternateServiceAccountConfiguration -like "Latest: <n*")
+{
+
+Write-Host "KerberosEnabled: False"
+
+}
+Else
+{
+
+Write-Host "KerberosEnabled: True"
+
+}
+
 Get-OrganizationConfig | fl OAuth2ClientProfileEnabled
 
 Get-OrganizationConfig | fl MitigationsEnabled

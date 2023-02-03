@@ -26,7 +26,7 @@ If ($Space -lt "20 %")
 {
 
 Write-Host "There is $space left on the C-drive. It have to be atleast 20%
-Check C:\inetpub\logs\LogFiles\W3SVC1 & W3SVC2. If there is log files older than 14-days. Delete them." -ForegroundColor Red
+Run this script: https://raw.githubusercontent.com/ITR-MITHO/Microsoft-Exchange/main/IISLogCleanup.ps1." -ForegroundColor Red
 
 }
 Else

@@ -178,7 +178,7 @@ OrganizationConfig
 
 " -ForegroundColor Green
 
-$Kerb = Get-ClientAccessServer $env:COMPUTERNAME -IncludeAlternateServiceAccountCredentialStatus -ErrorAction SilentlyContinue| Select AlternateServiceAccountConfiguration
+$Kerb = Get-ClientAccessServer $env:COMPUTERNAME -IncludeAlternateServiceAccountCredentialStatus -WarningAction SilentlyContinue | Select AlternateServiceAccountConfiguration
 
 If ($Kerb.AlternateServiceAccountConfiguration -like "Latest: <n*")
 {

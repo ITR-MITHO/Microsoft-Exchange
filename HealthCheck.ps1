@@ -32,7 +32,7 @@ Check C:\inetpub\logs\LogFiles\W3SVC1 & W3SVC2. If there is log files older than
 Else
 {
 
-Write-Host "Free space on C-drive passed!" -ForegroundColor Green
+Write-Host "Free space on C:\ is above 20%" -ForegroundColor Green
 
 }
 

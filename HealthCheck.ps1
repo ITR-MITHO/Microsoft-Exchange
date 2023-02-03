@@ -18,7 +18,8 @@ The script is designed to help you check how Exchange is feeling today.
 
 
 #>
-
+Import-Module ActiveDirectory
+Add-PSSnapin *EXC*
 # Free space on C:\
 $Space = get-psdrive c | % { $_.free/($_.used + $_.free) } | % tostring p
 If ($Space -lt "20 %")

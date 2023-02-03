@@ -45,7 +45,9 @@ Write-Host "Over 100 e-mails are in queue!" -ForegroundColor Red
 }
 Else
 {
-Write-Host "Exchange Message queue is healthy.
+Write-Host "
+
+Exchange Message queue is healthy.
 
 " -ForegroundColor Green
 }

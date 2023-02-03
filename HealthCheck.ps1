@@ -14,7 +14,6 @@ The script is designed to help you check how Exchange is feeling today.
 
 .NOTES
 * Run in a elevated Exchange Shell
-* Enter EXTERNAL e-mailaddress when prompted
 * Run on each server individually. The script doesn't check every Exchange Server there is automatically.
 
 

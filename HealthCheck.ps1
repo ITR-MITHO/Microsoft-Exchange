@@ -25,7 +25,7 @@ $Space = get-psdrive c | % { $_.free/($_.used + $_.free) } | % tostring p
 If ($Space -lt "20 %")
 {
 
-Write-Host "There is $space left on the C-drive. It have to be atleaast 20%" -ForegroundColor Red
+Write-Host "There is $space left on the C-drive. It have to be atleast 20%" -ForegroundColor Red
 
 }
 Else

@@ -124,10 +124,10 @@ $RetentionName = $R.Name
 $RetentionTag = $R.RetentionPolicyTagLinks
 $RetentionCount = (Get-Mailbox -ResultSize unlimited | Where {$_.RetentionPolicy -eq "$Retention.Name"}).count
 
-Write-Host " $RetentionName is assiged to $RetentionCount mailboxes.
+Write-Host " 
+
+$RetentionName is assiged to $RetentionCount mailboxes.
 PolicyTag: $RetentionTag
-
-
 
 " 
 

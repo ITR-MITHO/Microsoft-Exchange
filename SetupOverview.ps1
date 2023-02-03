@@ -6,7 +6,7 @@ There will be one output file named "ExchangeReport.txt" the file will be placed
 
 .OUTPUTS
 ExchangeReport.txt contains all Exchange configuration
-Mailbox.csv contains all the relevant information about mailboxes.
+
 
 #>
 
@@ -45,7 +45,6 @@ $Data += $Items
 $Data | FL Domain, Servername, OS, RAM, Exchver, InitialPage, MaxPage, FreeSpaceOnC, Boot
 
 
-
 Write-Host "
 
 ###########################################################################
@@ -54,7 +53,7 @@ MailBox Databases
 
 " -ForegroundColor Green
 
-Get-MailboxDatabase -Status | fl Name, DatabaseSize, Server, EDBFilePath, LogFolderPath, MasterServerOrAvailabilityGroup, DeletedItemRetention
+Get-MailboxDatabase -Status | fl Name, DatabaseSize, Server, EDBFilePath, LogFolderPath, MasterServerOrAvailabilityGroup, DeletedItemRetention, CircularLoggingEnabled
 
 
 Write-Host "
@@ -108,7 +107,7 @@ AcceptedDomains
 
 " -ForegroundColor Green
 
-Get-AcceptedDomain | fl Name
+Get-AcceptedDomain | fl Name, DomainType
 
 Write-Host "
 
@@ -117,9 +116,23 @@ RetentionPolicy
 ###########################################################################
 
 " -ForegroundColor Green
+$Retention = Get-Retentionpolicy | Select Name, RetentionPolicyTagLinks
 
-Get-Retentionpolicy | fl Name, IsDefault, RetentionPolicyTagLinks
+Foreach ($R in $Retention)
+{
 
+$RetentionName = $R.Name
+$RetentionTag = $R.RetentionPolicyTagLinks
+$RetentionCount = (Get-Mailbox -ResultSize unlimited | Where {$_.RetentionPolicy -eq "$Retention.Name"}).count
+
+Write-Host " $RetentionName is assiged to $RetentionCount mailboxes.
+PolicyTag: $RetentionTag
+
+
+
+" 
+
+}
 
 Write-Host "
 
@@ -154,7 +167,7 @@ Exchange Certificates
 " -ForegroundColor Green
 
 
-Get-ExchangeCertificate | fl Thumbprint, IsSelfSigned, Subject, Services, Notafter, NotBefore
+Get-ExchangeCertificate | fl Services, Thumbprint, IsSelfSigned, Subject, Services, Notafter, NotBefore
 
 
 Write-Host "

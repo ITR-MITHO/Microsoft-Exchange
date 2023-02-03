@@ -35,7 +35,7 @@ RAM = (Invoke-command $Server.Name {(systeminfo | Select-String 'Total Physical 
 Exchver = (Invoke-command $Server.Name {Get-WmiObject -Class Win32_Product | Where {$_.Caption -eq "Microsoft Exchange Server"}}).Version
 InitialPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).InitialSize
 MaxPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).MaximumSize
-FreeSpaceonC = CFreeGB = (Invoke-Command $Server.Name {(Get-WmiObject win32_logicaldisk -Filter "DeviceID='C:'").FreeSpace / 1gb -as [int]})
+FreeSpaceonC = (Invoke-Command $Server.Name {(Get-WmiObject win32_logicaldisk -Filter "DeviceID='C:'").FreeSpace / 1gb -as [int]})
 Boot = (Invoke-command $Server.Name {systeminfo | find "System Boot Time:"})
 
 }

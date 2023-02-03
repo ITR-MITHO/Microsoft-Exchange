@@ -23,6 +23,7 @@ Exchange Server Information
 
 " -ForegroundColor Green
 
+$Space = get-psdrive c | % { $_.free/($_.used + $_.free) } | % tostring p
 $Serverlist = Get-ExchangeServer | Select Name
 $Data = @()
 
@@ -35,13 +36,13 @@ RAM = (Invoke-command $Server.Name {(systeminfo | Select-String 'Total Physical 
 Exchver = (Invoke-command $Server.Name {Get-WmiObject -Class Win32_Product | Where {$_.Caption -eq "Microsoft Exchange Server"}}).Version
 InitialPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).InitialSize
 MaxPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).MaximumSize
-CFreeGB = (Invoke-Command $Server.Name {(Get-WmiObject win32_logicaldisk -Filter "DeviceID='C:'").FreeSpace / 1gb -as [int]})
+FreeSpaceonC = $Space
 Boot = (Invoke-command $Server.Name {systeminfo | find "System Boot Time:"})
 
 }
 $Data += $Items
 }
-$Data | FL Domain, Servername, OS, RAM, Exchver, InitialPage, MaxPage, CFreeGB, Boot
+$Data | FL Domain, Servername, OS, RAM, Exchver, InitialPage, MaxPage, FreeSpaceOnC, Boot
 
 
 

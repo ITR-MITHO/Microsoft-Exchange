@@ -166,7 +166,7 @@ Exchange Certificates
 " -ForegroundColor Green
 
 
-Get-ExchangeCertificate | fl Services, Thumbprint, IsSelfSigned, Subject, Services, Notafter, NotBefore
+Get-ExchangeCertificate | fl Services, Thumbprint, IsSelfSigned, Subject, Notafter, NotBefore
 
 
 Write-Host "

@@ -25,7 +25,8 @@ $Space = get-psdrive c | % { $_.free/($_.used + $_.free) } | % tostring p
 If ($Space -lt "20 %")
 {
 
-Write-Host "There is $space left on the C-drive. It have to be atleast 20%" -ForegroundColor Red
+Write-Host "There is $space left on the C-drive. It have to be atleast 20%
+Check C:\inetpub\logs\LogFiles\W3SVC1 & W3SVC2. If there is log files older than 14-days. Delete them." -ForegroundColor Red
 
 }
 Else

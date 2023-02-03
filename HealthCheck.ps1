@@ -6,7 +6,6 @@ The script is designed to help you check how Exchange is feeling today.
 
 * Can be run without editing
 * Free space on C-drive
-* Sends e-mail to test the mailflow
 * Exchange ServerComponents
 * MessageQueue higher than 100
 * DAG Replication Test
@@ -20,16 +19,6 @@ The script is designed to help you check how Exchange is feeling today.
 
 
 #>
-
-$Recipient = Read-Host "Enter EXTERNAL e-mailaddress (e.g. email@gmail.com)"
-$mydomain = (Get-ADDomain).DNSRoot
-Send-MailMessage -To $Recipient -From ExchangeHealth@$mydomain -Subject "Testing mailflow" -Body "
-
-If you have rececived this e-mail, the mail-flow from your on-premises Exchange is working.
-Best regards, 
-$env:computername.$mydomain
-" -SmtpServer "$env:computername.$mydomain"
-
 
 # Free space on C:\
 $Space = get-psdrive c | % { $_.free/($_.used + $_.free) } | % tostring p

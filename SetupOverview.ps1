@@ -32,7 +32,7 @@ Domain = (Get-ADDomain).DNSRoot
 Servername = $Server.Name
 OS = (Get-CimInstance -ComputerName $Server.Name -ClassName Win32_OperatingSystem).Caption
 RAM = (Invoke-command $Server.Name {(systeminfo | Select-String 'Total Physical Memory:').ToString().Split(':')[1].Trim()})
-Exchver = (Invoke-command $Server.Name {Get-WmiObject -Class Win32_Product | Where {$_.Caption -eq "Microsoft Exchange Server"}}).Version
+Exchver = (Invoke-command $Server.Name {Get-Command Exsetup.exe | ForEach {$_.FileVersionInfo}}).FileVersion
 InitialPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).InitialSize
 MaxPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).MaximumSize
 FreeSpaceonC = (Invoke-Command $Server.Name {(Get-WmiObject win32_logicaldisk -Filter "DeviceID='C:'").FreeSpace / 1gb -as [int]})
@@ -42,7 +42,6 @@ Boot = (Invoke-command $Server.Name {systeminfo | find "System Boot Time:"})
 $Data += $Items
 }
 $Data | FL Domain, Servername, OS, RAM, Exchver, InitialPage, MaxPage, FreeSpaceOnC, Boot
-
 
 Write-Host "
 

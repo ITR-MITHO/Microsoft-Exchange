@@ -198,64 +198,35 @@ Get-OrganizationConfig | fl MitigationsEnabled
 Get-OrganizationConfig | fl MapiHttpEnabled
 
 Write-Host "
-
 ###########################################################################
-Exchange URL's
+Virtual Directories
 ###########################################################################
-
-
 " -ForegroundColor Green
 
 Write-Host "Autodiscover"
 Get-ClientAccessServer -WarningAction SilentlyContinue -Identity "$env:COMPUTERNAME" | fl AutodiscoverServiceInternalURI
+Get-ExchangeServer $env:computername | Get-AutodiscoverVirtualDirectory | fl InternalAuthenticationMethods, ExternalAuthenticationMethods
 
 Write-Host "OWA (Outlook Web Application)"
-Get-OwaVirtualDirectory -Identity "$env:COMPUTERNAME\OWA (Default Web Site)" | fl InternalURL, ExternalURL
+Get-OwaVirtualDirectory -Identity "$env:COMPUTERNAME\OWA (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
 
 Write-Host "ECP (Exchange Control Panel)"
-Get-ECPVirtualDirectory -Identity "$env:COMPUTERNAME\ECP (Default Web Site)" | fl InternalURL, ExternalURL
+Get-ECPVirtualDirectory -Identity "$env:COMPUTERNAME\ECP (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
 
 Write-Host "EWS (Exchange Web Services)"
-Get-WebServicesVirtualDirectory -Identity "$env:COMPUTERNAME\EWS (Default Web Site)" | fl InternalURL, ExternalURL
+Get-WebServicesVirtualDirectory -Identity "$env:COMPUTERNAME\EWS (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
 
 Write-Host "MAPI"
-Get-MapiVirtualDirectory -Identity "$env:COMPUTERNAME\MAPI (Default Web Site)" | fl InternalURL, ExternalURL
+Get-MapiVirtualDirectory -Identity "$env:COMPUTERNAME\MAPI (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
 
 Write-Host "OAB (Offline Address Book)"
-Get-OABVirtualDirectory -Identity "$env:COMPUTERNAME\OAB (Default Web Site)" | fl InternalURL, ExternalURL
+Get-OABVirtualDirectory -Identity "$env:COMPUTERNAME\OAB (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
 
 Write-Host "EAS (Exchange Active Sync)"
 Get-ActiveSyncVirtualDirectory -Identity "$env:COMPUTERNAME\Microsoft-Server-ActiveSync (Default web site)" | fl InternalURL, ExternalURL
 
 Write-Host "Outlook Anywhere"
 Get-OutlookAnywhere -Identity "$env:COMPUTERNAME\rpc (Default web site)" | Fl InternalHostname, ExternalHostname
-
-
-Write-Host "
-
-###########################################################################
-Exchange Authentication protocols
-###########################################################################
-
-
-" -ForegroundColor Green
-
-Write-Host "Autodiscover"
-Get-ExchangeServer $env:computername | Get-AutodiscoverVirtualDirectory | fl InternalAuthenticationMethods, ExternalAuthenticationMethods
-
-Write-Host "OWA (Outlook Web Application"
-Get-ExchangeServer $env:computername | Get-OWAVirtualDirectory | fl InternalAuthenticationMethods, ExternalAuthenticationMethods
-
-Write-Host "ECP (Exchange Control Panel)"
-Get-ExchangeServer $env:computername | Get-ECPVirtualDirectory | fl InternalAuthenticationMethods, ExternalAuthenticationMethods
-
-Write-Host "EWS (Exchange Web Services)"
-Get-ExchangeServer $env:computername | Get-WebServicesVirtualDirectory | fl InternalAuthenticationMethods, ExternalAuthenticationMethods
-
-Write-Host "MAPI"
-Get-ExchangeServer $env:computername | Get-MapiVirtualDirectory | fl InternalAuthenticationMethods, ExternalAuthenticationMethods
-
-Write-Host "Outlook Anywhere"
 Get-ExchangeServer $env:computername | Get-OutlookAnywhere | fl InternalClientAuthenticationMethod, ExternalClientAuthenticationMethod, IISAuthenticationMethods
 
 Stop-Transcript | out-null

@@ -20,17 +20,31 @@ https://github.com/ITR-MITHO
 
 #>
 
-
 Add-PSSnapin *EXC*
 Import-Module ActiveDirectory
 
+$File = Test-path "$Home\desktop\MailboxExport.csv"
+If ($File)
+{
+
+$Confirm = Read-Host "MailboxExport.csv already present on your desktop. Do you want me to delete it for you? (Y/N)"
+If ($Confirm -eq "Y")
+
+{
+
+Remove-Item "$Home\desktop\MailboxExport.csv" -Confirm:$false
+
+}
+    }
+
+
+Clear-Host
 $Mailboxes = Get-Mailbox -ResultSize Unlimited
 $Results = @()
 $StartDate = Get-Date
 
 
-Write-Host "The script is estimated to take about 10 minutes on larger envionments. Grab a coffee :-)" -ForegroundColor Yellow
-Write-Host "Start Time $StartDate"
+Write-Host "Start Time: $StartDate - It is estimated to take 10-15 minutes for large organisations. Grab a nice cup of coffee :-)" -ForegroundColor Yellow
 Sleep 5
 Foreach ($Mailbox in $Mailboxes)
 {
@@ -72,11 +86,9 @@ $results += [PSCustomObject]@{
 }
     }
         
-
 # Selecting the fields in a specific order instead of random.
 $Results | Select Username, Name, Email, Type, Size, Deleted, Total, DB, LastLogon, ADEnabled, {$_.FullAccess}, {$_.SendAs} | 
 Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
 
 $EndDate = Get-Date
-Write-Host "Export completed! Find your .csv-file here: $Home\desktop\MailboxExport.csv" -ForegroundColor Green
-Write-Host "End time $EndDate"
+Write-Host "End Time: $EndDate - Find your .csv-file here: $Home\desktop\MailboxExport.csv" -ForegroundColor Green

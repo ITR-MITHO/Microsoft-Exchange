@@ -27,7 +27,7 @@ $File = Test-path "$Home\desktop\MailboxExport.csv"
 If ($File)
 {
 
-$Confirm = Read-Host "MailboxExport.csv already present on your desktop. Do you want me to delete it for you? (Y/N)"
+$Confirm = Read-Host "MailboxExport.csv already exists on your desktop. Do you want me to delete it for you? (Y/N)"
 If ($Confirm -eq "Y")
 
 {

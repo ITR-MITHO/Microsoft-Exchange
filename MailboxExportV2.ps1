@@ -50,7 +50,7 @@ Foreach ($Mailbox in $Mailboxes)
 {
 
 $Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName
-$Permissions = Get-MailboxPermission -identity $Mailbox.SamAccountName | Where {$_.AccessRights -EQ "FullAccess" -and -not ($_.User -like “NT AUTHORITY\*”)}
+$Permission = Get-MailboxPermission -identity $Mailbox.SamAccountName | Where {$_.AccessRights -EQ "FullAccess" -and -not ($_.User -like “NT AUTHORITY\*”)}
 $ADPermission = Get-Mailbox $Mailbox.SamAccountName | Get-ADPermission | Where {$_.ExtendedRights -like "Send-As" -and -not ($_.User -like “NT AUTHORITY\*”)}
 $ADAtt = Get-ADUser -Identity $Mailbox.SamAccountName -Properties *
 

@@ -1,19 +1,22 @@
 <#
 V.2
-The script will export the following information from all mailboxes: 
-    SamAccountName
-    DisplayName
-    PrimarySmtpAddress
-    RecipientTypeDetails
-    DatabaseName
-    LastLogonTime
-    ADEnabled
-    TotalItemSize.To.MB
-    TotalDeletedItemSize.To.MB
-    Total  -> This field empty and used to add Size & Deleted together in this field inside Excel to determine the total size of a mailbox.
-    SendAs 
-    FullAccess
+The script will export the following information from all mailboxes:
 
+                            SamAccountName
+                            DisplayName
+                            PrimarySmtpAddress
+                            RecipientTypeDetails
+                            DatabaseName
+                            LastLogonTime
+                            ADEnabled
+                            TotalItemSize.To.MB
+                            TotalDeletedItemSize.To.MB
+                            Total
+                            SendAs 
+                            FullAccess
+
+.NOTE
+The attribute "Total" This field empty and used to add Size & Deleted together in this field inside Excel to determine the total size of a mailbox.
 
 If you're having any issues with the script, please reach out to me.
 https://github.com/ITR-MITHO

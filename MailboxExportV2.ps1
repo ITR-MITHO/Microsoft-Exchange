@@ -34,11 +34,11 @@ Write-Host "Start Time $StartDate"
 Sleep 5
 Foreach ($Mailbox in $Mailboxes)
 {
-$MailboxUserName = $Mailbox.SamAccountName
-$Statistics = Get-MailboxStatistics -Identity $MailboxUserName
-$Permissions = Get-MailboxPermission -identity $MailboxUserName | Where {$_.AccessRights -EQ "FullAccess" -and -not ($_.User -like “NT AUTHORITY\*”)}
-$ADPermission = Get-Mailbox $MailboxUserName | Get-ADPermission | Where {$_.ExtendedRights -like "Send-As" -and -not ($_.User -like “NT AUTHORITY\*”)}
-$ADAtt = Get-ADUser -Identity $MailboxUserName -Properties *
+
+$Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName
+$Permissions = Get-MailboxPermission -identity $Mailbox.SamAccountName | Where {$_.AccessRights -EQ "FullAccess" -and -not ($_.User -like “NT AUTHORITY\*”)}
+$ADPermission = Get-Mailbox $Mailbox.SamAccountName | Get-ADPermission | Where {$_.ExtendedRights -like "Send-As" -and -not ($_.User -like “NT AUTHORITY\*”)}
+$ADAtt = Get-ADUser -Identity $Mailbox.SamAccountName -Properties *
 
 if ($Statistics) 
 {
@@ -51,7 +51,8 @@ else
     $Size = $null
     $Deleted = $null
 }
-Foreach ($Mailbox in $Mailboxes) {
+
+
 $results += [PSCustomObject]@{
 
     Username = $Mailbox.SamAccountName
@@ -70,11 +71,12 @@ $results += [PSCustomObject]@{
 
 }
     }
-        }
+        
 
 # Selecting the fields in a specific order instead of random.
 $Results | Select Username, Name, Email, Type, Size, Deleted, Total, DB, LastLogon, ADEnabled, {$_.FullAccess}, {$_.SendAs} | 
 Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
+
 $EndDate = Get-Date
 Write-Host "Export completed! Find your .csv-file here: $Home\desktop\MailboxExport.csv" -ForegroundColor Green
 Write-Host "End time $EndDate"

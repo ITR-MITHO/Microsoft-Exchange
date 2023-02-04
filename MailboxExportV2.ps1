@@ -63,7 +63,7 @@ $results += [PSCustomObject]@{
     ADEnabled = $ADAtt.Enabled
     Size = $Size
     Deleted = $Deleted
-    Total = $null         # This field 0 and is used to add Size & Deleted together in Excel to determine the total size of a mailbox.
+    Total = $null  # This field empty and used to add Size & Deleted together in this field inside Excel to determine the total size of a mailbox.
     SendAs = $ADPermission.User
     FullAccess = $Permission.User
 

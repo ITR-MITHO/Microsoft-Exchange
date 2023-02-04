@@ -140,7 +140,7 @@ Send Connectors
 
 " -ForegroundColor Green
 
-Get-SendConnector | fl name, Smarthosts, AddressSpaces, Enabled
+Get-SendConnector | fl name, Smarthosts, AddressSpaces, Enabled, ProtocolLoggingLevel
 
 
 Write-Host "
@@ -152,7 +152,7 @@ Receive Connectors
 " -ForegroundColor Green
 
 
-Get-ReceiveConnector | fl Name, Enabled, RemoteIPRanges
+Get-ReceiveConnector | fl Name, Enabled, RemoteIPRanges, ProtocolLoggingLevel
 
 
 

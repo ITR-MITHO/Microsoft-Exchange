@@ -13,8 +13,6 @@ By looking at the registry-database we can determine what version of Exchange is
 - Exchange 2007              = NOT SUPPORTED - EOL 11 April 2017
 
 #>
-
-<# Arrays #>
 Add-PSSnapin *EXC*
 $Display = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\* | Where {$_.DisplayName -like "Microsoft Exchange Server 20*"}
 $Exchange2019 = "Microsoft Exchange Server 2019 Cumulative Update 11"
@@ -22,106 +20,31 @@ $Exchange2016 = "Microsoft Exchange Server 2016 Cumulative Update 23"
 $Exchange2013 = "Microsoft Exchange Server 2013 Cumulative Update 23"
 $Exchange2010 = "Microsoft Exchange Server 2010"
 $Exchange2007 = "Microsoft Exchange Server 2007"
-$Servers = Get-ExchangeServer -Identity $Env:ComputerName
+$Servers = Get-ExchangeServer -Identity $ENV:COMPUTERNAME
 $Output = $Display.DisplayName
 
-<# Exchange Server 2019 #>
-Foreach ($S in $Servers)
-        {
-
-If ($Display -like "*Microsoft Exchange Server 2019*")
+Foreach ($Server in $Servers)
 {
-
-if ($Display.DisplayName -GE "$Exchange2019")
-{
-
-Write-Host "$Output - SUPPORTED" -ForegroundColor Green
-
-}
-Else
-{
-
-Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
-
-}
-
-   }
-        }
-    
-
-<# Exchange Server 2016 #>
-Foreach ($S in $Servers)
-        {
-
-If ($Display -like "*Microsoft Exchange Server 2016*")
-{
-
-if ($Display.DisplayName -GE "$Exchange2016")
-{
-
-Write-Host "$Output - SUPPORTED" -ForegroundColor Green
-
-}
-Else
-{
-
-Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
-
-}
-
-   }
-        }
-
-
-<# Exchange Server 2013 #>
-Foreach ($S in $Servers)
-        {
-
-If ($Display -like "*Microsoft Exchange Server 2013*")
-{
-
-if ($Display.DisplayName -GE "$Exchange2013")
-{
-
-Write-Host "$Output - SUPPORTED" -ForegroundColor Green
-
-}
-Else
-{
-
-Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
-
-}
-
-   }
-        }
-
-
-<# Exchange Server 2010 #>
-Foreach ($S in $Servers)
-        {
-
-If ($Display -like "*$Exchange2010*")
-
-{
-
+switch ($Output) {
+    $Exchange2019 {
+        Write-Host "$Output - SUPPORTED" -ForegroundColor Green
+        break
+    }
+    $Exchange2016 {
+        Write-Host "$Output - SUPPORTED" -ForegroundColor Green
+        break
+    }
+    $Exchange2013 {
+        Write-Host "$Output - SUPPORTED" -ForegroundColor Green
+        break
+    }
+    $Exchange2010 {
         Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
-
-}
-    
-        }
-
-
-<# Exchange Server 2007 #>
-Foreach ($S in $Servers)
-        {
-
-If ($Display -like "*$Exchange2007*")
-
-{
-
+        break
+    }
+    $Exchange2007 {
         Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
-
+        break
 }
-    
+    }
         }

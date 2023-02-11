@@ -180,11 +180,15 @@ $Kerb = Get-ClientAccessServer $env:COMPUTERNAME -IncludeAlternateServiceAccount
 
 If ($Kerb.AlternateServiceAccountConfiguration -like "Latest: <n*")
 {
-Write-Host "KerberosEnabled: False"
+Write-Host "KerberosEnabled: False
+
+"
 }
 Else
 {
-Write-Host "KerberosEnabled: True"
+Write-Host "KerberosEnabled: True
+
+"
 }
 
 $Hyrid = Get-HybridConfiguration

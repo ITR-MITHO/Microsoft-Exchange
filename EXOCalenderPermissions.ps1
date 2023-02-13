@@ -15,51 +15,31 @@ If the file is not present, one will be made.
  
  
 #Variables
-$username                   = admin@YourTenant.onmicrosoft.com
-[string]$Log                = "C:\Office365Scripts\Calendar.log"
-[string]$UserToGiveAccess   ="default" #If the setting is org-wide, write "Default"
-[string]$AccessRight        ="reviewer"
-$pathoffile                 = "C:\office365Scripts\Keys"
-$filename                   = "credentials.txt"
- 
+# Import the Exchange Online Management module
+$UserName = "admin@onmicrosoft.com"
+Import-Module ExchangeOnlineManagement
 
- 
+# Store the credentials for the connection in a secure file
+$cred = Get-Credential -UserName $UserName -Message "Enter password" # Comment this line out after first run
+$cred.Password | ConvertFrom-SecureString | Set-Content -Path "$env:USERPROFILE\Documents\ExoCreds.txt"
 
-#PasswordCheck
-$totalpath                  = "$pathoffile\$filename"
-if (!(Test-Path $totalpath)){
-    New-Item -ItemType directory $pathoffile
-    New-Item -path $pathoffile -Name "Credentials.txt" -ItemType file
-    Write-Host "Created new file"
-    $password = read-host "Enter the password of the user"
-    $secureStringPwd = $password | ConvertTo-SecureString -AsPlainText -Force 
-    $secureStringText = $secureStringPwd | ConvertFrom-SecureString 
- 
-    Set-Content $totalpath $secureStringText
-    }
-else
-{
-  Write-Host
+# Load the stored credentials
+$securePassword = Get-Content -Path "$env:USERPROFILE\Documents\ExoCreds.txt" | ConvertTo-SecureString
+$cred = New-Object System.Management.Automation.PSCredential("$Username", $securePassword)
+
+# Connect to Exchange Online
+Connect-ExchangeOnline -Credential $cred -ShowProgress $true
+
+# Check the connection status
+if (Get-ExoSession) {
+    Write-Host "Successfully connected to Exchange Online."
 }
- 
-Start-Transcript -Path $Log -Force
- 
+else {
+    Write-Host "Failed to connect to Exchange Online."
+}
 
- 
+############################################# START OF ACTUAL SCRIPT #############################################
 
-#login
-$password = Get-Content $totalpath | ConvertTo-SecureString
-$psCred = New-Object System.Management.Automation.PSCredential -ArgumentList ($username, $password)
-$session = New-PSSession –ConnectionUri https://ps.outlook.com/powershell –AllowRedirection –Authentication Basic –Credential $psCred –ConfigurationName Microsoft.Exchange
-$Import = Import-Pssession $Session -AllowClobber
-Import-Module MSOnline -verbose
- 
-
- 
-
-#################################################################################################################
-##############################################START OF ACTUAL SCRIPT#############################################
-#################################################################################################################
  
  
 foreach($mbx in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox){

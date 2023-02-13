@@ -11,7 +11,7 @@ $Username = "admin@onmicrosoft.com"
 Import-Module ExchangeOnlineManagement
 
 # Store the credentials for the connection in a secure file
-$cred = Get-Credential -UserName $UserName -Message "Enter password" # Comment this line out after first run
+$cred = Get-Credential -UserName $UserName -Message "Enter password" # Comment this line out after first run to automate it with scheduled tasks
 $cred.Password | ConvertFrom-SecureString | Set-Content -Path "C:\Office365\Keys\Cred.txt"
 
 # Load the stored credentials

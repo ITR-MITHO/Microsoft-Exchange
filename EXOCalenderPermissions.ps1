@@ -5,6 +5,7 @@ This script gives everyone reviewer permissions to eachothers calendar.
 
 .NOTES
 Change $UserToGiveAccess or $AccessRight if you want to modify who and what permission the script gives.
+Comment out or remove line 17 after the first successful run to schedule the script to run unattended.
 #>
 
 
@@ -13,7 +14,7 @@ $Username = "admin@onmicrosoft.com"
 Import-Module ExchangeOnlineManagement
 
 # Store the credentials for the connection in a secure file
-$cred = Get-Credential -UserName $UserName -Message "Enter password" # Comment this line out after first run to automate it with scheduled tasks
+$cred = Get-Credential -UserName $UserName -Message "Enter password"
 $cred.Password | ConvertFrom-SecureString | Set-Content -Path "C:\Office365\Keys\Cred.txt"
 
 # Load the stored credentials

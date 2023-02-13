@@ -1,9 +1,14 @@
 # Fill out the below variables with it's static information
-$ResourceGroupID = 'ResourceGroup ID'
-$AutomationAccount = 'AutomationAccount ID'
-$Certname = 'Certificate name'
-$AppID = 'Application ID'
-$OrganizationName = 'organization name e.g.: itr.onmicrosoft.com'
+$ResourceGroupID = "MITHO-ResourceGroup"
+$AutomationAccount = 'MITHO-AutomationAccount'
+$Certname = 'mycert'
+$AppID = 'XXXXX-XXXXXX-XXXXXX-XXXXXXX'
+$OrganizationName = 'itrsandboxmitho.onmicrosoft.com'
+
+# Azure Context
+Disable-AzContextAutosave -Scope Process
+$AzureContext = (Connect-AzAccount -Identity).context
+$AzureContext = Set-AzContext -SubscriptionName $AzureContext.Subscription -DefaultProfile $AzureContext
 
 # Obtain a copy of the certificate
 $ExchangeOnlineCertThumbPrint = (Get-AzAutomationCertificate -ResourceGroupName "$ResourceGroupID" -AutomationAccountName "$AutomationAccount" -Name "$Certname").Thumbprint

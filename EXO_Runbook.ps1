@@ -1,7 +1,7 @@
 # Fill out the below variables with static information
 $ResourceGroup = "MITHO-ResourceGroup"
 $AutomationAccount = 'MITHO-AutomationAccount'
-$Certname = 'mycert'
+$Certname = 'mycert' # Name of the cert added to the automation account
 $AppID = 'XXXXX-XXXXXX-XXXXXX-XXXXXXX'
 $OrganizationName = 'itrsandboxmitho.onmicrosoft.com'
 

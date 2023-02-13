@@ -35,16 +35,6 @@ Write-Host "Connect-ExchangeOnline failed. Ensure that the certificate is valid!
 Break
 }
 
-# Default UserMailbox Calendar Permissions
-$User = 'Default'
-$AccessRight = 'Reviewer'
-Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
-{
-
-    $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Select-Object -First 1).Name
-    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight
-
-}
 
 # Default UserMailbox Calendar Permissions
 $User = 'Default'
@@ -62,4 +52,23 @@ Catch
     Write-host "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $UserPrincipalName" -ForeGroundColor Red
 }
     Write-Host "Sucessfully added the user '$User' with calendar permissions '$AccessRight' on Mailbox: $UserPrincipalName" -ForegroundColor Green
+}
+
+
+# Default RoomMailbox Calendar Processing
+$Processing = 'AutoAccept'
+$DeleteComments = $true
+$OrganizaerToSubject = $true
+$Conflicts = $false
+$ExternalMeetings = $false
+Foreach ($Room in Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails RoomMailbox)
+{
+Try
+{
+Set-CalendarProcessing -Identity $Room.Alias -AutomateProcessing $Processing -DeleteComments $DeleteComments -AddOrganizerToSubject $OrganizaerToSubject -AllowConflicts $Conflicts -ProcessExternalMeetingMessages $ExternalMeetings -ErrorAction SilentlyContinue
+}
+Catch
+{
+Write-Host "Failed to update CalendarProcessing on $Room" -ForeGroundColor Red
+}
 }

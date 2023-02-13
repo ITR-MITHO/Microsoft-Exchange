@@ -3,7 +3,7 @@ $ResourceGroup = "MITHO-ResourceGroup"
 $AutomationAccount = 'MITHO-AutomationAccount'
 $Certname = 'mycert' # Name of the cert added to the automation account
 $AppID = 'XXXXX-XXXXXX-XXXXXX-XXXXXXX'
-$OrganizationName = 'itrsandboxmitho.onmicrosoft.com'
+$OrganizationName = 'itrmitho.onmicrosoft.com'
 
 # Azure Context
 Disable-AzContextAutosave -Scope Process

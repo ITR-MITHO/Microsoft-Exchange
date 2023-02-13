@@ -55,7 +55,7 @@ Break
 }
 Write-host "Connected to Exchange Online!" -ForeGroundColor Green
 
-# Reviewer Permissions for everyone to UserMailboxes
+
 # Default UserMailbox Calendar Permissions
 $User = 'Default'
 $AccessRight = 'Reviewer'

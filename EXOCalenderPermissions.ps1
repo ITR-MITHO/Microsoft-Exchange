@@ -52,12 +52,13 @@ Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails Use
 {
 Try 
 {
+    $UserPrincipalName = $Mailbox.UserPrincipalName
     $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Select-Object -First 1).Name
     Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 }
 Catch
 {
-    Write-host "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $Mailbox" -ForeGroundColor Red
+    Write-host "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $UserPrincipalName" -ForeGroundColor Red
 }
-    Write-Host "Sucessfully added the user '$User' with calendar permissions '$AccessRight' on Mailbox: $Mailbox" -ForegroundColor Green
+    Write-Host "Sucessfully added the user '$User' with calendar permissions '$AccessRight' on Mailbox: $UserPrincipalName" -ForegroundColor Green
 }

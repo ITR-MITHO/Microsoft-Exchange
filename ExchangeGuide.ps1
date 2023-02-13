@@ -14,5 +14,4 @@
 
 
 # Verify that Exchange is healthy after install or upgrade:
-# Run the below command in a elevated CMD
 cmd /c "powershell iex (irm raw.githubusercontent.com/ITR-MITHO/Microsoft-Exchange/main/HealthCheck.ps1)"

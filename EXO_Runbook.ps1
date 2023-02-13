@@ -72,4 +72,5 @@ Catch
 {
 Write-Host "Failed to update CalendarProcessing on $UserPrincipalName" -ForeGroundColor Red
 }
-    }
+Write-Host "Successfully updated CalendarProcessing on $UserPrincipalName" -ForeGroundColor Green
+}

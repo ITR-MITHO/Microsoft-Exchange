@@ -66,7 +66,7 @@ Foreach ($Room in Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails RoomMa
 Try
 {
 $UserPrincipalName = $Room.UserPrincipalName
-Set-CalendarProcessing -Identity $Room.Alias -AutomateProcessing $Processing -DeleteComments $DeleteComments -AddOrganizerToSubject $OrganizaerToSubject -AllowConflicts $Conflicts -ProcessExternalMeetingMessages $ExternalMeetings -ErrorAction SilentlyContinue
+Set-CalendarProcessing -Identity $Room.Alias -AutomateProcessing $Processing -DeleteComments $DeleteComments -AddOrganizerToSubject $OrganizaerToSubject -AllowConflicts $Conflicts -ProcessExternalMeetingMessages $ExternalMeetings -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 }
 Catch
 {

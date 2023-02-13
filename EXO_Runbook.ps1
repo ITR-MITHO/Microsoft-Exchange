@@ -1,5 +1,5 @@
 # Fill out the below variables with it's static information
-$ResourceGroupID = "MITHO-ResourceGroup"
+$ResourceGroup = "MITHO-ResourceGroup"
 $AutomationAccount = 'MITHO-AutomationAccount'
 $Certname = 'mycert'
 $AppID = 'XXXXX-XXXXXX-XXXXXX-XXXXXXX'
@@ -11,7 +11,7 @@ $AzureContext = (Connect-AzAccount -Identity).context
 $AzureContext = Set-AzContext -SubscriptionName $AzureContext.Subscription -DefaultProfile $AzureContext
 
 # Obtain a copy of the certificate
-$ExchangeOnlineCertThumbPrint = (Get-AzAutomationCertificate -ResourceGroupName "$ResourceGroupID" -AutomationAccountName "$AutomationAccount" -Name "$Certname").Thumbprint
+$ExchangeOnlineCertThumbPrint = (Get-AzAutomationCertificate -ResourceGroupName "$ResourceGroup" -AutomationAccountName "$AutomationAccount" -Name "$Certname").Thumbprint
 
 # Import Exchange Online Module
 Try
@@ -25,7 +25,16 @@ Break
 }
 
 # Connect to Exchange Online using the Certificate Thumbprint of the Certificate imported into the Automation Account
-Connect-ExchangeOnline -CertificateThumbPrint $ExchangeOnlineCertThumbPrint -AppID "$AppID" -Organization "$OrganizationName"
+Try
+{
+Connect-ExchangeOnline -CertificateThumbPrint $ExchangeOnlineCertThumbPrint -AppID "$AppID" -Organization "$OrganizationName" -ErrorAction Stop
+}
+Catch
+{
+Write-Host "Connect-ExchangeOnline failed. Ensure that the certificate is valid!" -ForegroundColor Red
+Break
+}
+
 
 
 # Default Calendar Permissions

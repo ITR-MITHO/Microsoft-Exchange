@@ -66,11 +66,11 @@ Foreach ($Room in Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails RoomMa
 Try
 {
 $UserPrincipalName = $Room.UserPrincipalName
-Set-CalendarProcessing -Identity $Room.Alias -AutomateProcessing $Processing -DeleteComments $DeleteComments -AddOrganizerToSubject $OrganizaerToSubject -AllowConflicts $Conflicts -ProcessExternalMeetingMessages $ExternalMeetings -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+Set-CalendarProcessing -Identity $UserPrincipalName -AutomateProcessing $Processing -DeleteComments $DeleteComments -AddOrganizerToSubject $OrganizaerToSubject -AllowConflicts $Conflicts -ProcessExternalMeetingMessages $ExternalMeetings -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 }
 Catch
 {
-Write-Host "Failed to update CalendarProcessing on $UserPrincipalName" -ForeGroundColor Red
+    Write-Host "Failed to update CalendarProcessing on $UserPrincipalName" -ForeGroundColor Red
 }
-Write-Host "Successfully updated CalendarProcessing on $UserPrincipalName" -ForeGroundColor Green
+    Write-Host "Successfully updated CalendarProcessing on $UserPrincipalName" -ForeGroundColor Green
 }

@@ -57,7 +57,7 @@ Try
 }
 Catch
 {
-    Write-host "Failed to add the user '$User' with calendar permission '$AccessRight' on mailbox: $Mailbox" -ForeGroundColor Red
+    Write-host "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $Mailbox" -ForeGroundColor Red
 }
     Write-Host "Sucessfully added the user '$User' with calendar permissions '$AccessRight' on Mailbox: $Mailbox" -ForegroundColor Green
 }

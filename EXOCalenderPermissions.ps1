@@ -10,7 +10,7 @@ Comment out or remove line 26 after the first successful run to schedule the scr
 
 
 # Import the Exchange Online Management module
-$Username = "admin@onmicrosoft.com"
+$Username = "admin@domain.onmicrosoft.com"
 Try
 {
 Import-Module ExchangeOnlineManagement -ErrorAction Stop

@@ -71,4 +71,4 @@ Catch
 {
 Write-Host "Failed to update CalendarProcessing on $Room" -ForeGroundColor Red
 }
-}
+    }

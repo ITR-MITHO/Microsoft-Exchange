@@ -21,10 +21,10 @@ Import-Module ExchangeOnlineManagement
 
 # Store the credentials for the connection in a secure file
 $cred = Get-Credential -UserName $UserName -Message "Enter password" # Comment this line out after first run
-$cred.Password | ConvertFrom-SecureString | Set-Content -Path "$env:USERPROFILE\Documents\ExoCreds.txt"
+$cred.Password | ConvertFrom-SecureString | Set-Content -Path "C:\Office365\Keys\Cred.txt"
 
 # Load the stored credentials
-$securePassword = Get-Content -Path "$env:USERPROFILE\Documents\ExoCreds.txt" | ConvertTo-SecureString
+$securePassword = Get-Content -Path "C:\Office365\Keys\Cred.txt" | ConvertTo-SecureString
 $cred = New-Object System.Management.Automation.PSCredential("$Username", $securePassword)
 
 # Connect to Exchange Online

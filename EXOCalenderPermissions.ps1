@@ -1,8 +1,10 @@
 <# 
  
 .DESCRIPTION  
-This script gives everyone reviewer permissions to eachother calendar. 
- 
+This script gives everyone reviewer permissions to eachothers calendar. 
+
+.NOTES
+Change $UserToGiveAccess or $AccessRight if you want to modify who and what permission the script gives.
 #>
 
 

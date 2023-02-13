@@ -35,10 +35,7 @@ Write-Host "Connect-ExchangeOnline failed. Ensure that the certificate is valid!
 Break
 }
 
-
-
-# Default Calendar Permissions
-
+# Default UserMailbox Calendar Permissions
 $UserToGiveAccess = 'Default'
 $AccessRight = 'Reviewer'
 foreach ($mbx in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
@@ -49,9 +46,7 @@ foreach ($mbx in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMai
 
 }
 
-
-# Default Room Mailbox Configuration
-
+# Default RoomMailbox Calendar Processing
 $Processing = 'AutoAccept'
 $DeleteComments = $true
 $OrganizaerToSubject = $true

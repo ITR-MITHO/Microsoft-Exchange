@@ -50,8 +50,14 @@ $User = 'Default'
 $AccessRight = 'Reviewer'
 Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
 {
-
+Try 
+{
     $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Select-Object -First 1).Name
-    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight
-
+    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+}
+Catch
+{
+    Write-host "Failed to add the user '$User' with calendar permission '$AccessRight' on mailbox: $Mailbox" -ForeGroundColor Red
+}
+    Write-Host "Sucessfully added the user '$User' with calendar permissions '$AccessRight' on Mailbox: $Mailbox" -ForegroundColor Green
 }

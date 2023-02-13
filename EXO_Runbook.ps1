@@ -1,4 +1,4 @@
-# Fill out the below variables with it's static information
+# Fill out the below variables with static information
 $ResourceGroup = "MITHO-ResourceGroup"
 $AutomationAccount = 'MITHO-AutomationAccount'
 $Certname = 'mycert'

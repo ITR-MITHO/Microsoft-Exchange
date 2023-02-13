@@ -1,8 +1,7 @@
 <# 
  
 .DESCRIPTION  
-This script gives all users reviewer access to eachother.
-Default is all users, the accessrights can be changed under variables, so can the user/group.
+This script gives everyone reviewer permissions to eachother calendar. 
  
 #>
 
@@ -32,7 +31,7 @@ else {
 
 
 # Reviewer Permissions for everyone to UserMailboxes
-$UserToGiveAccess = 'Default'
+$UserToGiveAccess = 'Default' # Default is 'Everyone' in the organisation.
 $AccessRight = 'Reviewer'
 foreach ($mbx in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
 {

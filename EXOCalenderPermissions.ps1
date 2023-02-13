@@ -5,13 +5,22 @@ This script gives everyone reviewer permissions to eachothers calendar.
 
 .NOTES
 Change $UserToGiveAccess or $AccessRight if you want to modify who and what permission the script gives.
-Comment out or remove line 17 after the first successful run to schedule the script to run unattended.
+Comment out or remove line 26 after the first successful run to schedule the script to run unattended.
 #>
 
 
 # Import the Exchange Online Management module
 $Username = "admin@onmicrosoft.com"
-Import-Module ExchangeOnlineManagement
+Try
+{
+Import-Module ExchangeOnlineManagement -ErrorAction Stop
+}
+Catch
+{
+Write-Host "Exchange Online Management Module is missing!" -ForegroundColor Red 
+Write-Host "Install the missing module with PowerShell: Install-Module ExchangeOnlineManagement" -ForegroundColor Yellow
+Break
+}
 
 # Store the credentials for the connection in a secure file
 $cred = Get-Credential -UserName $UserName -Message "Enter password"

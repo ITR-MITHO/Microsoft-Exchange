@@ -37,7 +37,7 @@ Connect-ExchangeOnline -Credential $cred -ShowProgress $true -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Connect-ExchangeOnline failed" -ForeGroundColor Red
+Write-Host "Connect-ExchangeOnline failed. Try to run the cmdlet manually." -ForeGroundColor Red
 Break
 }
 

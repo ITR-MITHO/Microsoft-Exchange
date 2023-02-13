@@ -31,24 +31,36 @@ $securePassword = Get-Content -Path "C:\Office365\Keys\Cred.txt" | ConvertTo-Sec
 $cred = New-Object System.Management.Automation.PSCredential("$Username", $securePassword)
 
 # Connect to Exchange Online
-Connect-ExchangeOnline -Credential $cred -ShowProgress $true
+Try
+{
+Connect-ExchangeOnline -Credential $cred -ShowProgress $true -ErrorAction Stop
+}
+Catch
+{
+Write-Host "Connect-ExchangeOnline failed" -ForeGroundColor Red
+Break
+}
 
 # Check the connection status
-if (Get-ExoSession) {
-    Write-Host "Successfully connected to Exchange Online."
+Try
+{
+Get-ExoSession -ErrorAction Stop
 }
-else {
-    Write-Host "Failed to connect to Exchange Online."
+Catch
+{
+Write-Host "Failed to connect to Exchange Online." -ForeGroundColor Red
+Break
 }
-
+Write-host "Connected to Exchange Online!" -ForeGroundColor Green
 
 # Reviewer Permissions for everyone to UserMailboxes
-$UserToGiveAccess = 'Default' # Default is 'Everyone' in the organisation.
+# Default UserMailbox Calendar Permissions
+$User = 'Default'
 $AccessRight = 'Reviewer'
-foreach ($mbx in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
+Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
 {
 
-    $languageCalendar = (Get-MailboxFolderStatistics -Identity $mbx.userprincipalname -FolderScope Calendar | Select-Object -first 1).name
-    Set-MailboxFolderPermission -Identity ($mbx.UserPrincipalName+":\$LanguageCalendar") -User $UserToGiveAccess -AccessRights $AccessRight
+    $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Select-Object -First 1).Name
+    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight
 
 }

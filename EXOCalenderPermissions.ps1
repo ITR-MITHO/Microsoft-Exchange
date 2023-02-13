@@ -1,11 +1,13 @@
 <# 
  
 .DESCRIPTION  
-This script gives everyone reviewer permissions to eachothers calendar. 
+This script gives everyone reviewer permissions to eachothers calendar.
+It can be run manually prompting for a password or scheduled to run unattended.
 
 .NOTES
+Change $Username to your tenant administrator name.
 Change $User or $AccessRight if you want to modify who and what permission the script gives.
-Comment out or remove line 26 after the first successful run to schedule the script to run unattended.
+Comment out or remove line 28 after the first successful run to schedule the script to run unattended.
 #>
 
 

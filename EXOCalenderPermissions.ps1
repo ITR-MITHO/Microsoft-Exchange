@@ -4,7 +4,7 @@
 This script gives everyone reviewer permissions to eachothers calendar. 
 
 .NOTES
-Change $UserToGiveAccess or $AccessRight if you want to modify who and what permission the script gives.
+Change $User or $AccessRight if you want to modify who and what permission the script gives.
 Comment out or remove line 26 after the first successful run to schedule the script to run unattended.
 #>
 

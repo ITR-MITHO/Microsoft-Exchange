@@ -54,11 +54,11 @@ Try
 {
     $UserPrincipalName = $Mailbox.UserPrincipalName
     $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Select-Object -First 1).Name
-    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
 }
 Catch
 {
-    Write-host "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $UserPrincipalName" -ForeGroundColor Red
+    Write-Warning "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $UserPrincipalName"
+    Continue
 }
-    Write-Host "Sucessfully added the user '$User' with calendar permissions '$AccessRight' on Mailbox: $UserPrincipalName" -ForegroundColor Green
-}
+    }

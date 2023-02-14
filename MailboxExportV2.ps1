@@ -23,6 +23,13 @@ https://github.com/ITR-MITHO
 
 #>
 
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+{
+write-host "Script is not running as Administrator" -ForegroundColor Yellow
+Break
+}
+
 Add-PSSnapin *EXC*
 Import-Module ActiveDirectory
 

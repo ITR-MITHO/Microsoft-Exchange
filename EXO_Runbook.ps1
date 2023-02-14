@@ -45,14 +45,14 @@ Try
 {
     $UserPrincipalName = $Mailbox.UserPrincipalName
     $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Select-Object -First 1).Name
-    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
 }
 Catch
 {
-    Write-host "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $UserPrincipalName" -ForeGroundColor Red
+    Write-Warning "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $UserPrincipalName"
+    Continue
 }
-    Write-Host "Sucessfully added the user '$User' with calendar permissions '$AccessRight' on Mailbox: $UserPrincipalName" -ForegroundColor Green
-}
+    }
 
 
 # Default RoomMailbox Calendar Processing
@@ -66,11 +66,11 @@ Foreach ($Room in Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails RoomMa
 Try
 {
 $UserPrincipalName = $Room.UserPrincipalName
-Set-CalendarProcessing -Identity $UserPrincipalName -AutomateProcessing $Processing -DeleteComments $DeleteComments -AddOrganizerToSubject $OrganizaerToSubject -AllowConflicts $Conflicts -ProcessExternalMeetingMessages $ExternalMeetings -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+Set-CalendarProcessing -Identity $UserPrincipalName -AutomateProcessing $Processing -DeleteComments $DeleteComments -AddOrganizerToSubject $OrganizaerToSubject -AllowConflicts $Conflicts -ProcessExternalMeetingMessages $ExternalMeetings -WarningAction SilentlyContinue -ErrorAction Stop
 }
 Catch
 {
-    Write-Host "Failed to update CalendarProcessing on $UserPrincipalName" -ForeGroundColor Red
+    Write-Warning "Failed to update CalendarProcessing on $UserPrincipalName"
+    Continue
 }
-    Write-Host "Successfully updated CalendarProcessing on $UserPrincipalName" -ForeGroundColor Green
-}
+    }

@@ -56,17 +56,20 @@ Catch
 
 
 # Default RoomMailbox Calendar Processing
-$Processing = 'AutoAccept'
-$DeleteComments = $true
-$OrganizaerToSubject = $true
-$Conflicts = $false
-$ExternalMeetings = $false
+
+$Parameter = @{
+AutomateProcessing = "AutoAccept"
+DeleteComments = $true
+AddOrganizerToSubject = $true
+AllowConflicts = $false
+ProcessExternalMeetingMessages = $false
+}
 Foreach ($Room in Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails RoomMailbox)
 {
 Try
 {
 $UserPrincipalName = $Room.UserPrincipalName
-Set-CalendarProcessing -Identity $UserPrincipalName -AutomateProcessing $Processing -DeleteComments $DeleteComments -AddOrganizerToSubject $OrganizaerToSubject -AllowConflicts $Conflicts -ProcessExternalMeetingMessages $ExternalMeetings -WarningAction SilentlyContinue -ErrorAction Stop
+Set-CalendarProcessing -identity $UserPrincipalName @Parameter
 }
 Catch
 {

@@ -20,7 +20,7 @@ Import-Module ExchangeOnlineManagement -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Exchange Online Management Module is missing!" -ForegroundColor Red 
+Write-Warning "Exchange Online Management Module is missing!"
 Break
 }
 
@@ -31,7 +31,7 @@ Connect-ExchangeOnline -CertificateThumbPrint $ExchangeOnlineCertThumbPrint -App
 }
 Catch
 {
-Write-Host "Connect-ExchangeOnline failed. Ensure that the certificate is valid!" -ForegroundColor Red
+Write-Warning "Connect-ExchangeOnline failed. Ensure that the certificate is valid!"
 Break
 }
 

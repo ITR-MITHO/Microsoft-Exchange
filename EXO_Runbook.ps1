@@ -31,7 +31,7 @@ Connect-ExchangeOnline -CertificateThumbPrint $ExchangeOnlineCertThumbPrint -App
 }
 Catch
 {
-Write-Warning "Connect-ExchangeOnline failed. Ensure that the certificate is valid!"
+Write-Warning "Failed to connect to Exchange Online. Ensure that the certificate is valid!"
 Break
 }
 

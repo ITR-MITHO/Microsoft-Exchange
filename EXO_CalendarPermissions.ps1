@@ -39,7 +39,7 @@ Connect-ExchangeOnline -Credential $cred -ShowProgress $true -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Failed to connect to Exchange Online. Try to run the cmdlet manually" -ForeGroundColor Red
+Write-Host "Failed to connect to Exchange Online. Try to run 'Connect-ExchangeOnline' manually" -ForeGroundColor Red
 Break
 }
 Write-host "Connected to Exchange Online!" -ForeGroundColor Green

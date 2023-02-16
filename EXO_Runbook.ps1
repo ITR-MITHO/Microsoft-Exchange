@@ -41,10 +41,11 @@ $User = 'Default'
 $AccessRight = 'Reviewer'
 Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
 {
-Try 
-{
     $UserPrincipalName = $Mailbox.UserPrincipalName
     $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Select-Object -First 1).Name
+Try 
+{
+    
     Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
 }
 Catch

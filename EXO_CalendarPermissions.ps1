@@ -2,12 +2,12 @@
  
 .DESCRIPTION  
 This script gives everyone reviewer permissions to eachothers calendar.
-It can be run manually prompting for a password or scheduled to run unattended.
+
 
 .NOTES
-Change $Username to your tenant administrator name.
-Change $User or $AccessRight if you want to modify who and what permission the script gives.
-Comment out or remove line 28 after the first successful run to schedule the script to run unattended.
+Change the variable $Username to your tenant administrator name.
+Change the variable $User or $AccessRight if you want to modify who and what permission the script gives.
+
 #>
 
 
@@ -60,8 +60,8 @@ Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails Use
     $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Where { $_.FolderType -eq 'Calendar'}).Name
 Try 
 {
-
-Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
+    
+    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
 
 }
 Catch

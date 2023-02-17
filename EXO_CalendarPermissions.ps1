@@ -25,6 +25,14 @@ Break
 }
 
 # Store the credentials for the connection in a secure file
+$ITRPath = Test-Path "C:\ITR"
+If (-Not $ITRPath)
+{
+
+mkdir "C:\ITR"
+
+}
+
 $TestPath = Test-Path "C:\ITR\Cred.txt"
 if (-not $TestPath)
 {

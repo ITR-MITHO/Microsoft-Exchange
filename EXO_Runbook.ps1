@@ -1,3 +1,14 @@
+<#
+.DESCRIPTION
+The script is designed to use within Azure Runebooks. 
+It will set user calendar permissions for all UserMailboxes and setup a default behaviour for RoomMailboxes. 
+
+.NOTES
+Edit the settings for UserMailbox calendar permissions in line 50 & 51
+Edit the settings for RoomMailbox behaviour in line 70-78
+
+#>
+
 # Fill out the below variables with static information
 $ResourceGroup = "MITHO-ResourceGroup"
 $AutomationAccount = 'MITHO-AutomationAccount'
@@ -16,25 +27,24 @@ $ExchangeOnlineCertThumbPrint = (Get-AzAutomationCertificate -ResourceGroupName 
 # Import Exchange Online Module
 Try
 {
-Import-Module ExchangeOnlineManagement -ErrorAction Stop
+    Import-Module ExchangeOnlineManagement -ErrorAction Stop
 }
-Catch
+    Catch
 {
-Write-Warning "Exchange Online Management Module is missing!"
-Break
+    Write-Warning "Exchange Online Management Module is missing!"
+    Break
 }
 
 # Connect to Exchange Online using the Certificate Thumbprint of the Certificate imported into the Automation Account
 Try
 {
-Connect-ExchangeOnline -CertificateThumbPrint $ExchangeOnlineCertThumbPrint -AppID "$AppID" -Organization "$OrganizationName" -ErrorAction Stop
+    Connect-ExchangeOnline -CertificateThumbPrint $ExchangeOnlineCertThumbPrint -AppID "$AppID" -Organization "$OrganizationName" -ErrorAction Stop
 }
 Catch
 {
 Write-Warning "Failed to connect to Exchange Online. Ensure that the certificate is valid!"
 Break
 }
-
 
 # Default UserMailbox Calendar Permissions
 $User = 'Default'
@@ -47,6 +57,7 @@ Try
 {
     
     Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
+
 }
 Catch
 {
@@ -55,22 +66,23 @@ Catch
 }
     }
 
-
 # Default RoomMailbox Calendar Processing
-
 $Parameter = @{
 AutomateProcessing = "AutoAccept"
 DeleteComments = $true
 AddOrganizerToSubject = $true
 AllowConflicts = $false
 ProcessExternalMeetingMessages = $false
+BookingWindowInDays = "180"
+MaximumDurationInMinutes = "600"
+MinimumDurationInMinutes = "5"
 }
 Foreach ($Room in Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails RoomMailbox)
 {
 Try
 {
-$UserPrincipalName = $Room.UserPrincipalName
-Set-CalendarProcessing -identity $UserPrincipalName @Parameter
+    $UserPrincipalName = $Room.UserPrincipalName
+    Set-CalendarProcessing -identity $UserPrincipalName @Parameter
 }
 Catch
 {

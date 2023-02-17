@@ -25,16 +25,16 @@ Break
 }
 
 # Store the credentials for the connection in a secure file
-$ITRPath = Test-Path "C:\ITR"
-If (-Not $ITRPath)
+$ITR = Test-Path "C:\ITR"
+If (-Not $ITR)
 {
 
 mkdir "C:\ITR"
 
 }
 
-$TestPath = Test-Path "C:\ITR\Cred.txt"
-if (-not $TestPath)
+$PWFile = Test-Path "C:\ITR\Cred.txt"
+if (-not $PWFile)
 {
 
     $cred = Get-Credential -UserName $UserName -Message "Enter password"

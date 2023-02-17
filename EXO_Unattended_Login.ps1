@@ -1,18 +1,15 @@
 <# 
  
 .DESCRIPTION  
-First time running the script, it will prompt you for the password to your O365 administrator.
+First time running the script, it will prompt you for the credentials to your O365 administrator.
 Next time you run the script it will automatically use your username and password. 
-The password is stored in a encrypted file inside C:\ITR
 
 .NOTES
-The only thing you need to change is the variable $Username to your O365 Administrator
-To run use this in a scheduled script it is important to exclude the server or user you're using from Condtional Access/MFA policy.
+To use this in a scheduled script it is important to exclude the server or user you're using from Condtional Access/MFA policy.
+
 #>
 
-
 # Import the Exchange Online Management module
-$Username = "admin@domain.onmicrosoft.com"
 Try
 {
 Import-Module ExchangeOnlineManagement -ErrorAction Stop
@@ -25,26 +22,25 @@ Break
 }
 
 # Store the credentials for the connection in a secure file
-$ITR = Test-Path "C:\ITR"
+$ITR = Test-Path "C:\ITR\EXO"
 If (-Not $ITR)
 {
-
-mkdir "C:\ITR"
-
+mkdir "C:\ITR\EXO"
 }
 
-$PWFile = Test-Path "C:\ITR\Cred.txt"
+$PWFile = Test-Path "C:\ITR\EXO\PWD.txt"
 if (-not $PWFile)
 {
-
-    $cred = Get-Credential -UserName $UserName -Message "Enter password"
-    $cred.Password | ConvertFrom-SecureString | Set-Content -Path "C:\ITR\Cred.txt"
-
+    $cred = Get-Credential -Message "Enter your O365 administrator credentials 
+(example: admin@domain.onmicrosoft.com)"
+    $cred.Password | ConvertFrom-SecureString | Set-Content -Path "C:\ITR\EXO\PWD.txt"
+    $Cred.UserName | Set-Content -path "C:\ITR\EXO\USR.txt"
 }
 
 # Load the stored credentials
-$securePassword = Get-Content -Path "C:\ITR\Cred.txt" | ConvertTo-SecureString
-$cred = New-Object System.Management.Automation.PSCredential("$Username", $securePassword)
+$SecurePassword = Get-Content -Path "C:\ITR\EXO\PWD.txt" | ConvertTo-SecureString
+$SecureUser = Get-Content -Path "C:\ITR\EXO\USR.txt"
+$cred = New-Object System.Management.Automation.PSCredential("$SecureUser", $securePassword)
 
 # Connect to Exchange Online
 Try

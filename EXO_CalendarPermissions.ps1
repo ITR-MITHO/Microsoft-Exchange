@@ -25,11 +25,17 @@ Break
 }
 
 # Store the credentials for the connection in a secure file
-$cred = Get-Credential -UserName $UserName -Message "Enter password"
-$cred.Password | ConvertFrom-SecureString | Set-Content -Path "C:\Office365\Keys\Cred.txt"
+$TestPath = Test-Path "C:\ITR\Cred.txt"
+if (-not $TestPath)
+{
+
+    $cred = Get-Credential -UserName $UserName -Message "Enter password"
+    $cred.Password | ConvertFrom-SecureString | Set-Content -Path "C:\ITR\Cred.txt"
+
+}
 
 # Load the stored credentials
-$securePassword = Get-Content -Path "C:\Office365\Keys\Cred.txt" | ConvertTo-SecureString
+$securePassword = Get-Content -Path "C:\ITR\Cred.txt" | ConvertTo-SecureString
 $cred = New-Object System.Management.Automation.PSCredential("$Username", $securePassword)
 
 # Connect to Exchange Online

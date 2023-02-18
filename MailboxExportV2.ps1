@@ -100,5 +100,4 @@ $results += [PSCustomObject]@{
 $Results | Select Username, Name, Email, Type, Size, Deleted, Total, DB, LastLogon, ADEnabled, {$_.FullAccess}, {$_.SendAs} | 
 Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
 
-$EndDate = Get-Date
-Write-Host "End Time: $EndDate - Find your .csv-file here: $Home\desktop\MailboxExport.csv" -ForegroundColor Green
+Write-Host "Find your .csv-file here: $Home\desktop\MailboxExport.csv" -ForegroundColor Green

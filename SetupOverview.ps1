@@ -92,6 +92,10 @@ Write-Host "RoomMailboxes"
 Write-Host "PublicFolders"
 (Get-PublicFolder "\" -Recurse -ErrorAction SilentlyContinue).count
 
+Write-Host "DynamicDistributionGroups"
+(Get-DynamicDistributionGroup -Resultsize Unlimited).Count
+Write-Host "DynamicDistributionGroups do not work in Hybrid mode"
+
 Write-Host "
 
 ###########################################################################
@@ -184,7 +188,6 @@ OrganizationConfig
 " -ForegroundColor Green
 
 $Kerb = Get-ClientAccessServer $env:COMPUTERNAME -IncludeAlternateServiceAccountCredentialStatus -WarningAction SilentlyContinue | Select AlternateServiceAccountConfiguration
-
 If ($Kerb.AlternateServiceAccountConfiguration -like "Latest: <n*")
 {
 Write-Host "KerberosEnabled: False

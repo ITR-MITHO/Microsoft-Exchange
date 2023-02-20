@@ -17,7 +17,7 @@ Import-Module ExchangeOnlineManagement -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Exchange Online Management Module is missing!" -ForegroundColor Red 
+Write-Host "Exchange Online Module is NOT installed" -ForegroundColor Red
 Write-Host "Install the missing module with PowerShell: Install-Module ExchangeOnlineManagement" -ForegroundColor Yellow
 Break
 }
@@ -41,7 +41,7 @@ if (-not $PWFile)
 # Load the stored credentials
 $SecurePassword = Get-Content -Path "C:\ITR\EXO\PWD.txt" | ConvertTo-SecureString
 $SecureUser = Get-Content -Path "C:\ITR\EXO\USR.txt"
-$cred = New-Object System.Management.Automation.PSCredential("$SecureUser", $securePassword)
+$cred = New-Object System.Management.Automation.PSCredential($SecureUser, $securePassword)
 
 # Connect to Exchange Online
 Try
@@ -50,7 +50,8 @@ Connect-ExchangeOnline -Credential $cred -ShowProgress $true -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Failed to connect to Exchange Online. Try to run 'Connect-ExchangeOnline' manually" -ForeGroundColor Red
+Write-Host "Failed to connect to Exchange Online. If your user requires Multi-factor authentication from this destination, it will not work." -ForegroundColor Red    
+Write-Host "Try to run 'Connect-ExchangeOnline' manually, to see if it prompts for MFA" -ForeGroundColor Yellow
 Break
 }
 Write-host "Connected to Exchange Online!" -ForeGroundColor Green

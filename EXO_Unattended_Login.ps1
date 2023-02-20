@@ -16,7 +16,7 @@ Import-Module ExchangeOnlineManagement -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Exchange Online Module Missing" -ForegroundColor Yellow
+Write-Host "Exchange Online Module is NOT installed" -ForegroundColor Yellow
 Write-Host "Install the missing module with PowerShell: Install-Module ExchangeOnlineManagement" -ForegroundColor Yellow
 Break
 }

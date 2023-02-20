@@ -3,10 +3,8 @@
 .DESCRIPTION  
 First time running the script, it will prompt you for the credentials to your O365 administrator.
 Next time you run the script it will automatically use your username and password. 
-
 .NOTES
 To use this in a scheduled script it is important to exclude the server or user you're using from Condtional Access/MFA policy.
-
 #>
 
 # Import the Exchange Online Management module
@@ -16,7 +14,7 @@ Import-Module ExchangeOnlineManagement -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Exchange Online Module is NOT installed" -ForegroundColor Yellow
+Write-Host "Exchange Online Module is NOT installed" -ForegroundColor Red
 Write-Host "Install the missing module with PowerShell: Install-Module ExchangeOnlineManagement" -ForegroundColor Yellow
 Break
 }
@@ -49,7 +47,7 @@ Connect-ExchangeOnline -Credential $cred -ShowProgress $true -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Failed to connect to Exchange Online. If your user requires Multi-factor authentication from this destination, it will not work." -ForegroundColor Yellow    
+Write-Host "Failed to connect to Exchange Online. If your user requires Multi-factor authentication from this destination, it will not work." -ForegroundColor Red    
 Write-Host "Try to run 'Connect-ExchangeOnline' manually, to see if it prompts for MFA" -ForeGroundColor Yellow
 Break
 }

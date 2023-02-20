@@ -16,7 +16,7 @@ Import-Module ExchangeOnlineManagement -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Exchange Online Management Module is missing!" -ForegroundColor Red 
+Write-Host "Exchange Online Module Missing" -ForegroundColor Yellow
 Write-Host "Install the missing module with PowerShell: Install-Module ExchangeOnlineManagement" -ForegroundColor Yellow
 Break
 }
@@ -40,7 +40,7 @@ if (-not $PWFile)
 # Load the stored credentials
 $SecurePassword = Get-Content -Path "C:\ITR\EXO\PWD.txt" | ConvertTo-SecureString
 $SecureUser = Get-Content -Path "C:\ITR\EXO\USR.txt"
-$cred = New-Object System.Management.Automation.PSCredential("$SecureUser", $securePassword)
+$cred = New-Object System.Management.Automation.PSCredential($SecureUser, $securePassword)
 
 # Connect to Exchange Online
 Try

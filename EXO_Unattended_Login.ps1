@@ -49,7 +49,7 @@ Connect-ExchangeOnline -Credential $cred -ShowProgress $true -ErrorAction Stop
 }
 Catch
 {
-Write-Host "Failed to connect to Exchange Online. This could be due to MFA requirements for your user." -ForegroundColor Yellow    
+Write-Host "Failed to connect to Exchange Online. This could be due to MFA requirements for your user. This script does not support MFA" -ForegroundColor Yellow    
 Write-Host "Try to run 'Connect-ExchangeOnline' manually, to see if it prompts for MFA" -ForeGroundColor Yellow
 Break
 }

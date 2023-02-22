@@ -46,7 +46,7 @@ Write-Host "
 Exchange Server Information
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 $Serverlist = Get-ExchangeServer | Select Name
 $Data = @()
@@ -71,7 +71,7 @@ Write-Host "
 MailBox Databases
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 Get-MailboxDatabase -Status | fl Name, DatabaseSize, Server, EDBFilePath, LogFolderPath, MasterServerOrAvailabilityGroup, DeletedItemRetention, MailboxRetention, CircularLoggingEnabled
 
@@ -82,7 +82,7 @@ Write-Host "
 Database backup timestamps
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 Get-MailboxDatabase -Status | Fl Name, LastFullBackup, LastIncrementalBackup
 
@@ -93,7 +93,7 @@ Write-Host "
 Number of mailboxes
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 Write-Host "UserMailboxes"
 (Get-Mailbox -RecipientTypeDetails UserMailbox -Resultsize Unlimited).count
@@ -117,7 +117,7 @@ Write-Host "
 TransportRules
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 Get-TransportRule -WarningAction SilentlyContinue | fl Name, State
 
@@ -129,7 +129,7 @@ Write-Host "
 AcceptedDomains
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 Get-AcceptedDomain | fl Name, DomainType
 
@@ -139,7 +139,7 @@ Write-Host "
 RetentionPolicy
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 $Retention = Get-Retentionpolicy | Select Name, RetentionPolicyTagLinks
 
 Foreach ($R in $Retention)
@@ -164,7 +164,7 @@ Write-Host "
 Send Connectors
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 Get-SendConnector | fl name, Smarthosts, AddressSpaces, Enabled, ProtocolLoggingLevel
 
@@ -175,7 +175,7 @@ Write-Host "
 Receive Connectors
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 
 Get-ReceiveConnector | fl Name, Enabled, RemoteIPRanges, ProtocolLoggingLevel
@@ -188,7 +188,7 @@ Write-Host "
 Exchange Certificates
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 
 Get-ExchangeCertificate | fl Services, Thumbprint, IsSelfSigned, Subject, Notafter, NotBefore
@@ -200,7 +200,7 @@ Write-Host "
 OrganizationConfig
 ###########################################################################
 
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 $Kerb = Get-ClientAccessServer $env:COMPUTERNAME -IncludeAlternateServiceAccountCredentialStatus -WarningAction SilentlyContinue | Select AlternateServiceAccountConfiguration
 If ($Kerb.AlternateServiceAccountConfiguration -like "Latest: <n*")
@@ -236,7 +236,7 @@ Write-Host "
 ###########################################################################
 Virtual Directories
 ###########################################################################
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 Write-Host "Autodiscover"
 Get-ClientAccessServer -WarningAction SilentlyContinue -Identity "$env:COMPUTERNAME" | fl AutodiscoverServiceInternalURI
@@ -271,7 +271,7 @@ Write-Host "
 ###########################################################################
 DMARC Records for all domains.
 ###########################################################################
-" -ForegroundColor Green
+" -ForegroundColor Yellow
 
 $Domains = Get-Mailbox -ResultSize Unlimited | Select-Object EmailAddresses -ExpandProperty EmailAddresses | Where-Object { $_ -like "smtp*"} | ForEach-Object { ($_ -split "@")[1] } | Sort-Object -Unique
 # DMARC records.

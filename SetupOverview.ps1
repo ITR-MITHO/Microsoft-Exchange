@@ -198,7 +198,7 @@ Write-Host "KerberosEnabled: True
 "
 }
 
-$Hyrid = Get-HybridConfiguration
+$Hybrid = Get-HybridConfiguration
 If ($Hybrid)
 {
 Write-Host "HybridEnabled: True"

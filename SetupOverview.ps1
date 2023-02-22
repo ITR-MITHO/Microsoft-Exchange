@@ -8,7 +8,24 @@ There will be one output file named "ExchangeReport.txt" the file will be placed
 ExchangeReport.txt contains all Exchange configuration
 DMARC.txt contains all domains and their DMARC records
 
-
+                                            
+                                            
+                                            Exchange Server Information
+                                            Mailbox Database configuration
+                                            Database Backup Timestamps
+                                            Number and type of mailboxes
+                                            Transport Rules
+                                            AcceptedDomains
+                                            Retention Policy
+                                            Send Connectors
+                                            Receive Connectors
+                                            Exchange Certificates
+                                            Organization Configuration
+                                            Virtual Directory - Urls & Auth
+                                            DMARC records for all domains
+                                            
+                                            
+                                            
 #>
 
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())

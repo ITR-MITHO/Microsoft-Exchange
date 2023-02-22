@@ -6,6 +6,7 @@ There will be one output file named "ExchangeReport.txt" the file will be placed
 
 .OUTPUTS
 ExchangeReport.txt contains all Exchange configuration
+DMARC.txt contains all domains and their DMARC records
 
 
 #>
@@ -247,3 +248,25 @@ Get-OutlookAnywhere -Identity "$env:COMPUTERNAME\rpc (Default web site)" | Fl In
 Get-ExchangeServer $env:computername | Get-OutlookAnywhere | fl InternalClientAuthenticationMethod, ExternalClientAuthenticationMethod, IISAuthenticationMethods
 
 Stop-Transcript | out-null
+
+
+Write-Host "
+###########################################################################
+DMARC Records for all domains.
+###########################################################################
+" -ForegroundColor Green
+
+$Domains = Get-Mailbox -ResultSize Unlimited | Select-Object EmailAddresses -ExpandProperty EmailAddresses | Where-Object { $_ -like "smtp*"} | ForEach-Object { ($_ -split "@")[1] } | Sort-Object -Unique
+# DMARC records.
+Echo "-------- DKIM and DMARC DNS Records Report --------"
+Echo ""
+
+$Result = foreach ($Domain in $Domains) {
+    Echo "---------------------- $Domain ----------------------"
+    Echo ""
+    Echo "DMARC TXT Record:"
+    (nslookup -q=txt _dmarc.$Domain | Select-String "DMARC1") -replace "`t", ""
+    Echo ""
+
+}
+$Result | Out-File $home\desktop\DMARC.txt

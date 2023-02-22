@@ -270,9 +270,10 @@ Stop-Transcript | out-null
 Write-Host "
 ###########################################################################
 DMARC Records for all domains.
+It will write 'errors' when domains do not exist.
 ###########################################################################
 " -ForegroundColor Yellow
-
+Sleep 5
 $Domains = Get-Mailbox -ResultSize Unlimited | Select-Object EmailAddresses -ExpandProperty EmailAddresses | Where-Object { $_ -like "smtp*"} | ForEach-Object { ($_ -split "@")[1] } | Sort-Object -Unique
 # DMARC records.
 Echo "-------- DKIM and DMARC DNS Records Report --------"

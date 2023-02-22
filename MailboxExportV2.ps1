@@ -47,14 +47,11 @@ Remove-Item "$Home\desktop\MailboxExport.csv" -Confirm:$false
 }
     }
 
-
 Clear-Host
 $Mailboxes = Get-Mailbox -ResultSize Unlimited
 $Results = @()
-$StartDate = Get-Date
 
-
-Write-Host "Start Time: $StartDate - It is estimated to take 10-15 minutes for large organisations. Grab a nice cup of coffee :-)" -ForegroundColor Yellow
+Write-Host "It is estimated to take 10-15 minutes for large organisations. Grab a nice cup of coffee :-)" -ForegroundColor Yellow
 Sleep 5
 Foreach ($Mailbox in $Mailboxes)
 {
@@ -75,7 +72,6 @@ else
     $Size = $null
     $Deleted = $null
 }
-
 
 $results += [PSCustomObject]@{
 

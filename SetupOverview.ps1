@@ -2,7 +2,7 @@
 
 .DESCRIPTION
 This script will give you an overview of how the Exchange is setup, and what configurations have been made. 
-There will be one output file named "ExchangeReport.txt" the file will be placed on your desktop.
+There will be two output files named "ExchangeReport.txt" and "DMARC.txt" the files will be placed on your desktop.
 
 .OUTPUTS
 ExchangeReport.txt contains all Exchange configuration

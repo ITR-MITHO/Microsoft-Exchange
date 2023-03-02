@@ -87,7 +87,7 @@ $results += [PSCustomObject]@{
     }
         
 # Selecting the fields in a specific order instead of random.
-$Results | Select Username, Name, Email, Type, Size, Deleted, Total, DB, LastLogon, ADEnabled, {$_.FullAccess}, {$_.SendAs} | 
+$Results | Select Username, Name, Email, Type, Size, Deleted, Total, DB, LastLogon, ADEnabled | 
 Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
 
 Write-Host "

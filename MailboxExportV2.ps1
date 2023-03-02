@@ -92,4 +92,6 @@ Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
 
 Write-Host "
             Find your .csv-file here: $Home\desktop\MailboxExport.csv
+            
+            
             For a export of full & send-as permissions use the following script: https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/FullAccessAndSendAs.ps1" -ForegroundColor Green

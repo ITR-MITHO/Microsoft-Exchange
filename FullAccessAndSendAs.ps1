@@ -31,7 +31,7 @@ $FullObjects | Select MailboxSamAccountName, MailboxDisplayName, MailboxPrimaryS
 
 # Send-As Permissions
 $SendAsObjects = @()
-$Mailboxes = Get-Mailbox -RecipientTypeDetails SharedMailbox -ResultSize Unlimited
+$Mailboxes = Get-Mailbox -ResultSize Unlimited
 
 Foreach ($Mailbox in $Mailboxes) {
     $SendAs = Get-ADPermission $Mailbox.Identity | Where-Object {$_.ExtendedRights -like "*send*" -and $_.isinherited -like "*false*" -and $_.User -notlike "*Self*" -and $_.user -notlike "S-1-5-21*"} | Select-Object User, IdentityReference, AccessRights

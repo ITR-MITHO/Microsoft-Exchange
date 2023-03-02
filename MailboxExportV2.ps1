@@ -12,8 +12,6 @@ The script will export the following information from all mailboxes:
                             TotalItemSize.To.MB
                             TotalDeletedItemSize.To.MB
                             Total
-                            SendAs 
-                            FullAccess
 
 .NOTE
 The attribute "Total" This field empty and used to add Size & Deleted together in this field inside Excel to determine the total size of a mailbox.
@@ -57,8 +55,6 @@ Foreach ($Mailbox in $Mailboxes)
 {
 
 $Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName
-$Permission = Get-MailboxPermission -identity $Mailbox.SamAccountName | Where {$_.AccessRights -EQ "FullAccess" -and -not ($_.User -like “NT AUTHORITY\*”)}
-$ADPermission = Get-Mailbox $Mailbox.SamAccountName | Get-ADPermission | Where {$_.ExtendedRights -like "Send-As" -and -not ($_.User -like “NT AUTHORITY\*”)}
 $ADAtt = Get-ADUser -Identity $Mailbox.SamAccountName -Properties Enabled
 
 if ($Statistics) 
@@ -85,8 +81,6 @@ $results += [PSCustomObject]@{
     Size = $Size
     Deleted = $Deleted
     Total = $null  # This field empty and used to add Size & Deleted together in this field inside Excel to determine the total size of a mailbox.
-    SendAs = $ADPermission.User
-    FullAccess = $Permission.User
 
 
 }
@@ -96,4 +90,6 @@ $results += [PSCustomObject]@{
 $Results | Select Username, Name, Email, Type, Size, Deleted, Total, DB, LastLogon, ADEnabled, {$_.FullAccess}, {$_.SendAs} | 
 Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
 
-Write-Host "Find your .csv-file here: $Home\desktop\MailboxExport.csv" -ForegroundColor Green
+Write-Host "
+            Find your .csv-file here: $Home\desktop\MailboxExport.csv
+            For a export of full & send-as permissions use the following script: https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/FullAccessAndSendAs.ps1" -ForegroundColor Green

@@ -2,7 +2,7 @@
 
 .DESCRIPTION
 The script is designed to gather information about all ActiveSync devices in an on-prem Exchange environment. 
-It can be run without editing, but I would suggest running it in an elevated PowerShell. 
+It can be run without editing, but needs to be running in an elevated PowerShell. 
 
 .NOTES
 If you have any issues, contact me directly for guidance at mitho@itrelation.dk

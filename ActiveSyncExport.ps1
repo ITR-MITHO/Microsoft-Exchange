@@ -1,8 +1,8 @@
 <#
 
 .DESCRIPTION
-The script is designed to gather information about all ActiveSync devices in an on-prem Exchange environment. 
-It can be run without editing, but needs to be running in an elevated PowerShell. 
+The script is designed to gather information about all ActiveSync devices in an on-prem Exchange & Exchange Online environment. 
+It can be run without editing, but needs to be running in an elevated PowerShell
 
 .NOTES
 If you have any issues, contact me directly for guidance at mitho@itrelation.dk
@@ -75,6 +75,6 @@ Foreach ($Mailbox in $MailboxesWithEASDevices)
         }
     }
 }
-
+cls
 Write-Host "Report completed. Find your file here: $Export" -ForegroundColor Gree
 $report | Export-Csv $Export -NoTypeInformation  -Encoding UTF8

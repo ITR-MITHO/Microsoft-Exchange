@@ -11,6 +11,6 @@ Set-ThrottlingPolicy "Default Policy" -EasMaxInactivityForDeviceCleanup 30
 Foreach ($Mailbox in Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails UserMailbox)
 {
 
-Set-Mailbox -identity $Mailbox.SamAccountName -ThrottlingPolicy "Default Policy"
+Set-Mailbox $Mailbox.SamAccountName -ThrottlingPolicy "Default Policy"
     
 }

@@ -33,8 +33,12 @@ $Space = get-psdrive c | % { $_.free/($_.used + $_.free) } | % tostring p
 If ($Space -lt "20 %")
 {
 
-Write-Host "There is $space left on the C-drive. It have to be atleast 20%
-Run this script: https://raw.githubusercontent.com/ITR-MITHO/Microsoft-Exchange/main/IISLogCleanup.ps1." -ForegroundColor Red
+Write-Host "There is $space left on the C-drive. It have needs atleast 20%
+" -ForegroundColor Red
+
+Write-host "
+Run this script to clean up the drive.
+https://raw.githubusercontent.com/ITR-MITHO/Microsoft-Exchange/main/IISLogCleanup.ps1." -ForegroundColor Yellow
 
 }
 Else

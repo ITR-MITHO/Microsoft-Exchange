@@ -22,7 +22,7 @@ DMARC.txt contains all domains and their DMARC records
                                             Exchange Certificates
                                             Organization Configuration
                                             Virtual Directory - Urls & Auth
-                                            DMARC records for all domains
+                                            DMARC records for all accepted domains
                                             
                                             
                                             

@@ -6,7 +6,7 @@ There will be two output files named "ExchangeReport.txt" and "DMARC.txt" the fi
 
 .OUTPUTS
 ExchangeReport.txt contains all Exchange configuration
-DMARC.txt contains all domains and their DMARC records
+DMARC.txt contains all accepted domains and their DMARC records
 
                                             
                                             

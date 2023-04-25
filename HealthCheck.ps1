@@ -11,6 +11,7 @@ The script is designed to help you check how Exchange is feeling today.
 * DAG Replication Test
 * Microsoft Exchange Services
 * MAPI Connectivity
+* Outlook Connectivity
 
 .NOTES
 * Run in a elevated Exchange Shell
@@ -111,6 +112,21 @@ Write-Host "MAPIConnectivityTest passed
 }
 
 
+# OutlookConnectivity
+$OutlookConnectivity = Test-OutlookConnectivity -ProbeIdentity OutlookMapiHttp.Protocol\OutlookMapiHttpSelfTestProbe
+If ($MAPIConnectivity  -EQ "Failed")
+{
+Write-Host "OutlookConnectivity failed." -ForegroundColor Red
+$MapiConnectivity
+}
+Else
+{
+Write-Host "OutlookConnectivity passed
+
+" -ForegroundColor Green
+}
+
+
 # DAGReplicationHealth
 $DAGTest = Test-ReplicationHealth $env:computername | Where {$_.Result -like "*failed*"} | Select Server, Check, Result
 $DAG = Get-DatabaseAvailabilityGroup
@@ -146,3 +162,5 @@ cls
 }
 
 }
+
+Write-Host "Healthcheck completed." -ForegroundColor Yellow

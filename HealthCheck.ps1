@@ -114,10 +114,10 @@ Write-Host "MAPIConnectivityTest passed
 
 # OutlookConnectivity
 $OutlookConnectivity = Test-OutlookConnectivity -ProbeIdentity OutlookMapiHttp.Protocol\OutlookMapiHttpSelfTestProbe
-If ($MAPIConnectivity  -EQ "Failed")
+If ($OutlookConnectivity -EQ "Failed")
 {
 Write-Host "OutlookConnectivity failed." -ForegroundColor Red
-$MapiConnectivity
+$OutlookConnectivity
 }
 Else
 {

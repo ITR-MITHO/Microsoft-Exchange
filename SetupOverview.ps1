@@ -291,9 +291,9 @@ Stop-Transcript | out-null
 Write-Host "
 ###########################################################################
 DMARC Records for all domains.
-It will write 'errors' when domains do not exist.
 ###########################################################################
 " -ForegroundColor Yellow
+$ErrorActionPreference = 'SilentlyContinue'
 Sleep 5
 $Domains = Get-Mailbox -ResultSize Unlimited | Select-Object EmailAddresses -ExpandProperty EmailAddresses | Where-Object { $_ -like "smtp*"} | ForEach-Object { ($_ -split "@")[1] } | Sort-Object -Unique
 $Result = foreach ($Domain in $Domains) {
@@ -305,3 +305,6 @@ $Result = foreach ($Domain in $Domains) {
 
 }
 $Result | Out-File $home\desktop\DMARC.txt
+
+Write-host "Script completed. 
+Find your output files on your desktop here: $home\Desktop" -ForegroundColor Green

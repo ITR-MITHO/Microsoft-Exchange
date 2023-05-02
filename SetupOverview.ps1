@@ -108,9 +108,9 @@ Write-Host "RoomMailboxes"
 Write-Host "PublicFolders"
 (Get-PublicFolder "\" -Recurse -ErrorAction SilentlyContinue).count
 
-Write-Host "DynamicDistributionGroups"
+Write-Host "DynamicDistributionGroups (DDG does not work in hybrid mode)"
 (Get-DynamicDistributionGroup -Resultsize Unlimited).Count
-Write-Host "DynamicDistributionGroups do not work in Hybrid mode"
+
 
 
 

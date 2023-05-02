@@ -168,7 +168,7 @@ Foreach ($R in $Retention)
 
 $RetentionName = $R.Name
 $RetentionTag = $R.RetentionPolicyTagLinks
-$RetentionCount = (Get-Mailbox -ResultSize unlimited | Where {$_.RetentionPolicy -eq "$Retention.Name"}).count
+$RetentionCount = (Get-Mailbox -ResultSize unlimited | Where {$_.RetentionPolicy -eq "$RetentionName"}).count
 
 Write-Host " 
 

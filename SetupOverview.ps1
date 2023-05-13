@@ -2,11 +2,9 @@
 
 .DESCRIPTION
 This script will give you an overview of how the Exchange is setup, and what configurations have been made. 
-There will be two output files named "ExchangeReport.txt" and "DMARC.txt" the files will be placed on your desktop.
 
 .OUTPUTS
-ExchangeReport.txt contains all Exchange configuration
-DMARC.txt contains all accepted domains and their DMARC records
+ExchangeReport.txt contains all information
 
                                             
                                             
@@ -253,6 +251,26 @@ Get-OrganizationConfig | fl MitigationsEnabled
 
 Get-OrganizationConfig | fl MapiHttpEnabled
 
+
+Write-Host "
+###########################################################################
+DMARC Records for all domains.
+###########################################################################
+" -ForegroundColor Yellow
+$ErrorActionPreference = 'SilentlyContinue'
+Sleep 5
+$Domains = Get-Mailbox -ResultSize Unlimited | Select-Object EmailAddresses -ExpandProperty EmailAddresses | Where-Object { $_ -like "smtp*"} | ForEach-Object { ($_ -split "@")[1] } | Sort-Object -Unique
+$Result = foreach ($Domain in $Domains) {
+    Echo "---------------------- $Domain ----------------------"
+    Echo ""
+    Echo "DMARC TXT Record:"
+    (nslookup -q=txt _dmarc.$Domain | Select-String "DMARC1") -replace "`t", ""
+    Echo ""
+
+}
+$Result
+
+
 Write-Host "
 ###########################################################################
 Virtual Directories
@@ -287,24 +305,5 @@ Get-ExchangeServer $env:computername | Get-OutlookAnywhere | fl InternalClientAu
 
 Stop-Transcript | out-null
 
-
-Write-Host "
-###########################################################################
-DMARC Records for all domains.
-###########################################################################
-" -ForegroundColor Yellow
-$ErrorActionPreference = 'SilentlyContinue'
-Sleep 5
-$Domains = Get-Mailbox -ResultSize Unlimited | Select-Object EmailAddresses -ExpandProperty EmailAddresses | Where-Object { $_ -like "smtp*"} | ForEach-Object { ($_ -split "@")[1] } | Sort-Object -Unique
-$Result = foreach ($Domain in $Domains) {
-    Echo "---------------------- $Domain ----------------------"
-    Echo ""
-    Echo "DMARC TXT Record:"
-    (nslookup -q=txt _dmarc.$Domain | Select-String "DMARC1") -replace "`t", ""
-    Echo ""
-
-}
-$Result | Out-File $home\desktop\DMARC.txt
-
 Write-host "Script completed. 
-Find your output files on your desktop here: $home\Desktop" -ForegroundColor Green
+Find your output file on your desktop here: $home\Desktop\ExchangeReport.txt" -ForegroundColor Green

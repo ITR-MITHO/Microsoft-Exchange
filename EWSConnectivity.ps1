@@ -4,7 +4,7 @@
 Used to see what mailboxes are using EWS and which aren't using it.
 
 .OUTPUT
-2 files placed on desktop: YES-Activity and NO-Activity. 
+1 file named "Activity.txt" will be placed on your desktop
 
 #>
 

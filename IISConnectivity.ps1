@@ -82,5 +82,5 @@ Echo "$Full, $Name, $Primary, $Logon, Yes" | Out-File $home\desktop\Activity.csv
  $EndTime = Get-Date
  Clear
  
- Write-Host "Completed. Find your file here: $home\desktop\Activity.csv"
+ Write-Host "Completed. Find your file here: $home\desktop\Activity.csv" -ForeGroundColor Green
  Write-Host "Started at: $StartTime     Ended at: $EndTime"

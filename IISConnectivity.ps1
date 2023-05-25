@@ -58,6 +58,7 @@ Else
 Echo "$Full, $Name, $Primary, $Logon, Yes" | Out-File $home\desktop\Activity.csv -Append -Encoding unicode
 }
  }
+ 
  $EndTime = Get-Date
  Clear
 

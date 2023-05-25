@@ -1,9 +1,11 @@
 Add-PSSnapin *EXC*
 Import-Module WebAdministration
+Import-Module ActiveDirectory
 
 $Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
 $Date = (Get-Date).AddDays(-14)
 $Mailbox = Get-Mailbox -ResultSize unlimited -RecipientTypeDetails UserMailbox, Sharedmailbox | Select SamAccountName, DisplayName, PrimarySMTPAddress, LastLogonDate
+$AD = Get-ADUser -Filter * -Properties SamAccountName, LastLogonDate | Select SamAccountName, LastLogonDate
 
 # Creating our own CSV-file with data
 Echo "Name, Username, Email, LastLogon, Activity" | Out-File $home\desktop\Activity.csv
@@ -13,7 +15,7 @@ CLS
 Write-Host "Starting to collect logs.. This might take a while." -ForegroundColor Yellow
 ForEach ($M in $Mailbox)
 {
-$AD = Get-ADUser $M.SamAccountName -Properties LastLogonDate | Select LastLogonDate
+$SamAccount = $AD.LastLogonDate
 $Name = $M.SamAccountName
 $Full = $M.DisplayName
 $Primary = $M.PrimarySMTPAddress

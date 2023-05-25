@@ -12,7 +12,7 @@ It will place a .csv-file on your desktop named "Activity.csv"
 
 #>
 
-# Checking permissions
+# Checking Permissions
 Remove-Item "$Home\desktop\PermissionIssue.txt" -Force
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))

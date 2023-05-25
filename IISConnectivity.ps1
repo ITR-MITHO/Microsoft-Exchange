@@ -12,8 +12,13 @@ It will place a .csv-file on your desktop named "Activity.csv"
 
 #>
 
-# Checking Permissions
+# Checking permissions
+$PMError = Test-Path $Home\desktop\PermissionIssue.txt
+if ($PMError)
+{
 Remove-Item "$Home\desktop\PermissionIssue.txt" -Force
+}
+timeout 3
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {

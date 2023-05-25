@@ -1,5 +1,6 @@
 <#
 .DESCRIPTION
+Works on Exchange 2013, 2016 and 2019. 
 The script will search IIS logs for the last 14 days to see which mailboxes are active and which aren't.
 Foeach Mailbox there is, it will search for that specific mailbox in all IIS-logs.
 It will place a .csv-file on your desktop named "Activity.csv"

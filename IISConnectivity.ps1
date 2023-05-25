@@ -59,6 +59,9 @@ Echo "$Full, $Name, $Primary, $Logon, Yes" | Out-File $home\desktop\Activity.csv
  $EndTime = Get-Date
  Clear
 
- Write-Host "Completed. Find your file here: $home\desktop\Activity.txt" -ForeGroundColor Green
+ Write-Host "Completed. Find your file here: $home\desktop\Activity.txt
+ Yes in the log means: The user connected to Exchange recently
+ No in the log means: The user haven't connected to Exchange for a while." -ForeGroundColor Green
+
  Write-Host "Started at: $StartTime"
  Write-Host "Ended at: $EndTime"

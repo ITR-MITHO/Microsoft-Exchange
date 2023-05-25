@@ -8,6 +8,7 @@ It will place a .csv-file on your desktop named "Activity.csv"
 .NOTES
 * Run PowerShell as administrator. 
 * No editing is needed. 
+* Can take 10-15 minutes to complete the exports. 
 
 #>
 

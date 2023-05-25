@@ -28,8 +28,8 @@ Echo "Name, Username, Email, LastLogon, Activity" | Out-File $home\desktop\Activ
 # Beginning to go through all mailboxes.
 Clear
 
-Write-Host "Starting to collect logs.. This can take 10-15 minutes..
-When completed, it will be shown in this box." -ForegroundColor Yellow
+Write-Host "Collecting and searching IIS-logs. This might take 10-15 minutes. 
+When the report is done you will be notified in this box." -ForegroundColor Yellow
 
 ForEach ($M in $Mailbox)
 {

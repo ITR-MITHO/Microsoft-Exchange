@@ -10,10 +10,12 @@ It will place a .csv-file on your desktop named "Activity.csv"
 
 #>
 
+# Modules
 Add-PSSnapin *EXC*
 Import-Module WebAdministration
 Import-Module ActiveDirectory
 
+# Variables
 $StartTime = Get-Date
 $Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
 $Date = (Get-Date).AddDays(-14)

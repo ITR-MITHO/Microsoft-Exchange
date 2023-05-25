@@ -1,7 +1,7 @@
 Add-PSSnapin *EXC*
 Import-Module WebAdministration
 Import-Module ActiveDirectory
-
+$StartDate = Get-Date
 $Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
 $Date = (Get-Date).AddDays(-14)
 $Mailbox = Get-Mailbox -ResultSize unlimited -RecipientTypeDetails UserMailbox, Sharedmailbox | Select SamAccountName, DisplayName, PrimarySMTPAddress, LastLogonDate
@@ -42,6 +42,8 @@ Else
 Echo "$Full, $Name, $Primary, $Logon, Yes" | Out-File $home\desktop\Activity.csv -Append
 }
  }
- 
+ $SearchDate = Get-Date
  cls
  Write-Host "Completed. Find your file here: $home\desktop\Activity.txt" -ForeGroundColor Green
+ Write-Host "Started at: $StartDate"
+ Write-Host "Ended at: $SearchDate"

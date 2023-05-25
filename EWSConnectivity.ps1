@@ -5,7 +5,6 @@ Import-Module ActiveDirectory
 $Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
 $Date = (Get-Date).AddDays(-14)
 $Mailbox = Get-Mailbox -ResultSize unlimited -RecipientTypeDetails UserMailbox, Sharedmailbox | Select SamAccountName, DisplayName, PrimarySMTPAddress, LastLogonDate
-$AD = Get-ADUser -Filter * -Properties SamAccountName, LastLogonDate | Select SamAccountName, LastLogonDate
 
 # Creating our own CSV-file with data
 Echo "Name, Username, Email, LastLogon, Activity" | Out-File $home\desktop\Activity.csv
@@ -15,7 +14,7 @@ CLS
 Write-Host "Starting to collect logs.. This might take a while." -ForegroundColor Yellow
 ForEach ($M in $Mailbox)
 {
-$SamAccount = $AD.LastLogonDate
+$AD = Get-ADUser $M.SamAccountName -Properties LastLogonDate | Select LastLogonDate
 $Name = $M.SamAccountName
 $Full = $M.DisplayName
 $Primary = $M.PrimarySMTPAddress
@@ -33,7 +32,6 @@ If ($Folder.Value -like "%Systemdrive%*")
     # Change the line below with one of the following: */mapi/*, */Microsoft-Server-ActiveSync/*, */AutoDiscover/*, */OWA/*, */ECP/* and */EWS/*
     $Data = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Select-String -Pattern "$Name" | Where {$_.Line -like "*/EWS/*"} | Select -First 1
 }
-
 
 If (-not $Data)
 {

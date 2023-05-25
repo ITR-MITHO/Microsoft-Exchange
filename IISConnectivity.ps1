@@ -14,7 +14,6 @@ It will place a .csv-file on your desktop named "Activity.csv"
 # Modules
 Add-PSSnapin *EXC*
 Import-Module WebAdministration
-Import-Module ActiveDirectory
 
 # Variables
 $StartTime = Get-Date
@@ -33,11 +32,20 @@ When completed, it will be shown in this box." -ForegroundColor Yellow
 
 ForEach ($M in $Mailbox)
 {
-$AD = Get-ADUser $M.SamAccountName -Properties LastLogonDate | Select LastLogonDate
+$MailboxStats = $M.SamAccountName | Get-MailboxStatistics | Select LastLogonTime
+if ($MailboxStats) 
+{
+    $LogonStat = $MailboxStats.LastLogonTime
+} 
+else
+{
+    $LogonStat = "No logon data"
+}
+
 $Name = $M.SamAccountName
 $Full = $M.DisplayName
 $Primary = $M.PrimarySMTPAddress
-$Logon = $AD.LastLogonDate
+$Logon = $LogonStat
 
 If ($Folder.Value -like "%Systemdrive%*")
 {

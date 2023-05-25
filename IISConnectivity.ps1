@@ -13,12 +13,12 @@ It will place a .csv-file on your desktop named "Activity.csv"
 #>
 
 # Checking permissions
-Remove-Item "$Home\desktop\ErrorEXC.txt" -Force
+Remove-Item "$Home\desktop\PermissionIssue.txt" -Force
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
-echo "Start PowerShell as an Administrator" > $Home\desktop\ErrorEXC.txt
-Start $home\desktop\ErrorEXC.txt
+echo "Start PowerShell as an Administrator" > $Home\desktop\PermissionIssue.txt
+Start $home\desktop\PermissionIssue.txt
 Break
 }
 
@@ -82,5 +82,5 @@ Echo "$Full, $Name, $Primary, $Logon, Yes" | Out-File $home\desktop\Activity.csv
  $EndTime = Get-Date
  Clear
  
- Write-Host "Completed. Find your file here: $home\desktop\Activity.csv" -ForegroundColor Green
+ Write-Host "Completed. Find your file here: $home\desktop\Activity.csv"
  Write-Host "Started at: $StartTime     Ended at: $EndTime"

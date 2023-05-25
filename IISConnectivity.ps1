@@ -7,6 +7,7 @@ It will place a .csv-file on your desktop named "Activity.csv"
 .NOTES
 * Run PowerShell as administrator. 
 * No editing is needed. 
+
 #>
 
 Add-PSSnapin *EXC*
@@ -24,7 +25,9 @@ Echo "Name, Username, Email, LastLogon, Activity" | Out-File $home\desktop\Activ
 # Beginning to go through all mailboxes.
 Clear
 
-Write-Host "Starting to collect logs.. This might take a while." -ForegroundColor Yellow
+Write-Host "Starting to collect logs.. This can take 10-15 minutes..
+When completed, it will be shown in this box." -ForegroundColor Yellow
+
 ForEach ($M in $Mailbox)
 {
 $AD = Get-ADUser $M.SamAccountName -Properties LastLogonDate | Select LastLogonDate

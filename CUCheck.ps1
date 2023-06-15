@@ -88,8 +88,6 @@ if ($Display.DisplayName -Like "*$Exchange2013*")
 }
 
    }
-        }
-
 
 <# Exchange Server 2010 #>
 Foreach ($S in $Servers)

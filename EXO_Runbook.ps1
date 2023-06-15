@@ -48,7 +48,7 @@ Break
 
 # Default UserMailbox Calendar Permissions
 $User = 'Default'
-$AccessRight = 'Reviewer'
+$AccessRight = 'LimitedDetails'
 Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
 {
     $UserPrincipalName = $Mailbox.UserPrincipalName

@@ -41,7 +41,8 @@ Write-Host "$Output - SUPPORTED" -ForegroundColor Green
 Else
 {
 
-Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
+Write-host "$Output - NOT SUPPORTED
+Please upgrade Exchange to the newest CU" -ForegroundColor Red
 
 }
 
@@ -65,7 +66,8 @@ Write-Host "$Output - SUPPORTED" -ForegroundColor Green
 Else
 {
 
-Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
+Write-host "$Output - NOT SUPPORTED
+Please upgrade Exchange to CU23" -ForegroundColor Red
 
 }
 
@@ -83,7 +85,8 @@ If ($Display -like "*Microsoft Exchange Server 2013*")
 if ($Display.DisplayName -Like "*$Exchange2013*")
 {
 
-        Write-host "$Output - NOT SUPPORTED - End of Life 11 April 2023" -ForegroundColor Red
+        Write-host "$Output - NOT SUPPORTED - End of Life 11 April 2023
+        Consider upgrading to Exchange Server 2019" -ForegroundColor Red
 
 }
 
@@ -97,7 +100,8 @@ If ($Display -like "*$Exchange2010*")
 
 {
 
-        Write-host "$Output - NOT SUPPORTED - End of Life 13 October 2020" -ForegroundColor Red
+        Write-host "$Output - NOT SUPPORTED - End of Life 13 October 2020
+        Consider upgrading to Exchange Server 2019" -ForegroundColor Red
 
 }
     
@@ -112,7 +116,8 @@ If ($Display -like "*$Exchange2007*")
 
 {
 
-        Write-host "$Output - NOT SUPPORTED - End of Life 11 April 2017" -ForegroundColor Red
+        Write-host "$Output - NOT SUPPORTED - End of Life 11 April 2017
+        Consider upgrading to Exchange Server 2019" -ForegroundColor Red
 
 }
     

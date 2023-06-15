@@ -6,7 +6,7 @@ The script will check if a installed version of Exchange is supported or not.
 .SYNOPSIS
 By looking at the registry-database we can determine what version of Exchange is installed on the server.
 
-- Exchange 2019 CU11+12      = SUPPORTED - EOL 14 October 2025
+- Exchange 2019 CU12+13      = SUPPORTED - EOL 14 October 2025
 - Exchange 2016 CU23         = SUPPORTED - EOL 14 October 2025
 - Exchange 2013 CU23         = NOT SUPPORTED - EOL 11 April 2023
 - Exchange 2010              = NOT SUPPORTED - EOL 13 October 2020

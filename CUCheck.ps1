@@ -83,7 +83,7 @@ If ($Display -like "*Microsoft Exchange Server 2013*")
 if ($Display.DisplayName -Like "*$Exchange2013*")
 {
 
-        Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
+        Write-host "$Output - NOT SUPPORTED - End of Life 11 April 2023" -ForegroundColor Red
 
 }
 
@@ -97,7 +97,7 @@ If ($Display -like "*$Exchange2010*")
 
 {
 
-        Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
+        Write-host "$Output - NOT SUPPORTED - End of Life 13 October 2020" -ForegroundColor Red
 
 }
     
@@ -112,7 +112,7 @@ If ($Display -like "*$Exchange2007*")
 
 {
 
-        Write-host "$Output - NOT SUPPORTED" -ForegroundColor Red
+        Write-host "$Output - NOT SUPPORTED - End of Life 11 April 2017" -ForegroundColor Red
 
 }
     

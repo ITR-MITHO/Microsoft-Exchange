@@ -10,7 +10,7 @@ $Mailbox = Get-Mailbox -ResultSize unlimited -RecipientTypeDetails UserMailbox, 
 Echo "Name, Username, Email, LastLogon, Activity" | Out-File $home\desktop\Activity.csv
 
 # Beginning to go through all mailboxes.
-CLS
+Clear
 Write-Host "Starting to collect logs.. This might take a while." -ForegroundColor Yellow
 ForEach ($M in $Mailbox)
 {
@@ -43,7 +43,5 @@ Echo "$Full, $Name, $Primary, $Logon, Yes" | Out-File $home\desktop\Activity.csv
 }
  }
  $SearchDate = Get-Date
- cls
+ Clear
  Write-Host "Completed. Find your file here: $home\desktop\Activity.txt" -ForeGroundColor Green
- Write-Host "Started at: $StartDate"
- Write-Host "Ended at: $SearchDate"

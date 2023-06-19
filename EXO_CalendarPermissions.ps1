@@ -1,7 +1,7 @@
 <# 
  
 .DESCRIPTION 
-Gives everyone reviewer permissions to any calendar.
+Gives everyone LimitedDetails permissions to any calendar.
 First time running the script, it will prompt you for the credentials to your O365 administrator.
 Next time you run the script it will automatically use your username and password. 
 
@@ -59,7 +59,7 @@ Write-host "Connected to Exchange Online!" -ForeGroundColor Green
 
 # Default UserMailbox Calendar Permissions
 $User = 'Default'
-$AccessRight = 'Reviewer'
+$AccessRight = 'LimitedDetails'
 Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
 {
     $UserPrincipalName = $Mailbox.UserPrincipalName

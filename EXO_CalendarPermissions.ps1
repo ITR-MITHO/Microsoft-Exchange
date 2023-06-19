@@ -72,7 +72,7 @@ Try
 }
 Catch
 {
-    Write-Warning "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $UserPrincipalName"
+    Write-Warning "Failed to add the permissions on Mailbox: $UserPrincipalName"
     Continue
 }
     }

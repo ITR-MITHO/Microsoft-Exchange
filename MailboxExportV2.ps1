@@ -77,6 +77,23 @@ else
     $Deleted = $null
 }
 
+
+If ($Statistics.LastLogonTime)
+{
+
+$LastLogon = $Statistics.LastlogonTime.ToString("dd-MM-yyyy")
+
+
+}
+Else
+{
+
+$LastLogon = "01-01-1800"
+
+}
+
+
+
 $results += [PSCustomObject]@{
 
     Username = $Mailbox.SamAccountName
@@ -84,7 +101,7 @@ $results += [PSCustomObject]@{
     Email = $Mailbox.PrimarySmtpAddress
     Type = $Mailbox.RecipientTypeDetails
     DB = $Statistics.DatabaseName
-    LastLogon = $Statistics.LastLogonTime
+    LastLogon = $LastLogon
     ADEnabled = $ADAtt.Enabled
     Size = $Size
     Deleted = $Deleted

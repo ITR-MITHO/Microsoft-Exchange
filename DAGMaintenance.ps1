@@ -10,10 +10,11 @@ Add-PSSnapin *EXC*
 
 Function DAG { 
     $Function = Read-Host "
-    
-    Enter 1 - START Maintenance
-    Enter 2 - STOP Maintenance
-    Enter 0 - EXIT
+Please enter one of the below numbers to proceed:
+
+    1 - START Maintenance
+    2 - STOP Maintenance
+    0 - EXIT
     "
     
     If ($Function -EQ "1")

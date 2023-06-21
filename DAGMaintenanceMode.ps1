@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
-The script will ask for your input to start it's process. 
-It will automatically put the server into or out of maintenance mode. No edits or inputs needed.
+The script is created to help putting Exchange into or out of maintenance mode. 
+Everything is done automatically, and works by simply inputting a number into the promt when asked. 
 
 #>
 

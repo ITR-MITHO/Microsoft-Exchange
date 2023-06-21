@@ -58,7 +58,7 @@ DAG
 
     If ($Function -EQ "2")
     {
-        Write-Host "INFORMATION: Taking $env:computername.$Domain out of maintenance mode" -ForegroundColor yellow
+        Write-Host "INFORMATION: Taking $env:computername out of maintenance mode" -ForegroundColor yellow
         $DAG = (Get-DatabaseavailabilityGroup | Where Servers -like "*$env:computername*" | Select Name).Name
         Set-ServerComponentState "$env:computername" -Component ServerWideOffline -State Active -Requester Maintenance
         Resume-ClusterNode -Name "$env:computername"

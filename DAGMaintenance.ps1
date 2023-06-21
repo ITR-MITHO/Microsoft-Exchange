@@ -8,8 +8,7 @@ Everything is done automatically, and works by simply inputting a number into th
 Import-Module ActiveDirectory
 Add-PSSnapin *EXC*
 
-Function DAG {
-    CLS    
+Function DAG { 
     $Function = Read-Host "
     
     Enter 1 - START Maintenance

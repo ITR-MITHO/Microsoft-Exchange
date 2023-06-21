@@ -12,8 +12,8 @@ Function DAG {
     $Function = Read-Host "
 Please enter one of the below numbers to proceed:
 
-    1 - START Maintenance
-    2 - STOP Maintenance
+    1 - START MAINTENANCE MODE
+    2 - STOP MAINTENANCE MODE
     0 - EXIT
     "
     

@@ -68,7 +68,7 @@ DAG
 
         Timeout 10 | Out-Null
         # Redistribute databases
-        CD "C:\Program Files\Microsoft\Exchange Server\V15\scripts"
+        CD "$env:exchangeinstallpath\Scripts"
         .\RedistributeActiveDatabases.ps1 -DagName "$DAG" -BalanceDbsByActivationPreference -SkipMoveSuppressionChecks -Confirm:$false
         
  

@@ -1,9 +1,28 @@
 <#
 .SYNOPSIS
-The script is created to help putting Exchange into or out of maintenance mode. 
+Based on your input the script will either put Exchange into maintenance mode, or take it out of it. 
 Everything is done automatically, and works by simply inputting a number into the promt when asked. 
 
+.NOTES
+* MAKE SURE TO RUN THIS ON THE SERVER YOU WANT TO PUT INTO MAINTENANCE MODE
+
+
 #>
+
+# Checking permissions
+$PMError = Test-Path $Home\desktop\PermissionIssue.txt
+if ($PMError)
+{
+Remove-Item "$Home\desktop\PermissionIssue.txt" -Force
+}
+timeout 3
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+{
+echo "Start PowerShell as an Administrator" > $Home\desktop\PermissionIssue.txt
+Start $home\desktop\PermissionIssue.txt
+Break
+}
 
 Import-Module ActiveDirectory
 Add-PSSnapin *EXC*

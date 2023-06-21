@@ -25,7 +25,7 @@ If ($Confirm -eq "Y")
     $Redirect = Get-ExchangeServer | Where Name -NotLike "*$env:computername*" | Select Name -First 1
     
     
-    Write-Host "Draining message queue...." -ForegroundColor Green
+    Write-Host "INFORMATION: Putting $env:computername.$Domain into maintenence mode" -ForeGroundColor Yellow
     Set-ServerComponentState -Identity "$env:computername.$Domain" -Component HubTransport -State Draining -Requester Maintenance
     cls
   
@@ -36,7 +36,8 @@ If ($Confirm -eq "Y")
     Set-MailboxServer "$env:computername.$Domain" -DatabaseCopyAutoActivationPolicy Blocked
     Set-ServerComponentState "$env:computername.$Domain" -Component ServerWideOffline -State Inactive -Requester Maintenance
     Timeout 15 | Out-Null
-
+    
+    Clear
     Write-Host "$env:computername.$Domain is now in maintenence mode." -ForegroundColor Green
        
 }
@@ -64,7 +65,8 @@ DAG
         # Redistribute databases
         cd $exscripts
         .\RedistributeActiveDatabases.ps1 -DagName "$DAG" -BalanceDbsByActivationPreference -SkipMoveSuppressionChecks -Confirm:$false
-
+        
+        Clear
         Write-Host "INFORMATION: $env:computername.$Domain is now online and databases have been distributed." -ForegroundColor Green
     }
 

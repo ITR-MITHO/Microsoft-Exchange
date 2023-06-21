@@ -1,15 +1,19 @@
 <#
 .SYNOPSIS
-The script is designed to either put or take an Exchange Server in/out of Maintenence mode.
+The script will ask for your input to start it's process. 
+It will automatically put the server into or out of maintenence mode. No edits or inputs needed.
 
 #>
+
+Import-Module ActiveDirectory
+Add-PSSnapin *EXC*
 
 Function DAG {
     CLS    
     $Function = Read-Host "
     
-    Enter 1 - Start Maintenence mode
-    Enter 2 - Stop Maintenence mode
+    Enter 1 - START Maintenance
+    Enter 2 - STOP Maintenance
     Enter 0 - Exit
     "
     
@@ -19,7 +23,7 @@ Function DAG {
 Write-Host "
 
 IMPORTANT - PLEASE READ:
-If you choose to continue, $env:computername will be placed into maintenence mode. This will cause the server to stop responding to any incomming connections.
+If you choose to continue, $env:computername will be placed into maintenance mode. This will cause the server to stop responding to any incomming connections.
 
 " -ForegroundColor Yellow
 $Confirm = Read-Host "Are you sure you want to continue? (Y/N)"
@@ -29,22 +33,17 @@ If ($Confirm -eq "Y")
 
     $Domain = (Get-ADDomain).DNSRoot
     $Redirect = Get-ExchangeServer | Where Name -NotLike "*$env:computername*" | Select Name -First 1
+    $RedirectName = $Redirect.Name
     
     
-    Write-Host "INFORMATION: Putting $env:computername.$Domain into maintenence mode" -ForeGroundColor Yellow
-    Set-ServerComponentState -Identity "$env:computername.$Domain" -Component HubTransport -State Draining -Requester Maintenance
-    cls
-  
-  
-    Redirect-Message -Server "$env:computername.$Domain" -Target "$Redirect" -Confirm:$false
-    Suspend-ClusterNode "$env:computername.$Domain"
-    Set-MailboxServer "$env:computername.$Domain" -DatabaseCopyActivationDisabledAndMoveNow $true
-    Set-MailboxServer "$env:computername.$Domain" -DatabaseCopyAutoActivationPolicy Blocked
-    Set-ServerComponentState "$env:computername.$Domain" -Component ServerWideOffline -State Inactive -Requester Maintenance
-    Timeout 15 | Out-Null
-    
+    Write-Host "INFORMATION: Putting $env:computername into maintenance mode" -ForeGroundColor Yellow
+    Set-ServerComponentState -Identity "$env:computername" -Component HubTransport -State Draining -Requester Maintenance
+    Redirect-Message -Server "$env:computername" -Target "$RedirectName.$Domain" -Confirm:$false
+    Suspend-ClusterNode "$env:computername"
+    Set-MailboxServer "$env:computername" -DatabaseCopyActivationDisabledAndMoveNow $true -DatabaseCopyAutoActivationPolicy Blocked
+    Set-ServerComponentState "$env:computername" -Component ServerWideOffline -State Inactive -Requester Maintenance
     Clear
-    Write-Host "$env:computername.$Domain is now in maintenence mode." -ForegroundColor Green
+    Write-Host "$env:computername is now in maintenance mode." -ForegroundColor Green
        
 }
 Else 
@@ -59,21 +58,21 @@ DAG
 
     If ($Function -EQ "2")
     {
-        Write-Host "INFORMATION: Taking $env:computername.$Domain out of maintenence mode" -ForegroundColor yellow
+        Write-Host "INFORMATION: Taking $env:computername.$Domain out of maintenance mode" -ForegroundColor yellow
         $DAG = (Get-DatabaseavailabilityGroup | Where Servers -like "*$env:computername*" | Select Name).Name
-        Set-ServerComponentState "$env:computername.$Domain" -Component ServerWideOffline -State Active -Requester Maintenance
-        Resume-ClusterNode -Name "$env:computername.$Domain"
-        Set-MailboxServer "$env:computername.$Domain" -DatabaseCopyAutoActivationPolicy Unrestricted
-        Set-MailboxServer "$env:computername.$Domain" -DatabaseCopyActivationDisabledAndMoveNow $false
-        Set-ServerComponentState "$env:computername.$Domain" -Component HubTransport -State Active -Requester Maintenance
-        Timeout 15 | Out-Null
+        Set-ServerComponentState "$env:computername" -Component ServerWideOffline -State Active -Requester Maintenance
+        Resume-ClusterNode -Name "$env:computername"
+        Set-MailboxServer "$env:computername" -DatabaseCopyAutoActivationPolicy Unrestricted
+        Set-MailboxServer "$env:computername" -DatabaseCopyActivationDisabledAndMoveNow $false
+        Set-ServerComponentState "$env:computername" -Component HubTransport -State Active -Requester Maintenance
 
+        Timeout 10 | Out-Null
         # Redistribute databases
-        cd $exscripts
+        CD "C:\Program Files\Microsoft\Exchange Server\V15\scripts"
         .\RedistributeActiveDatabases.ps1 -DagName "$DAG" -BalanceDbsByActivationPreference -SkipMoveSuppressionChecks -Confirm:$false
         
-        Clear
-        Write-Host "INFORMATION: $env:computername.$Domain is now online and databases have been distributed." -ForegroundColor Green
+ 
+        Write-Host "INFORMATION: $env:computername is now online and databases have been distributed." -ForegroundColor Green
     }
 
     If ($Function -EQ "0")

@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
 The script will ask for your input to start it's process. 
-It will automatically put the server into or out of maintenence mode. No edits or inputs needed.
+It will automatically put the server into or out of maintenance mode. No edits or inputs needed.
 
 #>
 

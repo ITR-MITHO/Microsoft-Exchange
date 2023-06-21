@@ -88,7 +88,7 @@ $LastLogon = $Statistics.LastlogonTime.ToString("dd-MM-yyyy")
 Else
 {
 
-$LastLogon = "01-01-1800"
+$LastLogon = ""
 
 }
 

@@ -1,3 +1,9 @@
+<#
+.SYNOPSIS
+The script is designed to either put or take an Exchange Server in/out of Maintenence mode.
+
+#>
+
 Function DAG {
     CLS    
     $Function = Read-Host "

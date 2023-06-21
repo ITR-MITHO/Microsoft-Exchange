@@ -70,8 +70,7 @@ DAG
         $DAG = (Get-DatabaseavailabilityGroup | Where Servers -like "*$env:computername*" | Select Name).Name
         Set-ServerComponentState "$env:computername" -Component ServerWideOffline -State Active -Requester Maintenance
         Resume-ClusterNode -Name "$env:computername"
-        Set-MailboxServer "$env:computername" -DatabaseCopyAutoActivationPolicy Unrestricted
-        Set-MailboxServer "$env:computername" -DatabaseCopyActivationDisabledAndMoveNow $false
+        Set-MailboxServer "$env:computername" -DatabaseCopyAutoActivationPolicy Unrestricted -DatabaseCopyActivationDisabledAndMoveNow $false
         Set-ServerComponentState "$env:computername" -Component HubTransport -State Active -Requester Maintenance
 
         Timeout 10 | Out-Null

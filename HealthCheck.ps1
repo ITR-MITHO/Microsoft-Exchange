@@ -45,7 +45,7 @@ https://raw.githubusercontent.com/ITR-MITHO/Microsoft-Exchange/main/IISLogCleanu
 Else
 {
 
-Write-Host "Free space on C:\ is above 20%" -ForegroundColor Green
+Write-Host "SystemDrive: *PASSED*" -ForegroundColor Green
 
 }
 

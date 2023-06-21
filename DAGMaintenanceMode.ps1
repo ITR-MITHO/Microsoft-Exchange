@@ -39,6 +39,9 @@ If ($Confirm -eq "Y")
     Write-Host "INFORMATION: Putting $env:computername into maintenance mode" -ForeGroundColor Yellow
     Set-ServerComponentState -Identity "$env:computername" -Component HubTransport -State Draining -Requester Maintenance
     Redirect-Message -Server "$env:computername" -Target "$RedirectName.$Domain" -Confirm:$false
+    Move-ActiveMailboxDatabase -Server $env:computername
+    Write-Host "Moving active databases to other node" -ForegroundColor Yellow
+    Timeout 60 | Out-Null
     Suspend-ClusterNode "$env:computername"
     Set-MailboxServer "$env:computername" -DatabaseCopyActivationDisabledAndMoveNow $true -DatabaseCopyAutoActivationPolicy Blocked
     Set-ServerComponentState "$env:computername" -Component ServerWideOffline -State Inactive -Requester Maintenance

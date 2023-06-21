@@ -13,7 +13,7 @@ Function DAG {
     
     Enter 1 - START Maintenance
     Enter 2 - STOP Maintenance
-    Enter 0 - Exit
+    Enter 0 - EXIT
     "
     
     If ($Function -EQ "1")

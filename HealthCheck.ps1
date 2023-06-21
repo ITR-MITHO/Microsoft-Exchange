@@ -61,7 +61,7 @@ Else
 {
 Write-Host "
 
-Exchange Message queue is healthy.
+Exchange Message Queue: *PASSED*
 
 " -ForegroundColor Green
 }
@@ -76,7 +76,7 @@ $Component
 }
 Else
 {
-Write-Host "Exchange Server Components is running
+Write-Host "Exchange Server Components: *PASSED*
 
 " -ForegroundColor Green
 }
@@ -91,7 +91,7 @@ $ServiceHealth
 }
 else
 {
-Write-Host "Microsoft Exchange Services are running
+Write-Host "Exchange Server Services: *PASSED*
 
 " -ForegroundColor Green
 }
@@ -106,7 +106,7 @@ $MapiConnectivity
 }
 Else
 {
-Write-Host "MAPIConnectivityTest passed
+Write-Host "MAPIConnectivity: *PASSED*
 
 " -ForegroundColor Green
 }
@@ -121,7 +121,7 @@ $OutlookConnectivity
 }
 Else
 {
-Write-Host "OutlookConnectivity passed
+Write-Host "OutlookConnectivity: *PASSED*
 
 " -ForegroundColor Green
 }
@@ -136,7 +136,7 @@ If ($DAG)
 Write-Host "Exchange DAG Found.. Testing replication" -ForegroundColor Yellow
 If (-Not $DagTEST)
 {
-Write-Host "DAG Replication test passed" -ForegroundColor Green
+Write-Host "Exchange DAG replication: *PASSED*" -ForegroundColor Green
 }
 {
 

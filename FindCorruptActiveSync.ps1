@@ -15,5 +15,5 @@ Write-Host $csv
 Foreach ($cell in $csv)
     {
     $cell -match '(Guid:\s[\S]{8}-[\S]{4}-[\S]{4}-[\S]{4}-[\S]{12})'
-    Echo $Matches.Item(0) >> "C:\Users\$env:username\Desktop\GUIDS.csv"
+    Echo $Matches.Item(0) >> "$home\Desktop\GUIDS.csv"
     }

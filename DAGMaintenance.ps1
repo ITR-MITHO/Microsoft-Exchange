@@ -10,17 +10,11 @@ Everything is done automatically, and works by simply inputting a number into th
 #>
 
 # Checking permissions
-$PMError = Test-Path $Home\desktop\PermissionIssue.txt
-if ($PMError)
-{
-Remove-Item "$Home\desktop\PermissionIssue.txt" -Force
-}
-timeout 3
+
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
-echo "Start PowerShell as an Administrator" > $Home\desktop\PermissionIssue.txt
-Start $home\desktop\PermissionIssue.txt
+Write-Host "Start PowerShell as an Administrator" -ForeGroundColor Yellow
 Break
 }
 

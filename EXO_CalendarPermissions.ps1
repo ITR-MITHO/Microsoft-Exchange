@@ -7,6 +7,7 @@ Next time you run the script it will automatically use your username and passwor
 
 .NOTES
 To use this in a scheduled script it is important to exclude the server or user you're using from Condtional Access/MFA policy.
+Edit line 62 & 63 to change user and accessrights.
 
 #>
 

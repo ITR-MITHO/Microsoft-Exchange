@@ -18,7 +18,7 @@ if ($PMError)
 {
 Remove-Item "$Home\desktop\PermissionIssue.txt" -Force
 }
-timeout 3
+timeout 3 | Out-Null
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
@@ -34,11 +34,11 @@ Import-Module WebAdministration
 # Variables
 $StartTime = Get-Date
 $Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
-$Date = (Get-Date).AddDays(-14)
-$Mailbox = Get-Mailbox -ResultSize unlimited -RecipientTypeDetails UserMailbox, Sharedmailbox | Select SamAccountName, DisplayName, PrimarySMTPAddress, LastLogonDate
+$Date = (Get-Date).AddDays(-3)
+$Mailbox = Get-Mailbox -ResultSize unlimited -RecipientTypeDetails UserMailbox, Sharedmailbox | Select SamAccountName, DisplayName, PrimarySMTPAddress, LastLogonDate, RecipientTypeDetails
 
 # Creating our own CSV-file with data
-Echo "Name, Username, Email, LastLogon, Activity" | Out-File $home\desktop\Activity.csv -Encoding unicode
+Echo "Name, Username, Email, LastLogon, Type, Activity" | Out-File $home\desktop\Activity.csv -Encoding unicode
 
 # Beginning to go through all mailboxes.
 Clear
@@ -48,7 +48,7 @@ When the report is done you will be notified in this box." -ForegroundColor Yell
 
 ForEach ($M in $Mailbox)
 {
-$MailboxStats = $M.SamAccountName | Get-MailboxStatistics | Select LastLogonTime
+$MailboxStats = $M.SamAccountName | Get-MailboxStatistics | Select LastLogonTime -ErrorAction SilentlyContinue
 if ($MailboxStats) 
 {
     $LogonStat = $MailboxStats.LastLogonTime
@@ -61,6 +61,7 @@ else
 $Name = $M.SamAccountName
 $Full = $M.DisplayName
 $Primary = $M.PrimarySMTPAddress
+$Type = $M.RecipientTypeDetails
 $Logon = $LogonStat
 
 If ($Folder.Value -like "%Systemdrive%*")
@@ -76,11 +77,11 @@ If ($Folder.Value -like "%Systemdrive%*")
 
 If (-not $Data)
 {
-Echo "$Full, $Name, $Primary, $Logon, No" | Out-File $home\desktop\Activity.csv -Append -Encoding unicode
+Echo "$Full, $Name, $Primary, $Logon, $Type, No" | Out-File $home\desktop\Activity.csv -Append -Encoding unicode
 }
 Else
 {
-Echo "$Full, $Name, $Primary, $Logon, Yes" | Out-File $home\desktop\Activity.csv -Append -Encoding unicode
+Echo "$Full, $Name, $Primary, $Logon, $Type, Yes" | Out-File $home\desktop\Activity.csv -Append -Encoding unicode
 }
  }
  

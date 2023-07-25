@@ -255,7 +255,7 @@ DMARC Records for all domains.
 " -ForegroundColor Yellow
 $ErrorActionPreference = 'SilentlyContinue'
 Sleep 5
-$Domains = Get-AcceptedDomain | Where DomainName -notlike "*.local"| Select DomainName
+$Domains = Get-AcceptedDomain | Where DomainName -notlike "*.local" | Select DomainName
 $Result = foreach ($Domain in $Domains) {
 $ActualDomain = $Domain.DomainName
     Echo "---------------------- $ActualDomain ----------------------"

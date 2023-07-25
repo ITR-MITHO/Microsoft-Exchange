@@ -119,14 +119,17 @@ Group Policies that might effect Outlook behaviour
 " -ForegroundColor Yellow
 
 $DC = (Get-ADDomainController | Select Name -First 1).Name
-Invoke-Command -computerName $DC {
+Invoke-Command -ComputerName $DC 
+{
+
 $AllGPO = Get-GPO -All -Domain $env:SERDNSDOMAIN
 [string[]] $MatchedGPOList = @()
-foreach ($gpo in $AllGPO) { 
-    $report = Get-GPOReport -Guid $gpo.Id -ReportType Xml 
-    if ($report -match 'Outlook') { 
-        write-host "$($gpo.DisplayName)" -foregroundcolor "Green"
-        $MatchedGPOList += "$($gpo.DisplayName)";
+
+ForEach ($GPO in $AllGPO) { 
+    $Report = Get-GPOReport -Guid $gpo.Id -ReportType Xml 
+    if ($Report -match 'Outlook') { 
+        Write-Host "$($GPO.DisplayName)" -ForeGroundColor "Green"
+        $MatchedGPOList += "$($GPO.DisplayName)";
 } 
   }
     }

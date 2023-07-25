@@ -110,7 +110,26 @@ Write-Host "DynamicDistributionGroups (DDG does not work in hybrid mode)"
 (Get-DynamicDistributionGroup -Resultsize Unlimited).Count
 
 
+Write-Host "
 
+###########################################################################
+Group Policies that might effect Outlook behaviour
+###########################################################################
+
+" -ForegroundColor Yellow
+
+$DC = (Get-ADDomainController | Select Name -First 1).Name
+Invoke-Command -computerName $DC {
+$AllGPO = Get-GPO -All -Domain $env:SERDNSDOMAIN
+[string[]] $MatchedGPOList = @()
+foreach ($gpo in $AllGPO) { 
+    $report = Get-GPOReport -Guid $gpo.Id -ReportType Xml 
+    if ($report -match 'Outlook') { 
+        write-host "$($gpo.DisplayName)" -foregroundcolor "Green"
+        $MatchedGPOList += "$($gpo.DisplayName)";
+} 
+  }
+    }
 
 Write-Host "
 

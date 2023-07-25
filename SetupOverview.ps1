@@ -67,12 +67,12 @@ $Data | FL Domain, Servername, OS, RAM, Exchver, InitialPage, MaxPage
 Write-Host "
 
 ###########################################################################
-MailBox Databases
+Mailbox Databases
 ###########################################################################
 
 " -ForegroundColor Yellow
 
-Get-MailboxDatabase -Status | fl Name, DatabaseSize, Server, EDBFilePath, LogFolderPath, MasterServerOrAvailabilityGroup, DeletedItemRetention, MailboxRetention, CircularLoggingEnabled
+Get-MailboxDatabase -Status | fl Name, DatabaseSize, Server, EDBFilePath, LogFolderPath, MasterServerOrAvailabilityGroup, DeletedItemRetention, MailboxRetention, CircularLoggingEnabled, AvailableNewMailboxSpace
 
 
 Write-Host "
@@ -83,7 +83,7 @@ Database backup timestamps
 
 " -ForegroundColor Yellow
 
-Get-MailboxDatabase -Status | Fl Name, LastFullBackup, LastIncrementalBackup
+Get-MailboxDatabase -Status | Fl Name, LastFullBackup, LastIncrementalBackup, LastDifferentialBackup
 
 
 Write-Host "
@@ -150,7 +150,7 @@ AcceptedDomains
 
 " -ForegroundColor Yellow
 
-Get-AcceptedDomain | fl Name, DomainType
+Get-AcceptedDomain | fl Name, DomainType, DomainName
 
 Write-Host "
 
@@ -259,12 +259,13 @@ DMARC Records for all domains.
 " -ForegroundColor Yellow
 $ErrorActionPreference = 'SilentlyContinue'
 Sleep 5
-$Domains = Get-Mailbox -ResultSize Unlimited | Select-Object EmailAddresses -ExpandProperty EmailAddresses | Where-Object { $_ -like "smtp*"} | ForEach-Object { ($_ -split "@")[1] } | Sort-Object -Unique
+$Domains = Get-AcceptedDomain | Where DomainName -notlike "*.local"| Select DomainName
 $Result = foreach ($Domain in $Domains) {
-    Echo "---------------------- $Domain ----------------------"
+$ActualDomain = $Domain.DomainName
+    Echo "---------------------- $ActualDomain ----------------------"
     Echo ""
     Echo "DMARC TXT Record:"
-    (nslookup -q=txt _dmarc.$Domain | Select-String "DMARC1") -replace "`t", ""
+    (nslookup -q=txt _dmarc.$ActualDomain | Select-String "DMARC1") -replace "`t", ""
     Echo ""
 
 }

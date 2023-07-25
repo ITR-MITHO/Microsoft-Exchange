@@ -245,11 +245,7 @@ Else
 Write-Host "HybridEnabled: False"
 }
 
-Get-OrganizationConfig | fl OAuth2ClientProfileEnabled
-
-Get-OrganizationConfig | fl MitigationsEnabled
-
-Get-OrganizationConfig | fl MapiHttpEnabled
+Get-OrganizationConfig | fl OAuth2ClientProfileEnabled, MitigationsEnabled, MapiHttpEnabled
 
 
 Write-Host "

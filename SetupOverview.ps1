@@ -197,7 +197,7 @@ Receive Connectors
 " -ForegroundColor Yellow
 
 
-Get-ReceiveConnector | fl Name, Enabled, RemoteIPRanges, ProtocolLoggingLevel
+Get-ReceiveConnector | fl Name, Enabled, RemoteIPRanges, ProtocolLoggingLevel, PermissionGroups
 
 
 

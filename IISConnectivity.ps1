@@ -1,7 +1,7 @@
 <#
 .DESCRIPTION
 Works on Exchange 2013, 2016 and 2019. 
-The script will search IIS logs for the last 14 days to see which mailboxes are active and which aren't.
+The script will search IIS logs for the last 5 days to see which mailboxes are active and which aren't.
 Foeach Mailbox there is, it will search for that specific mailbox in all IIS-logs.
 It will place a .csv-file on your desktop named "Activity.csv"
 
@@ -32,9 +32,8 @@ Add-PSSnapin *EXC*
 Import-Module WebAdministration
 
 # Variables
-$StartTime = Get-Date
 $Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
-$Date = (Get-Date).AddDays(-3)
+$Date = (Get-Date).AddDays(-5)
 $Mailbox = Get-Mailbox -ResultSize unlimited -RecipientTypeDetails UserMailbox, Sharedmailbox | Select SamAccountName, DisplayName, PrimarySMTPAddress, LastLogonDate, RecipientTypeDetails
 
 # Creating our own CSV-file with data
@@ -42,7 +41,6 @@ Echo "Name, Username, Email, LastLogon, Type, Activity" | Out-File $home\desktop
 
 # Beginning to go through all mailboxes.
 Clear
-
 Write-Host "Collecting and searching IIS-logs. This might take 10-15 minutes. 
 When the report is done you will be notified in this box." -ForegroundColor Yellow
 
@@ -85,8 +83,5 @@ Echo "$Full, $Name, $Primary, $Logon, $Type, Yes" | Out-File $home\desktop\Activ
 }
  }
  
- $EndTime = Get-Date
- Clear
- 
- Write-Host "Completed. Find your file here: $home\desktop\Activity.csv" -ForeGroundColor Green
- Write-Host "Started at: $StartTime     Ended at: $EndTime"
+Clear
+Write-Host "Completed. Find your file here: $home\desktop\Activity.csv" -ForeGroundColor Green

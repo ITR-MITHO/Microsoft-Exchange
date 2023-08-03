@@ -1,3 +1,9 @@
+<#
+
+The script is designed to compare two receive connectors. If one of the connectors is missing IP's from the other, it will list which ones are missing and vice versa. 
+
+#>
+
 Get-ReceiveConnector | FL Identity
 $Connector1 = Read-Host "Name of the reference connector"
 $Connector2 = Read-Host "Name of the difference connector"

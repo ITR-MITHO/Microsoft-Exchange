@@ -87,7 +87,7 @@ $ServiceHealth = Test-ServiceHealth $env:computername
 if ($ServiceHealth | Where {$_.RequiredServicesRunning -NE $true})
 {
 Write-Host "Microsoft Exchange Services are not running!" -ForegroundColor Red
-$ServiceHealth
+$ServiceHealth | Where {$_.ServicesNotRunning -NE $null} | Select Role, ServicesnotRunning
 }
 else
 {
@@ -95,6 +95,7 @@ Write-Host "Exchange Server Services: *PASSED*
 
 " -ForegroundColor Green
 }
+
 
 
 # MapiConnectivity

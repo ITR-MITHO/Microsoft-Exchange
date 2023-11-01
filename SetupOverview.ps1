@@ -7,7 +7,7 @@ This script will give you an overview of how the Exchange is setup, and what con
 ExchangeReport.txt contains all information
 
                                             
-                                            
+                                            Domain Controller Information
                                             Exchange Server Information
                                             Mailbox Database configuration
                                             Database Backup Timestamps
@@ -37,7 +37,42 @@ Break
 
 Import-Module ActiveDirectory
 Add-PSSnapin *EXC*
-Start-Transcript -path $home\Desktop\ExchangeReport.txt -append | out-null
+Start-Transcript -path $home\Desktop\ExchangeRepor2t.txt -append | out-null
+
+Write-Host "
+
+###########################################################################
+Domain Controller information
+###########################################################################
+
+" -ForegroundColor Yellow
+
+$DomainControllers = Get-ADDomainController -filter * | Select Hostname
+$Data = @()
+
+foreach ($DomainController in $Domaincontrollers) {
+
+$MyObject = New-Object PSObject -Property @{
+Domain = (Get-ADDomain).DNSRoot
+Servername = $DomainController.Hostname
+ForestLevel = (Get-ADForest).ForestMode
+DomainLevel = (Get-ADDomain).DomainMode
+OS = (Get-CimInstance -ComputerName $DomainController.Hostname -ClassName Win32_OperatingSystem).Caption
+}
+$Data += $MyObject
+}
+$Data | FL Domain, Servername, OS, ForestLevel, DomainLevel
+
+$RecycleBin = get-adoptionalfeature "recycle bin feature";
+$Forestmode = (get-adforest).forestmode;
+if (($RecycleBin.EnabledScopes).count -eq 0) 
+{	
+Write-Host "AD Recycle Bin: DISABLED"
+}
+else
+{
+Write-Host "AD Recycle Bin: ENABLED"
+}
 
 Write-Host "
 
@@ -324,4 +359,4 @@ Get-ExchangeServer $env:computername | Get-OutlookAnywhere | fl InternalClientAu
 Stop-Transcript | out-null
 
 Write-host "Script completed. 
-Find your output file on your desktop here: $home\Desktop\ExchangeReport.txt" -ForegroundColor Green
+Find your output file on your desktop here: $home\Desktop\ExchangeRepor2t.txt" -ForegroundColor Green

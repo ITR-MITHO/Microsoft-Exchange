@@ -359,4 +359,4 @@ Get-ExchangeServer $env:computername | Get-OutlookAnywhere | fl InternalClientAu
 Stop-Transcript | out-null
 
 Write-host "Script completed. 
-Find your output file on your desktop here: $home\Desktop\ExchangeRepor2t.txt" -ForegroundColor Green
+Find your output file on your desktop here: $home\Desktop\ExchangeReport.txt" -ForegroundColor Green

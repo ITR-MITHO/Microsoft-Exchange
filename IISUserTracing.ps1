@@ -19,7 +19,7 @@ Else
 {
 mkdir $home\desktop\ExchangeLogs | Out-null
 }
-   $User = Read-Host "Enter the username of the account you'd like to search for"
+   $User = Read-Host "Enter the username of the account you'd like to search for or the IP-address you are interrested in"
 
    If ($Folder.Value -like "%Systemdrive%*")
 {

@@ -3,7 +3,7 @@
    The script will collect the 500 newest entries from a specific user in the IIS logs the past 20 days on the following services: 
    Autodiscover, Exchange Web Services and MAPI
 
-   The only thing you need to do, is run this script as elevated, and enter a username to search for.
+   The only thing you need to do, is to run this script as elevated, and enter a username or IP-address to search for.
   
    #>
 

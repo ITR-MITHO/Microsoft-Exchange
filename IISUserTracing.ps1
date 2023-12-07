@@ -2,14 +2,14 @@
    
    The script will collect the 500 newest entries from a specific user in the IIS logs the past X days on the following services: 
    Autodiscover, Exchange Web Services and MAPI
-   Change the variable $Days to something else if you want it to be higher than 3 days.
+   Change the variable $Days to something else if you want it to be higher than 10 days.
    The only thing you need to do, is to run this script as elevated, and enter a username or IP-address to search for.
   
    #>
 
 Import-Module WebAdministration
 $Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
-$Days = 3
+$Days = 10
 $PMError = Test-Path $Home\desktop\ExchangeLogs
 if ($PMError)
 {

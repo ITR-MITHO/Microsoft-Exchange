@@ -35,8 +35,8 @@ CLS
 Write-Host "INFORMATION: Searching for $User in IIS logs for the past $Days days." -foregroundcolor Yellow
 $Data = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Sort-Object -Descending
 
-$Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/MAPI/*"} | Sort-Object -Descending > $home\Desktop\ExchangeLogs\MAPI.log
 $Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/Autodiscover/*"} | Sort-Object -Descending > $home\Desktop\ExchangeLogs\Autodiscover.log
 $Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/EWS/*"} | Sort-Object -Descending > $home\Desktop\ExchangeLogs\EWS.log
+$Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/MAPI/*"} | Sort-Object -Descending > $home\Desktop\ExchangeLogs\MAPI.log
 
 Write-Host "INFORMATION: Find your log files here: $Home\Desktop\Exchangelogs" -ForegroundColor Green

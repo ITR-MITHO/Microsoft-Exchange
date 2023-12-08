@@ -8,9 +8,9 @@
   
    #>
 
+$Days = 1
 Import-Module WebAdministration
 $IISFolder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
-$Days = 1
 $Date = (Get-Date).AddDays(-$Days)
 $DesktopFolder = Test-Path $Home\desktop\ExchangeLogs
 if (-not $Desktopfolder)

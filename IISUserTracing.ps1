@@ -9,7 +9,7 @@
    #>
 
 Import-Module WebAdministration
-$Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
+$IISFolder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
 $Days = 1
 $Date = (Get-Date).AddDays(-$Days)
 $DesktopFolder = Test-Path $Home\desktop\ExchangeLogs
@@ -19,13 +19,13 @@ mkdir $home\desktop\ExchangeLogs | Out-null
 }
    $User = Read-Host "Enter the username of the account you'd like to search for or the IP-address you are interrested in"
    
-   If ($Folder.Value -like "%Systemdrive%*")
+   If ($IISFolder.Value -like "%Systemdrive%*")
 {
     CD "C:\Inetpub\Logs\LogFiles\W3SVC1"
 }
  Else
 {  
-    CD $Folder.Value
+    CD $IISFolder.Value
 }
 CLS
 Write-Host "INFORMATION: Searching for $User in IIS logs for the past $Days days." -foregroundcolor Yellow

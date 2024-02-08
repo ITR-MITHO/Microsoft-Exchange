@@ -1,6 +1,5 @@
 <# 
-
-Make sure to run the commands in a elevated Exchange Shell.
+Open Exchange Shell from an Exchange Server in a elevated mode
 Microsoft Docs: https://docs.microsoft.com/en-us/exchange/architecture/client-access/kerberos-auth-for-load-balanced-client-access?view=exchserver-2019
 
 #>

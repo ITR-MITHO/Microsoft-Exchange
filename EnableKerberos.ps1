@@ -5,29 +5,28 @@ Microsoft Docs: https://docs.microsoft.com/en-us/exchange/architecture/client-ac
 
 #>
 # Run this first
-$domain = Read-host "Enter your domain name. (E.g. microsoft.com)"
 Import-Module ActiveDirectory
 Add-PSSnapin *EXC*
 
 # Verify that the SPN isn't already taken by another service.
-Setspn -F -Q http/mail.$domain
+Setspn -F -Q http/mail.domain.com
 
-# Creates a new ASA-credential named "OwaAppProxy" - Can be found in AD by searching for 'computers'
-New-ADComputer -Name OwaAppProxy -AccountPassword (Read-Host 'Enter password' -AsSecureString) -Description 'Alternate Service Account credentials for Exchange' -Enabled:$True -SamAccountName EXCHKERB
-Set-ADComputer EXCHKERB -add @{"msDS-SupportedEncryptionTypes"="28"}
+# Creates a new ASA-credential named "EXCH-KERB" - Can be found in AD by searching for 'computers'
+New-ADComputer -Name EXCH-KERB -AccountPassword (Read-Host 'Enter password' -AsSecureString) -Description 'Alternate Service Account credentials for Exchange' -Enabled:$True -SamAccountName EXCH-KERB
+Set-ADComputer EXCH-KERB -add @{"msDS-SupportedEncryptionTypes"="28"}
 
 # Setting up Kerberos authentication
 cd $Exscripts
-.\RollAlternateServiceAccountPassword.ps1 -ToSpecificServer localhost -GenerateNewPasswordFor $domain\EXCHKERB$
+.\RollAlternateServiceAccountPassword.ps1 -ToSpecificServer localhost -GenerateNewPasswordFor domain.com\EXCH-KERB$
 
 # Verify that ASA-credentials are created
 Get-ClientAccessServer localhost -IncludeAlternateServiceAccountCredentialStatus | Format-List Name, AlternateServiceAccountConfiguration
 
 # Create SPN
-setspn -S http/mail.$domain $domain\EXCHKERB$
+setspn -S http/mail.domain.com domain.com\EXCH-KERB$
 
 # Verify SPN:
- setspn -L $Domain\EXCHKERB$
+ setspn -L domain.com\EXCH-KERB$
 
 # Enable kerberos for Outlook clients:
 Get-OutlookAnywhere -Server $env:localhost | Set-OutlookAnywhere -InternalClientAuthenticationMethod  Negotiate

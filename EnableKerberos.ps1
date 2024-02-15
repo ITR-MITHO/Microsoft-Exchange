@@ -28,7 +28,7 @@ setspn -S http/mail.domain.com domain.com\EXCH-KERB$
 
 # Enable kerberos authentication for Outlook clients:
 Get-OutlookAnywhere -Server $env:localhost | Set-OutlookAnywhere -InternalClientAuthenticationMethod  Negotiate
-Get-MapiVirtualDirectory -Server $env:localhost | Set-MapiVirtualDirectory -IISAuthenticationMethods Ntlm,Negotiate
+Get-MapiVirtualDirectory -Server $env:localhost | Set-MapiVirtualDirectory -IISAuthenticationMethods OAuth,Kerberos
  
 <#
 Verify traffic is using Kerberos:

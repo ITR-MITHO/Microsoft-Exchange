@@ -18,7 +18,7 @@ Set-ADComputer EXCH-KERB -add @{"msDS-SupportedEncryptionTypes"="28"}
 
 # Setup Kerberos authentication by running the RollAlternateServiceAccountPassword script
 cd $Exscripts
-.\RollAlternateServiceAccountPassword.ps1 -ToSpecificServer localhost -GenerateNewPasswordFor domain.com\EXCH-KERB$
+.\RollAlternateServiceAccountPassword.ps1 -ToSpecificServer $env:computername -GenerateNewPasswordFor domain.com\EXCH-KERB$
 
 # Verify that the ASA-credential is created
 Get-ClientAccessServer $env:computername -IncludeAlternateServiceAccountCredentialStatus | Format-List Name, AlternateServiceAccountConfiguration

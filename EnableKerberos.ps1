@@ -33,8 +33,7 @@ setspn -S http/mail.domain.com domain.com\EXCH-KERB$
 Get-OutlookAnywhere -Server $env:computername | Set-OutlookAnywhere -InternalClientAuthenticationMethod  Negotiate
 Get-MapiVirtualDirectory -Server $env:computername | Set-MapiVirtualDirectory -IISAuthenticationMethods OAuth,Kerberos
  
-<#
-Verify traffic is using Kerberos:
+
+<# Verify traffic is using Kerberos:
 %ExchangeInstallPath%\Logging\HttpProxy\RpcHttp
-Open the most recent log file, and then look for the word Negotiate
-#>
+Open the most recent log file, and then look for the word Negotiate #>

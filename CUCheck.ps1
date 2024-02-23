@@ -17,7 +17,7 @@ By looking at the registry-database we can determine what version of Exchange is
 <# Arrays #>
 Add-PSSnapin *EXC*
 $Display = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\* | Where {$_.DisplayName -like "Microsoft Exchange Server 20*"}
-$Exchange2019 = "Microsoft Exchange Server 2019 Cumulative Update 12"
+$Exchange2019 = "Microsoft Exchange Server 2019 Cumulative Update 13"
 $Exchange2016 = "Microsoft Exchange Server 2016 Cumulative Update 23"
 $Exchange2013 = "Microsoft Exchange Server 2013"
 $Exchange2010 = "Microsoft Exchange Server 2010"

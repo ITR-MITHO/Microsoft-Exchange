@@ -1,3 +1,4 @@
+Add-PSSnapin *EXC*
 Write-Host "Autodiscover"
 Get-ClientAccessServer -WarningAction SilentlyContinue -Identity "$env:COMPUTERNAME" | fl AutodiscoverServiceInternalURI
 

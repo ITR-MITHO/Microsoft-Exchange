@@ -1,3 +1,6 @@
+CLS
+Write-Host "Searching for group policies..." -ForegroundColor Yellow
+
 $DC = (Get-ADDomainController | Select Name -First 1).Name
 Invoke-Command -ComputerName $DC {
 

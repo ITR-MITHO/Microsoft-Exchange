@@ -78,11 +78,7 @@ Please upgrade Exchange to CU23" -ForegroundColor Red
 <# Exchange Server 2013 #>
 Foreach ($S in $Servers)
         {
-
-If ($Display -like "*Microsoft Exchange Server 2013*")
-{
-
-if ($Display.DisplayName -Like "*$Exchange2013*")
+If ($Display.DisplayName -Like "*$Exchange2013*")
 {
 
         Write-host "$Output - NOT SUPPORTED - End of Life 11 April 2023

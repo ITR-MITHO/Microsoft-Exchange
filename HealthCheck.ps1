@@ -55,7 +55,8 @@ $Queue = (Get-ExchangeServer | Get-Message -ErrorAction SilentlyContinue).count
 $Date = Get-Date -Format "dd-MM-yy HH:mm"
 If ($Queue -GT 100)
 {
-Write-Host "Over 100 e-mails are in queue!" -ForegroundColor Red
+Write-Host "Over 100 e-mails are in queue!
+" -ForegroundColor Red
 }
 Else
 {

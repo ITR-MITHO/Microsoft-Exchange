@@ -41,19 +41,19 @@ Please enter one of the below numbers to proceed:
     - Exports information about your current Exchange setup in a easily readable format
 
     4. IIS Tracing
-    - Prompts you to enter a username or IP-address you'd like to search for in all of your IIS-logs. Exports it to a folder in a readable format
+    - Prompts you to enter a username or IP-address you'd like to search for in all of your IIS-logs.
 
     5. IIS Log Cleanup
     - Deletes all IIS logfiles that is older than 14 days, to cleanup your drive
 
-    6. DAG Maintenance mode
-    - Helps you setting you Exchange node into Maintenance mode, and can also help you disable maintenance mode again
+    6. Enable or disable DAG Maintenance mode
+    - Helps you setting your Exchange node into Maintenance mode, or help you disable maintenance mode again
 
     7. SHOW EXCHANGE URLS
     - A list of all Exchange URLs
 
     8. Exchange CU Check
-    - Will tell you if your current Exchange CU is supported or not
+    - Will tell you if your installed Exchange CU is supported or not
 
     9. GPO that can affect Outlook behaviour
     - Finds all Group Policies that can affect the behaviour of Outlook

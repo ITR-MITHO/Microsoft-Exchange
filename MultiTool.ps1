@@ -1,9 +1,18 @@
 <#
 .DESCRIPTION
 The script is a multi-tool for Exchange admins. It contains several Exchange PowerShell scripts that all can be executed by entering the corrosponding number
+Save the script as "MultiTool.ps1" and run it directly inside of a elevated Exchange Shell
 
 .SYNOPSIS
-Save the script as "MultiTool.ps1" and run it directly inside of a elevated Exchange Shell
+Mailbox Export
+HealthCheck
+Overview of Exchange configuration
+Find IIS logs to a specific user or IP-address
+Delete IIS logs older than 14 days
+Enable or disable DAG maintenance
+Show Exchange URLs
+Check if the CU you have installed is supported by Microsoft
+Find all GPO's that can affect Outlook behaviour
 
 #>
 

@@ -52,13 +52,16 @@ Please enter one of the below numbers to proceed:
     7. SHOW EXCHANGE URLS
     - A list of all Exchange URLs
 
-    8. Exchange CU Check
+    8. EXCHANGE CU CHECK
     - Will tell you if your installed Exchange CU is supported or not
 
-    9. GPO that can affect Outlook behaviour
+    9. GPO THAT CAN AFFECT OUTLOOK
     - Finds all Group Policies that can affect the behaviour of Outlook
 
-    10. EXIT
+    10. CERTIFICATES THAT ARE ABOUT TO EXPIRE
+    - Shows you certificates that will expire in less than 60 days
+
+    11. EXIT
     "
 
     If ($Function -EQ "1")
@@ -106,7 +109,12 @@ Please enter one of the below numbers to proceed:
         cmd /c "powershell iex (irm raw.githubusercontent.com/ITR-MITHO/Microsoft-Exchange/main/GPOThatAffectOutlook.ps1)"
     }
 
-    If ($Function -EQ "10")
+        If ($Function -EQ "10")
+    {
+        cmd /c "powershell iex (irm raw.githubusercontent.com/ITR-MITHO/Microsoft-Exchange/main/CertExpireAlert.ps1)"
+    }
+
+    If ($Function -EQ "11")
     {
         Exit
     }

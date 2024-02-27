@@ -5,7 +5,6 @@ CLS
 Write-Host "Certificates that expires in less than 60 days.." -ForeGroundColor Yellow
 Foreach ($Cert in $Certificate) {
 if ($Certificate) {
-Thumprint, FriendlyName, Subject, NotAfter
 $Cert.Thumbprint, $Cert.friendlyname, $Cert.Subject, $Cert.NotAfter
 }
   }

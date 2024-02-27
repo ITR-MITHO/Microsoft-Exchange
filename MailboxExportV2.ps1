@@ -58,7 +58,7 @@ $Mailboxes = Get-Mailbox -ResultSize Unlimited
 $Results = @()
 
 Write-Host "It is estimated to take 10-15 minutes for large organisations. Grab a nice cup of coffee :-)" -ForegroundColor Yellow
-Sleep 5
+Sleep 5 | Out-Null
 Foreach ($Mailbox in $Mailboxes)
 {
 

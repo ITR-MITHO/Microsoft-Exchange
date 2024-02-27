@@ -1,5 +1,5 @@
 <#
-
+.DESCRIPTION
 The script is a multi-tool for Exchange admins. It contains several Exchange PowerShell scripts that all can be executed by entering the corrosponding number
 
 .SYNOPSIS

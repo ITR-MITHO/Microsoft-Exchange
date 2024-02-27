@@ -111,7 +111,6 @@ Please enter one of the below numbers to proceed:
         Exit
     }
 
-    
 }
 # Start of Function
 MultiTool

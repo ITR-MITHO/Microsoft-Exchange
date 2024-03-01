@@ -21,7 +21,7 @@ $Results = @()
 Write-Host "It is estimated to take 10-15 minutes for large organisations. Grab a nice cup of coffee :-)" -ForegroundColor Yellow
 Foreach ($Mailbox in $Mailboxes)
 {
-$Archive = Get-MailboxStatistics -Identity $Mailbox.SamAccountName -Archive -ErrorAction SilentyContinue | Select TotalItemSize
+$Archive = Get-MailboxStatistics -Identity $Mailbox.SamAccountName -Archive -ErrorAction SilentlyContinue | Select TotalItemSize
 If ($Archive)
 {
     $ArchiveInMB = [math]::Round(([long]((($Archive.TotalItemSize.Value -split "\(")[1] -split " ")[0] -split "," -join ""))/[math]::Pow(1024,3),3)

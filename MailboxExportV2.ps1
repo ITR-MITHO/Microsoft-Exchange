@@ -77,13 +77,11 @@ Else
 if ($Statistics) 
 {
     $Size = $Statistics.TotalItemSize.Value.ToMB()
-    $Deleted = $Statistics.TotalDeletedItemSize.Value.ToMB()
 } 
   
 else 
 {
     $Size = "0"
-    $Deleted = "0"
 }
 
 

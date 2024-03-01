@@ -28,7 +28,7 @@ If ($Archive)
 }
 else
 {
-    $ArchiveInMB = $null
+    $ArchiveInMB = "0"
 }
 
 $Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select TotalItemSize, TotalDeletedItemSize
@@ -39,8 +39,8 @@ if ($Statistics)
 } 
 else 
 {
-    $Size = $null
-    $Deleted = $null
+    $Size = "0"
+    $Deleted = "0"
 }
 $Data = @{
     Username = $Mailbox.SamAccountName

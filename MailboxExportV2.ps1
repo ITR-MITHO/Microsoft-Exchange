@@ -10,8 +10,7 @@ The script will export the following information from all mailboxes:
                             LastLogonTime
                             ADEnabled
                             TotalItemSize.To.MB
-                            TotalDeletedItemSize.To.MB
-                            Total
+                            ArchiveSize.To.MB
 
 .NOTE
 The attribute "Total" This field empty and used to add Size & Deleted together in this field inside Excel to determine the total size of a mailbox.

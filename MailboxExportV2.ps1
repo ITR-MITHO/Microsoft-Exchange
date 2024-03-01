@@ -62,8 +62,18 @@ Sleep 5 | Out-Null
 Foreach ($Mailbox in $Mailboxes)
 {
 
-$Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName
+$Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select TotalItemSize, TotalDeletedItemSize
 $ADAtt = Get-ADUser -Identity $Mailbox.SamAccountName -Properties Enabled
+$ArchiveSize = Get-MailboxStatistics -Identity $Mailbox.SamAccountName -Archive -ErrorAction SilentlyContinue | Select TotalItemSize
+
+if ($ArchiveSize)
+{
+    $ArchiveInMB = $ArchiveSize.TotalItemSize.Value.ToMB()
+}
+Else
+{
+    $ArchiveInMB = "0"
+}
 
 if ($Statistics) 
 {
@@ -73,8 +83,8 @@ if ($Statistics)
   
 else 
 {
-    $Size = $null
-    $Deleted = $null
+    $Size = "0"
+    $Deleted = "0"
 }
 
 
@@ -88,7 +98,7 @@ $LastLogon = $Statistics.LastlogonTime.ToString("dd-MM-yyyy")
 Else
 {
 
-$LastLogon = ""
+$LastLogon = $null
 
 }
 
@@ -101,14 +111,13 @@ $results += [PSCustomObject]@{
     LastLogon = $LastLogon
     ADEnabled = $ADAtt.Enabled
     Size = $Size
-    Deleted = $Deleted
-    Total = $null  # This field empty and used to add Size & Deleted together in this field inside Excel to determine the total size of a mailbox.
+    ArchiveSize = $ArchiveInMB
 
 }
     }
         
 # Selecting the fields in a specific order instead of random.
-$Results | Select Username, Name, Email, Type, Size, Deleted, Total, DB, LastLogon, ADEnabled | 
+$Results | Select Username, Name, Email, Type, Size, ArchiveSize, DB, LastLogon, ADEnabled | 
 Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
 
 Write-Host "

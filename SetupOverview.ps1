@@ -37,7 +37,7 @@ Break
 
 Import-Module ActiveDirectory
 Add-PSSnapin *EXC*
-Start-Transcript -path $home\Desktop\ExchangeRepor2t.txt -append | out-null
+Start-Transcript -path $home\Desktop\ExchangeReport.txt -append | out-null
 
 Write-Host "
 

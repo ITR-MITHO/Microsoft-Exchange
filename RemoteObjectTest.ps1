@@ -29,7 +29,6 @@ Write-Host "Failed to connect to Exchange Online." -ForegroundColor Red
 Write-Host "Try to run 'Connect-ExchangeOnline' manually" -ForeGroundColor Yellow
 Break
 }
-Write-host "Connected to Exchange Online!" -ForeGroundColor Green
 
 # Gather Mailbox Information
 $EXOMailbox = Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails UserMailbox | Select-Object Alias, PrimarySmtpAddress, @{Name="EmailAddresses";Expression={($_.EmailAddresses | Where-Object {$_ -clike "smtp*"} | ForEach-Object {"`"$_`","}) -join " "}}
@@ -48,7 +47,6 @@ $Results | Select Alias, PrimarySMTPAddress, EmailAddresses | Export-csv $home\d
 
 # Disconnecting from Exchange Online
 Disconnect-ExchangeOnline -Confirm:$false
-Write-Host "Disconnected from ExchangeOnline" -ForeGroundColor Yellow
 
 Add-PSSnapin *EXC*
 $CSV = Import-csv $Home\desktop\EXOMailboxes.csv

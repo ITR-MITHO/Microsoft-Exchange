@@ -41,19 +41,21 @@ Break
 }
 
 # Gather Mailbox Information
+$Domain = Read-Host "Enter Tenant name (e.g. contoso.mail.onmicrosoft.com)"
 $EXOMailbox = Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails UserMailbox | Select-Object Alias, PrimarySmtpAddress, @{Name="EmailAddresses";Expression={($_.EmailAddresses | Where-Object {$_ -clike "smtp*"} | ForEach-Object {"`"$_`","}) -join " "}}
 $Results = @()
 Foreach ($EXO in $EXOMailbox)
     {
-
-    $Results += [PSCustomObject]@{
+    $results += [PSCustomObject]@{
         Alias = $EXO.Alias
         PrimarySMTPAddress = $EXO.PrimarySMTPAddress
         EmailAddresses = $EXO.EmailAddresses
+        RemoteRouting = "$($EXO.Alias)@$Domain"
+
 }
     }
 
-$Results | Select Alias, PrimarySMTPAddress, EmailAddresses | Export-csv $home\desktop\EXOMailboxes.csv -NoTypeInformation -Encoding Unicode
+$Results | Select-Object Alias, PrimarySMTPAddress, RemoteRouting, EmailAddresses | Export-csv $home\desktop\EXOMailboxes.csv -NoTypeInformation -Encoding Unicode
 
 # Disconnecting from Exchange Online
 Disconnect-ExchangeOnline -Confirm:$false

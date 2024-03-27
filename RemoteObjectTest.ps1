@@ -37,12 +37,10 @@ $Results = @()
 Foreach ($EXO in $EXOMailbox)
     {
 
-
-    $results += [PSCustomObject]@{
+    $Results += [PSCustomObject]@{
         Alias = $EXO.Alias
         PrimarySMTPAddress = $EXO.PrimarySMTPAddress
         EmailAddresses = $EXO.EmailAddresses
-
 }
     }
 
@@ -63,7 +61,7 @@ $Email = $C.EmailAddresses
 
 If (Get-Recipient $C.Alias -ErrorAction SilentlyContinue)
 {
- 
+
 }
 Else
 {

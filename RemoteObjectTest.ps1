@@ -48,6 +48,7 @@ $Results | Select Alias, PrimarySMTPAddress, EmailAddresses | Export-csv $home\d
 
 # Disconnecting from Exchange Online
 Disconnect-ExchangeOnline -Confirm:$false
+Write-Host "Disconnected from ExchangeOnline" -ForeGroundColor Yellow
 
 Add-PSSnapin *EXC*
 $CSV = Import-csv $Home\desktop\EXOMailboxes.csv
@@ -69,4 +70,4 @@ Echo "$Alias, $Primary, $Email" | Out-File $home\desktop\Missing.csv -Append
 }
     }  
 
-Write-Host "Objects missing remote routing objects can be found in $home\desktop\missing.csv" -ForegroundColor Yellow
+Write-Host "Objects missing remote routing objects can be found in $home\desktop\missing.csv" -ForegroundColor Green

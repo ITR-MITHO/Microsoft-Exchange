@@ -62,7 +62,7 @@ Disconnect-ExchangeOnline -Confirm:$false
 
 Add-PSSnapin *EXC*
 $CSV = Import-csv $Home\desktop\EXOMailboxes.csv
-Echo "Alias, PrimarySMTPAddress, Emailaddresses" > $home\desktop\missing.csv
+Echo "Alias, PrimarySMTPAddress, RemoteRouting, Emailaddresses" > $home\desktop\missing.csv
 Foreach ($C in $CSV)
 {
 

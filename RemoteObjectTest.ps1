@@ -1,3 +1,13 @@
+<#
+.DESCRIPTION
+The script will prompt for Exchange Online credentials to export a list of all existing EXO mailboxes
+Afterwards it will from on-prem Exchange check if it can see the mailboxes. If it can't see the mailbox, it indicates that the remote routing objects is missing and needs to be enabled. 
+
+.SYNOPSIS
+Use from on-prem Exchange server, with elevated shell
+
+#>
+
 # Check elevated state of Powershell
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))

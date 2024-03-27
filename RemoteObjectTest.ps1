@@ -67,6 +67,8 @@ If (Get-Recipient $C.Alias -ErrorAction SilentlyContinue)
 }
 Else
 {
-Echo "$Alias, $Primary, $Email" | Out-File $home\desktop\missing.csv -Append
+Echo "$Alias, $Primary, $Email" | Out-File $home\desktop\Missing.csv -Append
 }
     }  
+
+Write-Host "Objects missing remote routing objects can be found in $home\desktop\missing.csv" -ForegroundColor Yellow

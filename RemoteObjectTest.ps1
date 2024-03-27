@@ -42,7 +42,7 @@ Break
 
 # Gather Mailbox Information
 $Domain = Read-Host "Enter Tenant name (e.g. contoso.mail.onmicrosoft.com)"
-$EXOMailbox = Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails UserMailbox | Select-Object Alias, PrimarySmtpAddress, @{Name="EmailAddresses";Expression={($_.EmailAddresses | Where-Object {$_ -clike "smtp*"} | ForEach-Object {"`"$_`","}) -join " "}}
+$EXOMailbox = Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails UserMailbox | Select-Object Alias, PrimarySmtpAddress, @{Name="EmailAddresses";Expression={($_.EmailAddresses | ForEach-Object {"`"$_`","}) -join ""}}
 $Results = @()
 Foreach ($EXO in $EXOMailbox)
     {
@@ -62,23 +62,22 @@ Disconnect-ExchangeOnline -Confirm:$false
 
 Add-PSSnapin *EXC*
 $CSV = Import-csv $Home\desktop\EXOMailboxes.csv
-Echo "Alias, PrimarySMTPAddress, RemoteRouting, Emailaddresses" > $home\desktop\missing.csv
+Echo "Alias, PrimarySMTPAddress, RemoteRouting, Emailaddresses" > $home\desktop\RemoteMissing.csv
 Foreach ($C in $CSV)
 {
 
 $Alias = $C.Alias
 $Primary = $C.PrimarySMTPAddress
-$Email = $C.EmailAddresses
+$Email = $C.EmailAddresses.TrimEnd(',')
 $RemoteRouting = $C.RemoteRouting
 
 If (Get-Recipient $C.Alias -ErrorAction SilentlyContinue)
 {
-Write-Host "$Primary was found" -ForeGroundColor Green
 }
 Else
 {
-Write-Host "$Primary can't be found" -ForeGroundColor Yellow
-Echo "$Alias, $Primary, $RemoteRouting, $Email" | Out-File $home\desktop\Missing.csv -Append
+Echo "$Alias, $Primary, $RemoteRouting, $Email" | Out-File $home\desktop\RemoteMissing.csv -Append
 }
     }  
-Write-Host "Objects missing remote routing objects can be found in $home\desktop\missing.csv" -ForegroundColor Green
+Write-Host "Objects missing remote routing objects can be found in $home\desktop\RemoteMissing.csv" -ForegroundColor Green
+Remove-Item $Home\Desktop\EXOMailboxes.csv -Force

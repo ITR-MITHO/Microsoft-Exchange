@@ -70,12 +70,12 @@ $Email = $C.EmailAddresses
 
 If (Get-Recipient $C.Alias -ErrorAction SilentlyContinue)
 {
-
+Write-Host "$Primary was found" -ForeGroundColor Green
 }
 Else
 {
+Write-Host "$Primary can't be found" -ForeGroundColor Yellow
 Echo "$Alias, $Primary, $Email" | Out-File $home\desktop\Missing.csv -Append
 }
     }  
-
 Write-Host "Objects missing remote routing objects can be found in $home\desktop\missing.csv" -ForegroundColor Green

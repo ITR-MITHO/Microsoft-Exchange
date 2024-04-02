@@ -62,7 +62,7 @@ Disconnect-ExchangeOnline -Confirm:$false
 
 Add-PSSnapin *EXC*
 $CSV = Import-csv $Home\desktop\EXOMailboxes.csv
-Echo "Alias, PrimarySMTPAddress, RemoteRouting, Emailaddresses" > $home\desktop\RemoteMissing.csv
+Echo "Alias; PrimarySMTPAddress; RemoteRouting; Emailaddresses" > $home\desktop\RemoteMissing.csv
 Foreach ($C in $CSV)
 {
 
@@ -76,7 +76,7 @@ If (Get-Recipient $C.Alias -ErrorAction SilentlyContinue)
 }
 Else
 {
-Echo "$Alias, $Primary, $RemoteRouting, $Email" | Out-File $home\desktop\RemoteMissing.csv -Append
+Echo "$Alias; $Primary; $RemoteRouting; $Email" | Out-File $home\desktop\RemoteMissing.csv -Append
 }
     }  
 Write-Host "Objects missing remote routing objects can be found in $home\desktop\RemoteMissing.csv" -ForegroundColor Green

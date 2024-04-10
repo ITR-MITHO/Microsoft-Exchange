@@ -3,15 +3,15 @@
    The script will collect the newest entries from a specific user in the IIS logs from the past X days on the following services: 
    Autodiscover, Exchange Web Services, MAPI and ActiveSync
 
-   Change the variable $Days to something else if you want it to be higher than 1 day.
+   Change the variable $Hours to something else if you want it to be higher than 3 hours.
    The only thing you need to do, is to run this script as elevated, and enter a username or IP-address to search for.
   
    #>
 
-$Days = 1
+$Hours = 3
 Import-Module WebAdministration
 $IISFolder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
-$Date = (Get-Date).AddDays(-$Days)
+$Date = (Get-Date).AddHours(-$Hours)
 $DesktopFolder = Test-Path $Home\desktop\ExchangeLogs
 if (-not $Desktopfolder)
 {
@@ -28,7 +28,7 @@ mkdir $home\desktop\ExchangeLogs | Out-null
     CD $IISFolder.Value
 }
 CLS
-Write-Host "INFORMATION: Searching for $User in IIS logs..." -foregroundcolor Yellow
+Write-Host "INFORMATION: Searching for $User in logs..." -foregroundcolor Yellow
 $Data = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Sort-Object -Descending
 
 $Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/Autodiscover/*"} > $home\Desktop\ExchangeLogs\Autodiscover.log
@@ -36,4 +36,12 @@ $Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/EWS/*"} > $home
 $Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/MAPI/*"} > $home\Desktop\ExchangeLogs\MAPI.log
 $Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/Microsoft-Server-ActiveSync/*"} > $home\Desktop\ExchangeLogs\ActiveSync.log
 
+
+CD "%ExchangeInstallPath%\Logging\HttpProxy\RpcHttp"
+$DataRPC = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Sort-Object -Descending
+$DataRPC | Select-String -Pattern "$User" > $home\Desktop\ExchangeLogs\HttpProxy-RpcHttp.log
+
+CD "%ExchangeInstallPath%\Logging\HttpProxy\Mapi"
+$DataMAPI = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Sort-Object -Descending
+$DataMAPI | Select-String -Pattern "$User" > $home\Desktop\ExchangeLogs\HttpProxy-MAPI.log
 Write-Host "INFORMATION: Find your log files here: $Home\Desktop\Exchangelogs" -ForegroundColor Green

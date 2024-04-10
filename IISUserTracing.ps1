@@ -1,6 +1,6 @@
 <# 
    
-   The script will collect the newest entries from a specific user in the IIS logs from the past X days on the following services: 
+   The script will collect the newest entries from a specific user in the IIS logs from the past X hours on the following services: 
    Autodiscover, Exchange Web Services, MAPI and ActiveSync
 
    Change the variable $Hours to something else if you want it to be higher than 3 hours.

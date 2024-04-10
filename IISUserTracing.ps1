@@ -8,7 +8,7 @@
   
    #>
 
-$Hours = 3
+$Hours = 12 # Whatever number you type will be X before current time. So if it is 12 it will be 12 hours ago.
 Import-Module WebAdministration
 $IISFolder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
 $Date = (Get-Date).AddHours(-$Hours)
@@ -37,11 +37,12 @@ $Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/MAPI/*"} > $hom
 $Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/Microsoft-Server-ActiveSync/*"} > $home\Desktop\ExchangeLogs\ActiveSync.log
 
 
-CD "%ExchangeInstallPath%\Logging\HttpProxy\RpcHttp"
+CD "C:\Program Files\Microsoft\Exchange Server\V15\Logging\HttpProxy\RpcHttp"
 $DataRPC = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Sort-Object -Descending
 $DataRPC | Select-String -Pattern "$User" > $home\Desktop\ExchangeLogs\HttpProxy-RpcHttp.log
 
-CD "%ExchangeInstallPath%\Logging\HttpProxy\Mapi"
+CD "C:\Program Files\Microsoft\Exchange Server\V15\Logging\HttpProxy\Mapi"
 $DataMAPI = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Sort-Object -Descending
 $DataMAPI | Select-String -Pattern "$User" > $home\Desktop\ExchangeLogs\HttpProxy-MAPI.log
+
 Write-Host "INFORMATION: Find your log files here: $Home\Desktop\Exchangelogs" -ForegroundColor Green

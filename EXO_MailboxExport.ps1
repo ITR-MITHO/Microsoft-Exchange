@@ -26,9 +26,7 @@ The script will export the following information from all mailboxes:
                             TotalItemSize
                             ArchiveSize
 
-
 .NOTE
-
 If you're having any issues with the script, please reach out to me.
 https://github.com/ITR-MITHO
 
@@ -72,6 +70,5 @@ $Results += New-Object PSObject -Property $Data
 # Selecting the fields in a specific order instead of random.
 $Results | Select-Object Username, Name, Email, Type, MailboxSize, ArchiveSize | 
 Export-csv "$Home\Desktop\MailboxExport.csv" -NoTypeInformation -Encoding Unicode
-
-Write-Host "
-Find your .csv-file here: $Home\desktop\MailboxExport.csv" -ForegroundColor Green
+CLS
+Write-Host "Find your .csv-file here: $Home\desktop\MailboxExport.csv" -ForegroundColor Green

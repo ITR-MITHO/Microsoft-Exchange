@@ -1,9 +1,4 @@
-<#
-IMPORTANT: Must be run in elevated Powershell
-Will delete IIS and HTTPProxy logs that is older then 14-days
-
-#>
-
+# Deletes IIS and HTTPProxy logs that is older then 14-days
 Import-Module WebAdministration
 $Date = (Get-Date).AddDays(-14)
 $Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value

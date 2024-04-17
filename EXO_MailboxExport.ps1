@@ -31,7 +31,7 @@ If you're having any issues with the script, please reach out to me.
 https://github.com/ITR-MITHO
 
 #>
-$Mailboxes = Get-Mailbox -ResultSize Unlimited
+$Mailboxes = $Mailboxes = Get-Mailbox -ResultSize Unlimited | Where {$_.RecipientTypeDetails -NE "DiscoveryMailbox"}
 $Results = @()
 Write-Host "It is estimated to take 10-15 minutes for large organisations. Grab a nice cup of coffee :-)" -ForegroundColor Yellow
 Foreach ($Mailbox in $Mailboxes)

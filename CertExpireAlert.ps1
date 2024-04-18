@@ -1,6 +1,5 @@
 $Date = (Get-Date).AddDays(-30)
 $Certificate = Get-ExchangeCertificate | Where {$_.NotAfter -lt "$Date"} | Select Thumbprint, FriendlyName, Subject, Notafter, services
-
 CLS
 Write-Host "Certificates that expires in less than 30 days.." -ForeGroundColor Yellow
 Foreach ($Cert in $Certificate) {
@@ -17,7 +16,6 @@ Subject: $Subject
 Thumbprint: $Thumb
 Expires: $NotAfter
 Services: $Services
-
 "
 }
   }

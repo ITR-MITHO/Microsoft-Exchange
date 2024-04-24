@@ -61,7 +61,7 @@ Sleep 5 | Out-Null
 Foreach ($Mailbox in $Mailboxes)
 {
 
-$Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select TotalItemSize, TotalDeletedItemSize
+$Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select TotalItemSize, TotalDeletedItemSize, LastLogonTime
 $ADAtt = Get-ADUser -Identity $Mailbox.SamAccountName -Properties Enabled
 $ArchiveSize = Get-MailboxStatistics -Identity $Mailbox.SamAccountName -Archive -ErrorAction SilentlyContinue | Select TotalItemSize
 

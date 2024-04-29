@@ -85,3 +85,4 @@ $Count++ # End of status bar
 # Select-Object in a specific order instead of random.
 $Results | Select-Object Username, Name, Email, Type, Size, ArchiveSize, DB, LastLogon, ADEnabled | 
 Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
+Write-Host "Find your exported data here: $Home\Desktop\MailboxExport.csv" -ForeGroundColor Green

@@ -11,60 +11,37 @@ The script will export the following information from all mailboxes:
                             ADEnabled
                             TotalItemSize.To.MB
                             ArchiveSize.To.MB
-
-.NOTE
-The attribute "Total" This field empty and used to add Size & Deleted together in this field inside Excel to determine the total size of a mailbox.
-
-If you're having any issues with the script, please reach out to me.
-https://github.com/ITR-MITHO
-
 #>
-
 # Checking permissions
-$PMError = Test-Path $Home\desktop\PermissionIssue.txt
-if ($PMError)
-{
-Remove-Item "$Home\desktop\PermissionIssue.txt" -Force
-}
-timeout 3
-$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+$CurrentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+If (-not $CurrentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
 Write-Host "Start PowerShell as an Administrator" -ForeGroundColor Yellow
 Break
 }
 
+# Adding PowerShell Modules
 Add-PSSnapin *EXC*
 Import-Module ActiveDirectory
 
-$File = Test-path "$Home\desktop\MailboxExport.csv"
-If ($File)
-{
-
-$Confirm = Read-Host "MailboxExport.csv already exists on your desktop. Do you want me to delete it for you? (Y/N)"
-If ($Confirm -eq "Y")
-
-{
-
-Remove-Item "$Home\desktop\MailboxExport.csv" -Confirm:$false
-
-}
-    }
-
-Clear-Host
+# Gathering mailbox information
 $Mailboxes = Get-Mailbox -ResultSize Unlimited
+$MailboxCount = ($Mailboxes | Measure-Object).count
+$Count = 1
 $Results = @()
-
-Write-Host "It is estimated to take 10-15 minutes for large organisations. Grab a nice cup of coffee :-)" -ForegroundColor Yellow
-Sleep 5 | Out-Null
 Foreach ($Mailbox in $Mailboxes)
 {
+    # Status bar while running
+    $DisplayName = ('{0} ({1})' -f $Mailbox.DisplayName, $Mailbox.Name)
+    $Activity = ('Working... [{0}/{1}]' -f $count, $MailboxCount)
+    $Status = ('Getting mailbox information: {0}' -f $DisplayName)
+    Write-Progress -Status $Status -Activity $Activity -PercentComplete (($Count / $MailboxCount) * 100)
 
-$Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select TotalItemSize, TotalDeletedItemSize, LastLogonTime
+$Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select-Object TotalItemSize, TotalDeletedItemSize, LastLogonTime
 $ADAtt = Get-ADUser -Identity $Mailbox.SamAccountName -Properties Enabled
-$ArchiveSize = Get-MailboxStatistics -Identity $Mailbox.SamAccountName -Archive -ErrorAction SilentlyContinue | Select TotalItemSize
+$ArchiveSize = Get-MailboxStatistics -Identity $Mailbox.SamAccountName -Archive -ErrorAction SilentlyContinue | Select-Object TotalItemSize
 
-if ($ArchiveSize)
+If ($ArchiveSize)
 {
     $ArchiveInMB = $ArchiveSize.TotalItemSize.Value.ToMB()
 }
@@ -73,32 +50,24 @@ Else
     $ArchiveInMB = "0"
 }
 
-if ($Statistics) 
+If ($Statistics) 
 {
     $Size = $Statistics.TotalItemSize.Value.ToMB()
 } 
-  
-else 
+Else 
 {
     $Size = "0"
 }
-
-
 If ($Statistics.LastLogonTime)
 {
-
 $LastLogon = $Statistics.LastlogonTime.ToString("dd-MM-yyyy")
-
-
 }
 Else
 {
-
 $LastLogon = $null
-
 }
 
-$results += [PSCustomObject]@{
+$Results += [PSCustomObject]@{
     Username = $Mailbox.SamAccountName
     Name = $Mailbox.DisplayName
     Email = $Mailbox.PrimarySmtpAddress
@@ -110,14 +79,9 @@ $results += [PSCustomObject]@{
     ArchiveSize = $ArchiveInMB
 
 }
+$Count++ # End of status bar
     }
-        
-# Selecting the fields in a specific order instead of random.
-$Results | Select Username, Name, Email, Type, Size, ArchiveSize, DB, LastLogon, ADEnabled | 
-Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
 
-Write-Host "
-            Find your .csv-file here: $Home\desktop\MailboxExport.csv
-            
-            
-            For a export of full & send-as permissions use the following script: https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/FullAccessAndSendAs.ps1" -ForegroundColor Green
+# Select-Object in a specific order instead of random.
+$Results | Select-Object Username, Name, Email, Type, Size, ArchiveSize, DB, LastLogon, ADEnabled | 
+Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode

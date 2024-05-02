@@ -1,21 +1,27 @@
+Add-PSSnapin *EXC*
+$Certificates = Get-ExchangeCertificate
+if ($Certificates)
+{
 $Date = (Get-Date).AddDays(-30)
-$Certificate = Get-ExchangeCertificate | Where {$_.NotAfter -lt "$Date"} | Select Thumbprint, FriendlyName, Subject, Notafter, services
-CLS
-Write-Host "Certificates that expires in less than 30 days.." -ForeGroundColor Yellow
-Foreach ($Cert in $Certificate) {
-if ($Certificate) {
-$Thumb = $Cert.Thumbprint
-$Friendly = $Cert.friendlyname
-$Subject = $Cert.Subject
-$NotAfter = $Cert.NotAfter.ToString("dd-MM-yyyy")
-$Services = $Cert.Services
+$Certificate = Get-ExchangeCertificate | Where-Object {$_.NotAfter -LT $Date -and $_.FriendlyName -NotLike "*MS-Organization*"}
 
-Write-Host "
-Friendly: $Friendly
-Subject: $Subject
-Thumbprint: $Thumb
-Expires: $NotAfter
-Services: $Services
-"
+$Output = @()
+Foreach ($C in $Certificate)
+{
+    $Output += [PSCustomObject]@{
+        FriendlyName = $C.FriendlyName
+        Subject = $C.Subject
+        Thumbprint = $C.Thumbprint
+        NotAfter = $C.NotAfter.ToString("dd-MM-yyyy")
+        Services = $C.Services       
 }
-  }
+    }
+        }
+Else
+{
+$Output += [PSCustomObject]@{
+        Error = "Get-ExchangeCertificate returns null"
+        Fix = "https://www.alitajran.com/get-exchangecertificate-blank-output/"
+}
+    }
+$Output

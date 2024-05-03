@@ -37,7 +37,7 @@ Foreach ($Mailbox in $Mailboxes)
     $Status = ('Getting mailbox information: {0}' -f $DisplayName)
     Write-Progress -Status $Status -Activity $Activity -PercentComplete (($Count / $MailboxCount) * 100)
 
-$Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select-Object TotalItemSize, TotalDeletedItemSize, LastLogonTime
+$Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select-Object TotalItemSize, TotalDeletedItemSize, LastLogonTime, DataBase
 $ADAtt = Get-ADUser -Identity $Mailbox.SamAccountName -Properties Enabled
 $ArchiveSize = Get-MailboxStatistics -Identity $Mailbox.SamAccountName -Archive -ErrorAction SilentlyContinue | Select-Object TotalItemSize
 
@@ -72,7 +72,7 @@ $Results += [PSCustomObject]@{
     Name = $Mailbox.DisplayName
     Email = $Mailbox.PrimarySmtpAddress
     Type = $Mailbox.RecipientTypeDetails
-    DB = $Statistics.DatabaseName
+    DB = $Statistics.Database
     LastLogon = $LastLogon
     ADEnabled = $ADAtt.Enabled
     SizeInMB = $Size

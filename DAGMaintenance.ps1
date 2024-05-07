@@ -136,6 +136,7 @@ Write-Host "
 }
 
     }
+        }
 
 # This needs to be here to start the loop.
 DAG

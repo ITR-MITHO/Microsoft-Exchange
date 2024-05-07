@@ -98,44 +98,10 @@ DAG
 If ($Function -EQ "3")
 {
 $HubTransport = Get-ServerComponentState -Identity "$env:computername" -Component HubTransport | Select State
-If ($HubTransport.State -eq "Active")
-{
-    Write-Host "HubTransport is ACTIVE" -ForegroundColor Green
-}
-Else
-{
-    Write-Host "HubTransport is STOPPED" -ForegroundColor Yellow
-}
-
 $ServerWideOffline = Get-ServerComponentState "$env:computername" -Component ServerWideOffline | Select State
-If ($ServerWideOffline.State -eq "Active")
-{
-    Write-Host "ServerWideOffline is ACTIVE" -ForegroundColor Green
-}
-Else
-{
-    Write-Host "ServerWideOffline is STOPPED" -ForegroundColor Yellow
-}
-
 $ClusterNode = Get-ClusterNode $env:computername | Select State
-If ($ClusterNode.State -EQ "Up")
-{
-    Write-Host "ClusterNode is ACTIVE" -ForegroundColor Green
-}
-Else
-{
-    Write-Host "ClusterNode is STOPPED" -ForegroundColor Yellow
-}
-
 $DatabaseCopy = Get-MailboxServer "$env:computername"  | Select DatabaseCopyAutoActivationPolicy, DatabaseCopyActivationDisabledAndMoveNow
-If ($DatabaseCopy.DatabaseCopyAutoActivationPolicy -EQ "Unrestricted" -and $DatabaseCopy.DatabaseCopyActivationDisabledAndMoveNow -eq $false)
-{
-    Write-Host "DatabaseCopy is ACTIVE" -ForegroundColor Green
-}
-Else
-{
-    Write-Host "DatabaseCopy is STOPPED" -ForegroundColor Yellow
-}
+
 
 Write-Host "
 INFORMATION: Ensure that databases is redistributed correctly, if they are not distributed correctly follow AliTajrans steps: 
@@ -144,7 +110,31 @@ https://www.alitajran.com/balance-mailbox-databases-in-exchange-dag/#h-balance-e
 Listed below is the activation preferenses and where they are mounted currently." -ForegroundColor Yellow
 
 Get-MailboxDatabase | ft Name, ActivationPreference, Server -AutoSize
+
+If ($DatabaseCopy.DatabaseCopyAutoActivationPolicy -EQ "Unrestricted" -and $DatabaseCopy.DatabaseCopyActivationDisabledAndMoveNow -eq $false -and $HubTransport.State -EQ "Stopped" -and $ClusterNode.State -EQ "Up" -and $ServerWideOffline.State -EQ "Active")
+{
+    Write-Host "Exchange is NOT in maintennace mode" -ForegroundColor Green
 }
+Else
+{
+$Hub = $HubTransport.State
+$Cluster = $ClusterNode.State
+$SWO = $ServerWideOffline.State
+$DataBaseCopyPolicy = $DatabaseCopy.DatabaseCopyAutoActivationPolicy
+$DatabaseMoveNow = $DatabaseCopy.DatabaseCopyActivationDisabledAndMoveNow
+
+Write-Host "Exchange is in maintenance - Listing state of components..." -ForegroundColor Yellow
+    
+Write-Host "
+    HubTransport | $HUB
+    ClusterNode | $Cluster
+    ServerOffline | $SWO
+    DatabaseCopyAutoActivationPolicy | $DataBaseCopyPolicy
+    DatabaseCopyActivationDisabledAndMoveNow | $DatabaseMoveNow
+
+    "
+}
+
     }
 
 # This needs to be here to start the loop.

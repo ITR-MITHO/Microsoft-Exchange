@@ -111,7 +111,7 @@ Listed below is the activation preferenses and where they are mounted currently.
 
 Get-MailboxDatabase | ft Name, ActivationPreference, Server -AutoSize
 
-If ($DatabaseCopy.DatabaseCopyAutoActivationPolicy -EQ "Unrestricted" -and $DatabaseCopy.DatabaseCopyActivationDisabledAndMoveNow -eq $false -and $HubTransport.State -EQ "Stopped" -and $ClusterNode.State -EQ "Up" -and $ServerWideOffline.State -EQ "Active")
+If ($DatabaseCopy.DatabaseCopyAutoActivationPolicy -EQ "Unrestricted" -and $DatabaseCopy.DatabaseCopyActivationDisabledAndMoveNow -eq $false -and $HubTransport.State -EQ "Active" -and $ClusterNode.State -EQ "Up" -and $ServerWideOffline.State -EQ "Active")
 {
     Write-Host "Exchange is NOT in maintennace mode" -ForegroundColor Green
 }

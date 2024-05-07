@@ -93,7 +93,6 @@ DAG
     If ($Function -EQ "0")
     {
         Exit
-}
     }
 
 If ($Function -EQ "3")
@@ -146,6 +145,7 @@ Listed below is the activation preferenses and where they are mounted currently.
 
 Get-MailboxDatabase | ft Name, ActivationPreference, Server -AutoSize
 }
+    }
 
 # This needs to be here to start the loop.
 DAG

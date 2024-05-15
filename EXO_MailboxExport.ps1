@@ -16,21 +16,9 @@ If you're having any issues with the script, please reach out to me.
 https://github.com/ITR-MITHO
 
 #>
-<#
-The script will export the following information from all mailboxes:
 
-                            Alias
-                            DisplayName
-                            PrimarySmtpAddress
-                            RecipientTypeDetails
-                            TotalItemSize
-                            ArchiveSize
+$CSVPATH = "$Home\Desktop\MailboxExport.csv"
 
-.NOTE
-If you're having any issues with the script, please reach out to me.
-https://github.com/ITR-MITHO
-
-#>
 $Mailboxes = $Mailboxes = Get-Mailbox -ResultSize Unlimited | Where {$_.RecipientTypeDetails -NE "DiscoveryMailbox"}
 $Results = @()
 Write-Host "It is estimated to take 10-15 minutes for large organisations. Grab a nice cup of coffee :-)" -ForegroundColor Yellow
@@ -69,6 +57,6 @@ $Results += New-Object PSObject -Property $Data
 }
 # Selecting the fields in a specific order instead of random.
 $Results | Select-Object Username, Name, Email, Type, MailboxSize, ArchiveSize | 
-Export-csv "$Home\Desktop\MailboxExport.csv" -NoTypeInformation -Encoding Unicode
+Export-csv $CSVPATH -NoTypeInformation -Encoding Unicode
 CLS
-Write-Host "Find your .csv-file here: $Home\desktop\MailboxExport.csv" -ForegroundColor Green
+Write-Host "Find your .csv-file here: $CSVPATH" -ForegroundColor Green

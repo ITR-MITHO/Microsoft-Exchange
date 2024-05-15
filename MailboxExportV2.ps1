@@ -12,6 +12,9 @@ The script will export the following information from all mailboxes:
                             TotalItemSize.To.MB
                             ArchiveSize.To.MB
 #>
+
+$CSVPATH = "$Home\Desktop\MailboxExport.csv"
+
 # Checking permissions
 $CurrentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 If (-not $CurrentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
@@ -84,5 +87,5 @@ $Count++ # End of status bar
 
 # Select-Object in a specific order instead of random.
 $Results | Select-Object Username, Name, Email, Type, SizeInMB, ArchiveInMB, DB, LastLogon, ADEnabled | 
-Export-csv $home\Desktop\MailboxExport.csv -NoTypeInformation -Encoding Unicode
-Write-Host "Find your exported data here: $Home\Desktop\MailboxExport.csv" -ForeGroundColor Green
+Export-csv $CSVPATH -NoTypeInformation -Encoding Unicode
+Write-Host "Find your exported data here: $CSVPATH" -ForeGroundColor Green

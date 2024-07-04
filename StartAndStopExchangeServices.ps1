@@ -25,7 +25,7 @@ $Path = "$Home\Desktop\ExchangeServices.csv"
 $File = Test-Path $Path
 If (-Not $File)
 {
-Get-Service | Where {$_.Name -like "*MSExch*" -and $_.Status -EQ "Running"} | Select Name | Export-csv $Path -NoTypeInformation -Encoding Unicode
+Get-Service | Where {$_.DisplayName -like "Microsoft Exchange*" -and $_.Status -EQ "Running"} | Select Name | Export-csv $Path -NoTypeInformation -Encoding Unicode
 }
 
 Function SERVICES { 

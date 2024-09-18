@@ -1,4 +1,4 @@
-# Replaces *@primary.com with *@secondary.com as primary SMTP adress and adds *primary as an alias
+# Replaces *@primary.com with *@secondary.com as primary SMTP adress and adds *@primary.com as an alias
 # TEST: $users = Get-ADUser User01 -Property ProxyAddresses
 
 $Users = import-csv $home\desktop\Users.csv

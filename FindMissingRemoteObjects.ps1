@@ -1,7 +1,7 @@
 <#
 .DESCRIPTION
-The script will prompt for Exchange Online credentials to export a list of all existing EXO mailboxes
-Afterwards it will from on-prem Exchange check if it can see the mailboxes. If it can't see the mailbox, it indicates that the remote routing objects is missing and needs to be enabled. 
+The script will prompt for Exchange Online credentials to export a list of all existing EXO mailboxes and your tenant name e.g. domain-com.mail.onmicrosoft.com
+Afterwards it will from on-prem Exchange check if it can see the mailboxes in Exchange Online. If it can't see the mailbox, it will create the RemoteRouting Address on the object
 
 .SYNOPSIS
 Use from on-prem Exchange server, with elevated shell
@@ -79,5 +79,37 @@ Else
 Echo "$Alias; $Primary; $RemoteRouting; $Email" | Out-File $home\desktop\RemoteMissing.csv -Append
 }
     }  
-Write-Host "Objects missing remote routing objects can be found in $home\desktop\RemoteMissing.csv" -ForegroundColor Green
 Remove-Item $Home\Desktop\EXOMailboxes.csv -Force
+
+
+# Creating log file
+$RemoteLog = Test-Path "$home\desktop\RemoteLog.csv"
+
+If ($RemoteLog)
+{
+    Remove-Item "$home\desktop\RemoteLog.csv"
+}
+Echo "Email, Status" > $home\desktop\RemoteLog.csv
+
+
+$ImportData = Import-Csv $home\desktop\Remotemissing.csv -Delimiter ";"
+Foreach ($Import in $ImportData)
+{
+
+$ImportEmail = $Import.PrimarySMTPAddress
+$ImportRouting = $Import.RemoteRouting
+
+    If (Enable-RemoteMailbox -Identity $ImportEmail -RemoteRoutingAddress $ImportRouting -ErrorAction SilentlyContinue)
+    {
+        Write-Output "$ImportEmail, SuccessfullyUpdated"  | Out-File $home\desktop\RemoteLog.csv -Append
+    }
+    Else
+    {
+        Write-Output "$ImportEmail, FailedToUpdate" | Out-File $home\desktop\RemoteLog.csv -Append
+    }
+    
+
+}
+
+Write-Host "A complete list objects missing remoterouting can be found in $home\desktop\RemoteMissing.csv" -ForegroundColor Green
+Write-Host "Logfile to see which objects was updated, and which failed can be found in $home\desktop\RemoteLog.csv" -ForegroundColor Yellow

@@ -13,4 +13,6 @@ Get-OutlookAnywhere -Server "$env:COMPUTERNAME" | Set-OutlookAnywhere -ExternalH
 
 
 Write-Host "Urls changed for OWA, MAPI, OAB, ECP, EWS, EAS and Outlook anywhere" -ForegroundColor Green
-Write-Host "Remember to manually change the autodiscover URL" -ForegroundColor Yellow
+Write-Host "
+Remember to manually change the autodiscover URL
+Set-ClientAccessServer -Identity $env:computername -AutoDiscoverServiceInternalUri MAIL.DOMAIN.COM/autodiscover/autodiscover.xml" -ForegroundColor Yellow

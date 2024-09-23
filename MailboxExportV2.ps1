@@ -5,6 +5,7 @@ The script will export the following information from all mailboxes:
                             SamAccountName
                             DisplayName
                             PrimarySmtpAddress
+                            UserPrincipalName
                             RecipientTypeDetails
                             DatabaseName
                             LastLogonTime
@@ -41,7 +42,7 @@ Foreach ($Mailbox in $Mailboxes)
     Write-Progress -Status $Status -Activity $Activity -PercentComplete (($Count / $MailboxCount) * 100)
 
 $Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select-Object TotalItemSize, TotalDeletedItemSize, LastLogonTime, DataBase
-$ADAtt = Get-ADUser -Identity $Mailbox.SamAccountName -Properties Enabled
+$ADAtt = Get-ADUser -Identity $Mailbox.SamAccountName -Properties Enabled, UserPrincipalName
 $ArchiveSize = Get-MailboxStatistics -Identity $Mailbox.SamAccountName -Archive -ErrorAction SilentlyContinue | Select-Object TotalItemSize
 
 If ($ArchiveSize)
@@ -74,6 +75,7 @@ $Results += [PSCustomObject]@{
     Username = $Mailbox.SamAccountName
     Name = $Mailbox.DisplayName
     Email = $Mailbox.PrimarySmtpAddress
+    UPN = $ADAtt.UserPrincipalName
     Type = $Mailbox.RecipientTypeDetails
     DB = $Statistics.Database
     LastLogon = $LastLogon
@@ -86,6 +88,6 @@ $Count++ # End of status bar
     }
 
 # Select-Object in a specific order instead of random.
-$Results | Select-Object Username, Name, Email, Type, SizeInMB, ArchiveInMB, DB, LastLogon, ADEnabled | 
+$Results | Select-Object Username, Name, Email, UPN, Type, SizeInMB, ArchiveInMB, DB, LastLogon, ADEnabled | 
 Export-csv $CSVPATH -NoTypeInformation -Encoding Unicode
 Write-Host "Find your exported data here: $CSVPATH" -ForeGroundColor Green

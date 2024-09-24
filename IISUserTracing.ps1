@@ -6,7 +6,7 @@
    Change the variable $Hours to something else if you want it to be higher than 3 hours.
    The only thing you need to do, is to run this script as elevated, and enter a username or IP-address to search for.
   
-   #>
+  #>
 
 $Hours = 12 # Whatever number you type will be X before current time. So if it is 12 it will be 12 hours ago.
 Import-Module WebAdministration

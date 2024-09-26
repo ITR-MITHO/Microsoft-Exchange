@@ -65,5 +65,4 @@ Catch
 {
     Write-Output "Failed to add $User to $Mailbox" | Out-File $home\desktop\FailedMailboxes.txt -Append
 }
-
-}
+    }

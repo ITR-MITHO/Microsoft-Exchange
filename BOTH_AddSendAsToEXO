@@ -3,9 +3,13 @@
 You will be prompted for Exchange Online credentials and to instsall the Exchange Online PowerShell module if missing
 The script will find all sendas permissions on-prem and then add those permissions to mailboxes in Exchange Online
 
-Logfile: $home\desktop\FailedMailboxes.txt tells you which mailboxes it failed on.
+.OUTPUT
+Failed.txt - Tells you which mailbox a user wasn't added to with SendAs
+SendAs.csv - A full file off all SendAs Permissions
+
 #>
 
+Add-PSSnapin *EXC*
 # Send-As Permissions
 $SendAsObjects = @()
 $Mailboxes = Get-Mailbox -ResultSize Unlimited
@@ -51,11 +55,14 @@ Break
 }
 Write-host "Connected to Exchange Online!" -ForeGroundColor Green
 
+
+$Log = "$home\desktop\Failed.txt"
+Write-Output "User,Mailbox" | Out-File $Log
 $CSV = Import-csv $home\desktop\Sendas.csv
 Foreach ($C in $CSV)
 {
 
-$Mailbox = $C.MailboxSamAccountName
+$Mailbox = $C.MailboxPrimarySMTP
 $User = $C.UserWithSendAs
 Try
 {
@@ -63,6 +70,6 @@ Add-RecipientPermission -Identity $Mailbox -Trustee $User -AccessRights Sendas -
 }
 Catch
 {
-    Write-Output "Failed to add $User to $Mailbox" | Out-File $home\desktop\FailedMailboxes.txt -Append
+    Write-Output "$User,$Mailbox" | Out-File $Log -Append
 }
     }

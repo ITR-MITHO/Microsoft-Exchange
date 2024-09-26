@@ -5,7 +5,7 @@ The script will find all sendas permissions on-prem and then add those permissio
 
 .OUTPUT
 Failed.txt - Tells you which mailbox a user wasn't added to with SendAs
-SendAs.csv - A full file off all SendAs Permissions
+SendAs.csv - A full file with all SendAs Permissions
 
 #>
 

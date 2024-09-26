@@ -3,9 +3,11 @@
 You will be prompted for Exchange Online credentials and to instsall the Exchange Online PowerShell module if missing
 The script will find all sendas permissions on-prem and then add those permissions to mailboxes in Exchange Online
 
+If mailboxes shows in Failed.txt it most likely is due to an alias being mailbox@domain.local or an non-accepted domain.
+
 .OUTPUT
 Failed.txt - Tells you which mailbox a user wasn't added to with SendAs
-SendAs.csv - A full file with all SendAs Permissions
+SendAs.csv - A full file off all SendAs Permissions
 
 #>
 

@@ -1,0 +1,69 @@
+<#
+- RUN FROM ON-PREM EXCHANGE
+You will be prompted for Exchange Online credentials and to instsall the Exchange Online PowerShell module if missing
+The script will find all sendas permissions on-prem and then add those permissions to mailboxes in Exchange Online
+
+Logfile: $home\desktop\FailedMailboxes.txt tells you which mailboxes it failed on.
+#>
+
+# Send-As Permissions
+$SendAsObjects = @()
+$Mailboxes = Get-Mailbox -ResultSize Unlimited
+
+Foreach ($Mailbox in $Mailboxes) {
+    $SendAs = Get-ADPermission $Mailbox.Identity | Where-Object {$_.ExtendedRights -like "*send*" -and $_.isinherited -like "*false*" -and $_.User -notlike "*Self*" -and $_.user -notlike "S-1-5-21*"} | Select-Object User, IdentityReference, AccessRights
+
+    Foreach ($User in $SendAs) {
+        $UserDomain = $User.User -split '\\' | Select-Object -Last 1
+        $UserMailbox = Get-Mailbox $UserDomain -ErrorAction SilentlyContinue
+        
+
+        if ($UserMailbox) {
+            $UserEmail = $UserMailbox.PrimarySmtpAddress
+        } else {
+            $UserEmail = $User.User
+        }
+
+        $SendAsObject = [PSCustomObject] @{
+            MailboxSamAccountName = $Mailbox.SamAccountName
+            MailboxDisplayName = $Mailbox.DisplayName
+            MailboxPrimarySMTP = $Mailbox.PrimarySmtpAddress
+            MailboxType = $Mailbox.RecipientTypeDetails
+            UserWithSendAs = $UserEmail
+        }
+
+        $SendAsObjects += $SendAsObject
+    }
+}
+$SendAsObjects | Select MailboxSamAccountName, MailboxDisplayName, MailboxPrimarySMTP, MailboxType, UserWithSendAs | Export-Csv $Home\Desktop\SendAs.csv -NoTypeInformation -Encoding Unicode
+
+# Connect to Exchange Online
+Try
+{
+Connect-ExchangeOnline -ErrorAction Stop
+}
+Catch
+{
+Write-Host "Failed to connect to Exchange Online. If your user requires Multi-factor authentication from this destination, it will not work." -ForegroundColor Red    
+Write-Host "Try to run 'Connect-ExchangeOnline' manually, to see if it prompts for MFA
+If it still fails, the module is missing. Use: Install-Module -Name ExchangeOnlineManagement" -ForeGroundColor Yellow
+Break
+}
+Write-host "Connected to Exchange Online!" -ForeGroundColor Green
+
+$CSV = Import-csv $home\desktop\Sendas.csv
+Foreach ($C in $CSV)
+{
+
+$Mailbox = $C.MailboxSamAccountName
+$User = $C.UserWithSendAs
+Try
+{
+Add-RecipientPermission -Identity $Mailbox -Trustee $User -AccessRights Sendas -Confirm:$false -ErrorAction Stop -WarningAction SilentlyContinue
+}
+Catch
+{
+    Write-Output "Failed to add $User to $Mailbox" | Out-File $home\desktop\FailedMailboxes.txt -Append
+}
+
+}

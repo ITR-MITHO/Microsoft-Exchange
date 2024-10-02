@@ -1,6 +1,7 @@
 Add-PSSnapin *EXC*
 
-Get-MessageTrackingLog -start 13:10 -eventID Receive | Select OriginalClientIP | out-file $home\desktop\ips.txt
+Get-MessageTrackingLog -start 13:10 -eventID Receive | Where {$_.OriginalClientIP -NE $null} | Select-Object -ExpandProperty OriginalClientIP | Set-Content $home\desktop\ips.txt
+
 
 $groupedLines = Get-Content "$home\desktop\ips.txt" | Group-Object
 

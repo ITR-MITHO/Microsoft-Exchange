@@ -1,4 +1,6 @@
 <#
+.DESCRIPTION
+The script will automatically adjust the following settings: 
 
 Pagefile based on RAM and Exchange version
 TCPKeepAlive: 20 minutes

@@ -1,11 +1,10 @@
 <#
-.DESCRIPTION
-The script will automatically adjust the following settings: 
+Automatically configures the below settings: 
 
-Pagefile based on RAM and Exchange version
-TCPKeepAlive: 20 minutes
-High Performance Power Plan
-Enable IPv6
+Pagefile configuration based on installed RAM and Exchange version
+TCPKeepAlive - 20 minutes
+Power Plan - High Performance
+IPv6 enabled on all NIC
 
 #>
 
@@ -108,6 +107,7 @@ TCPKeepAlive: 20 minutes
 Power Plan: High performance
 IPv6: ENABLED" -ForegroundColor Yellow
 
+Write-Host "Opening Microsoft Prerequisite and ISO-download pages in 5 seconds" -ForegroundColor Green
+Sleep 5
 Start https://learn.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019#exchange-server-2019
 Start https://learn.microsoft.com/en-us/exchange/plan-and-deploy/prerequisites?view=exchserver-2019#windows-server-2019--windows-server-2022-prerequisites-for-exchange-2019
-Write-Host "Opened Prerequisite documentation and Exchange build numbers article" -ForegroundColor Green

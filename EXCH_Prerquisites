@@ -1,0 +1,101 @@
+<#
+
+The script will set your pagefile based on amount of RAM and Exchange version
+TCPKeepAlive set to 20
+Power Plan set to High
+Enable IPV6 on all NIC
+
+#>
+
+# Pagefile
+
+
+$RAM = (Get-WmiObject -Class Win32_ComputerSystem).TotalPhysicalMemory / 1MB
+function Set-PageFile-Exchange2013_2016 {
+    if ($RAM -le 8192) {
+        $PageFileSize = 8202
+    } elseif ($RAM -le 16384) {
+        $PageFileSize = 16394
+    } elseif ($RAM -le 32768) {
+        $PageFileSize = 32778
+    } elseif ($RAM -le 65536) {
+        $PageFileSize = 32778
+    } elseif ($RAM -le 131072) {
+        $PageFileSize = 32778
+    } elseif ($RAM -le 196608) {
+        $PageFileSize = 32778
+    }
+    
+
+    Set-PageFile -InitialSize $PageFileSize -MaximumSize $PageFileSize
+}
+
+function Set-PageFile-Exchange2019 {
+    if ($RAM -le 65536) {
+        $PageFileSize = 16384
+    } elseif ($RAM -le 98304) {
+        $PageFileSize = 24576
+    } elseif ($RAM -le 131072) {
+        $PageFileSize = 32768
+    } elseif ($RAM -le 163840) {
+        $PageFileSize = 40960
+    } elseif ($RAM -le 196608) {
+        $PageFileSize = 49152
+    } elseif ($RAM -le 262144) {
+        $PageFileSize = 65536
+    }
+    
+    Set-PageFile -InitialSize $PageFileSize -MaximumSize $PageFileSize
+}
+
+function Set-PageFile {
+    param (
+        [int]$InitialSize,
+        [int]$MaximumSize
+    )
+    
+    $pagefileSetting = Get-WmiObject -Query "Select * from Win32_ComputerSystem"
+    $pagefileSetting.AutomaticManagedPagefile = $false
+    $pagefileSetting.Put()
+
+    $pagefile = Get-WmiObject -Query "Select * from Win32_PageFileSetting where Name = 'C:\\pagefile.sys'"
+    if ($pagefile -eq $null) {
+        # If the pagefile does not exist, create it
+        $pagefile = ([WmiClass] "root\cimv2:Win32_PageFileSetting").CreateInstance()
+        $pagefile.Name = "C:\\pagefile.sys"
+    }
+    
+    $pagefile.InitialSize = $InitialSize
+    $pagefile.MaximumSize = $MaximumSize
+    $pagefile.Put()
+
+    # Verify pagefile size
+    Write-Output "Pagefile size set to InitialSize: $InitialSize MB, MaximumSize: $MaximumSize MB"
+}
+
+# Main logic
+# Detect if Exchange Server 2013/2016 or Exchange Server 2019 is installed (for demo, this part is simplified)
+$ExchangeVersion = Read-Host "Enter Exchange Version (2013/2016 or 2019)"
+
+if ($ExchangeVersion -eq "2013" -or $ExchangeVersion -eq "2016") {
+    Set-PageFile-Exchange2013_2016
+} elseif ($ExchangeVersion -eq "2019") {
+    Set-PageFile-Exchange2019
+} else {
+    Write-Output "Unsupported Exchange version"
+}
+
+# TCPKeepAlive (20 minutes)
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\TcpIp\Parameters" -Name "KeepAliveTime" -PropertyType DWORD -Value 1200000 -Force
+
+# High Performance Power Plan
+powercfg -setactive SCHEME_MIN
+
+# Enable IPV6 on all NIC
+$NIC = Get-NetAdapterBinding -ComponentID ms_tcpip6 | Select Name
+Foreach ($N in $NIC)
+
+{
+	$Name = $N.Name
+	Enable-NetAdapterBinding -Name $Name -ComponentID ms_tcpip6
+}

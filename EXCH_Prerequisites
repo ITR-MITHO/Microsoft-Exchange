@@ -1,9 +1,9 @@
 <#
 
-The script will set your pagefile based on amount of RAM and Exchange version
-TCPKeepAlive set to 20
-Power Plan set to High
-Enable IPV6 on all NIC
+Pagefile based on RAM and Exchange version
+TCPKeepAlive: 20 minutes
+High Performance Power Plan
+Enable IPv6
 
 #>
 
@@ -105,3 +105,7 @@ PageFile: $PageSize MB
 TCPKeepAlive: 20 minutes
 Power Plan: High performance
 IPv6: ENABLED" -ForegroundColor Yellow
+
+Start https://learn.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019#exchange-server-2019
+Start https://learn.microsoft.com/en-us/exchange/plan-and-deploy/prerequisites?view=exchserver-2019#windows-server-2019--windows-server-2022-prerequisites-for-exchange-2019
+Write-Host "Opened Prerequisite documentation and Exchange build numbers article" -ForegroundColor Green

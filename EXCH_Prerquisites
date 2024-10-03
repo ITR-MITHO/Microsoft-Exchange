@@ -70,23 +70,21 @@ function Set-PageFile {
     $pagefile.Put()
 
     # Verify pagefile size
-    Write-Output "Pagefile size set to InitialSize: $InitialSize MB, MaximumSize: $MaximumSize MB"
 }
 
-# Main logic
-# Detect if Exchange Server 2013/2016 or Exchange Server 2019 is installed (for demo, this part is simplified)
-$ExchangeVersion = Read-Host "Enter Exchange Version (2013/2016 or 2019)"
 
-if ($ExchangeVersion -eq "2013" -or $ExchangeVersion -eq "2016") {
-    Set-PageFile-Exchange2013_2016
-} elseif ($ExchangeVersion -eq "2019") {
-    Set-PageFile-Exchange2019
+$ExchangeVersion = Read-Host "Enter Exchange version - e.g. '2016' or '2019'"
+
+if ($ExchangeVersion -EQ "2016") {
+    Set-PageFile-Exchange2013_2016 | Out-Null
+} elseif ($ExchangeVersion -EQ "2019") {
+    Set-PageFile-Exchange2019 | Out-Null
 } else {
     Write-Output "Unsupported Exchange version"
 }
 
 # TCPKeepAlive (20 minutes)
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\TcpIp\Parameters" -Name "KeepAliveTime" -PropertyType DWORD -Value 1200000 -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\TcpIp\Parameters" -Name "KeepAliveTime" -PropertyType DWORD -Value 1200000 -Force | Out-Null
 
 # High Performance Power Plan
 powercfg -setactive SCHEME_MIN
@@ -99,3 +97,11 @@ Foreach ($N in $NIC)
 	$Name = $N.Name
 	Enable-NetAdapterBinding -Name $Name -ComponentID ms_tcpip6
 }
+$PageSize = (Get-CimInstance Win32_PageFileSetting).MaximumSize
+
+Write-Host "
+Exchange Server $ExchangeVersion
+PageFile: $PageSize MB
+TCPKeepAlive: 20 minutes
+Power Plan: High performance
+IPv6: ENABLED" -ForegroundColor Yellow

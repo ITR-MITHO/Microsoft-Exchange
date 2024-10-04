@@ -5,7 +5,6 @@ Pagefile configuration based on installed RAM and Exchange version
 TCPKeepAlive - 20 minutes
 Power Plan - High Performance
 IPv6 enabled on all NIC
-TLS settings according to Microsofts healthchecker script
 Installs telnet client
 
 #>
@@ -101,7 +100,6 @@ Foreach ($N in $NIC)
 	Enable-NetAdapterBinding -Name $Name -ComponentID ms_tcpip6
 }
 
-cmd /c "powershell iex (irm alitajran.com/wp-content/uploads/scripts/Set-ExchangeTLS.ps1)" | Out-Null
 Install-WindowsFeature -Name Telnet-Client | Out-Null
 
 

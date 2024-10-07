@@ -165,3 +165,5 @@ New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders
 New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client' -Name 'DisabledByDefault' -value 0 -PropertyType 'DWord' -Force | Out-Null
 Write-Host 'TLS 1.0 has been enabled.' -ForegroundColor Green
 }
+
+Write-Host "A reboot is needed before changes are applied to the system" -ForeGroundColor Yellow

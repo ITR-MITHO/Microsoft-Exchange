@@ -11,8 +11,6 @@ Disables IE Enhanced Security
 #>
 
 # Pagefile
-
-
 $RAM = (Get-WmiObject -Class Win32_ComputerSystem).TotalPhysicalMemory / 1MB
 function Set-PageFile-Exchange2013_2016 {
     if ($RAM -le 8192) {
@@ -28,11 +26,8 @@ function Set-PageFile-Exchange2013_2016 {
     } elseif ($RAM -le 196608) {
         $PageFileSize = 32778
     }
-    
-
-    Set-PageFile -InitialSize $PageFileSize -MaximumSize $PageFileSize
+Set-PageFile -InitialSize $PageFileSize -MaximumSize $PageFileSize
 }
-
 function Set-PageFile-Exchange2019 {
     if ($RAM -le 65536) {
         $PageFileSize = 16384
@@ -47,16 +42,13 @@ function Set-PageFile-Exchange2019 {
     } elseif ($RAM -le 262144) {
         $PageFileSize = 65536
     }
-    
     Set-PageFile -InitialSize $PageFileSize -MaximumSize $PageFileSize
 }
-
 function Set-PageFile {
     param (
         [int]$InitialSize,
         [int]$MaximumSize
     )
-    
     $pagefileSetting = Get-WmiObject -Query "Select * from Win32_ComputerSystem"
     $pagefileSetting.AutomaticManagedPagefile = $false
     $pagefileSetting.Put()
@@ -67,17 +59,12 @@ function Set-PageFile {
         $pagefile = ([WmiClass] "root\cimv2:Win32_PageFileSetting").CreateInstance()
         $pagefile.Name = "C:\\pagefile.sys"
     }
-    
     $pagefile.InitialSize = $InitialSize
     $pagefile.MaximumSize = $MaximumSize
     $pagefile.Put()
-
-    # Verify pagefile size
 }
 
-
 $ExchangeVersion = Read-Host "Enter Exchange version - e.g. '2016' or '2019'"
-
 if ($ExchangeVersion -EQ "2016") {
     Set-PageFile-Exchange2013_2016 | Out-Null
 } elseif ($ExchangeVersion -EQ "2019") {
@@ -101,9 +88,10 @@ Foreach ($N in $NIC)
 	Enable-NetAdapterBinding -Name $Name -ComponentID ms_tcpip6
 }
 
+# Telnet Client
 Install-WindowsFeature -Name Telnet-Client | Out-Null
 
-#TLS 
+# TLS Settings
 # Enable TLS 1.2
 If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server')) {
     New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server' -Force | Out-Null
@@ -150,7 +138,6 @@ Set-ItemProperty -Path $UserKey -Name "IsInstalled" -Value 0 -Force
 Stop-Process -Name Explorer -Force
 
 $PageSize = (Get-CimInstance Win32_PageFileSetting).MaximumSize
-
 Write-Host "
 Adjusted the following settings!
 

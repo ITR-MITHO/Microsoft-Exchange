@@ -7,7 +7,7 @@ If mailboxes shows in Failed.txt it most likely is due to an alias being mailbox
 
 .OUTPUT
 Failed.txt - Tells you which mailbox a user wasn't added to with SendAs
-SendAs.csv - A full file off all SendAs Permissions
+SendAs.csv - A full list off all SendAs Permissions from on-prem
 
 #>
 

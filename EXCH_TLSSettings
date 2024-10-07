@@ -166,4 +166,5 @@ New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders
 Write-Host 'TLS 1.0 has been enabled.' -ForegroundColor Green
 }
 
-Write-Host "A reboot is needed before changes are applied to the system" -ForeGroundColor Yellow
+Write-Host "
+IMPORTANT: You need to reboot before the changes are applied" -ForeGroundColor Red

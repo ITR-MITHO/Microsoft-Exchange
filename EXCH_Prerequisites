@@ -149,8 +149,3 @@ Telnet Client: Installed
 IPv6: ENABLED
 TLS 1.2 Enabled (OS and .NET)
 Disabled IE Enhanced Security" -ForegroundColor Yellow
-
-Write-Host "Opening Microsoft Prerequisite and ISO-download pages in 15 seconds" -ForegroundColor Green
-Sleep 15
-Start https://learn.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019#exchange-server-2019
-Start https://learn.microsoft.com/en-us/exchange/plan-and-deploy/prerequisites?view=exchserver-2019#windows-server-2019--windows-server-2022-prerequisites-for-exchange-2019

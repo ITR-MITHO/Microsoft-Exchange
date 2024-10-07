@@ -111,5 +111,5 @@ $ImportRouting = $Import.RemoteRouting
 
 }
 
-Write-Host "A complete list objects missing remoterouting can be found in $home\desktop\RemoteMissing.csv" -ForegroundColor Green
+Write-Host "A complete list of objects missing RemoteRouting can be found in $home\desktop\RemoteMissing.csv" -ForegroundColor Green
 Write-Host "Logfile to see which objects was updated, and which failed can be found in $home\desktop\RemoteLog.csv" -ForegroundColor Yellow

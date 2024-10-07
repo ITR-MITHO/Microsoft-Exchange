@@ -139,13 +139,15 @@ Stop-Process -Name Explorer -Force
 
 $PageSize = (Get-CimInstance Win32_PageFileSetting).MaximumSize
 Write-Host "
-Adjusted the following settings!
+Adjusted the following settings!" -ForegroundColor Yellow
 
-Exchange Server $ExchangeVersion
+Write-Host "
+
+User input: Exchange $ExchangeVersion
 PageFile: $PageSize MB
 TCPKeepAlive: 20 minutes
 Power Plan: High performance
 Telnet Client: Installed
 IPv6: ENABLED
 TLS 1.2 Enabled (OS and .NET)
-Disabled IE Enhanced Security" -ForegroundColor Yellow
+Disabled IE Enhanced Security" -ForegroundColor Green

@@ -2,11 +2,11 @@
 Automatically configures the below settings: 
 
 Pagefile based on installed RAM and Exchange version
-Set TCPKeepAlive - 20 minutes
-Change Power Plan: High Performance
+TCPKeepAlive - 20 minutes
+Power Plan: High Performance
 Enables IPv6 on all NIC
 Enables TLS 1.2 for OS and .NET
-Installs the windows feature: Telnet client
+Install Windows Weature: Telnet client
 Disables IE Enhanced Security
 #>
 

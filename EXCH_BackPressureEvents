@@ -8,7 +8,7 @@ https://learn.microsoft.com/en-us/exchange/mail-flow/back-pressure?view=exchserv
 $server = $env:COMPUTERNAME
 
 $eventIDs = @(15004, 15005, 15006, 15007)
-$startTime = (Get-Date).AddHours(-24)
+$startTime = (Get-Date).AddDays(-7)
 $events = Get-WinEvent -FilterHashtable @{
     LogName = 'Application';
     ProviderName = 'MSExchangeTransport';
@@ -18,9 +18,9 @@ $events = Get-WinEvent -FilterHashtable @{
 
 
 if ($events.Count -eq 0) {
-    Write-Host "No backpressure events found in the last 24 hours on $server."
+    Write-Host "No backpressure events found in the last 7 days on $server."
 } else {
-    Write-Host "Backpressure events found on $server in the last 24 hours:"
+    Write-Host "Backpressure events found on $server in the last 7 days:"
     
     # Display the events
     foreach ($event in $events) {

@@ -1,3 +1,10 @@
+<#
+Searches for Event ID 15004, 15005, 15006 and 15007 in the Application log
+https://learn.microsoft.com/en-us/exchange/mail-flow/back-pressure?view=exchserver-2019#back-pressure-logging-information
+
+#>
+
+
 $server = $env:COMPUTERNAME
 
 $eventIDs = @(15004, 15005, 15006, 15007)

@@ -6,7 +6,7 @@ TCPKeepAlive - 20 minutes
 Power Plan: High Performance
 Enables IPv6 on all NIC
 Enables TLS 1.2 for OS and .NET
-Install Windows Weature: Telnet client
+Install Windows Feature: Telnet client
 Disables IE Enhanced Security
 #>
 

@@ -112,9 +112,9 @@ $events = Get-WinEvent -FilterHashtable @{
 
 
 if ($events.Count -eq 0) {
-    Write-Host "No backpressure events found in the last 24 hours on $server."
+    Write-Host "No backpressure events found in the last 24 hours on $server." -ForeGroundColor Green
 } else {
-    Write-Host "Backpressure events found on $server in the last 24 hours:"
+    Write-Host "Backpressure events found on $server in the last 24 hours:" -ForeGroundColor Red
     
     # Display the events
     foreach ($event in $events) {

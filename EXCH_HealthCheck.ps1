@@ -8,6 +8,7 @@ The script is designed to help you check how Exchange is feeling today.
 * Free space on C-drive
 * Exchange ServerComponents
 * MessageQueue higher than 100
+* Backpressure events
 * DAG Replication Test
 * Microsoft Exchange Services
 * MAPI Connectivity
@@ -97,6 +98,32 @@ Write-Host "Exchange Server Services: *PASSED*
 " -ForegroundColor Green
 }
 
+# Backpressure events
+$server = $env:COMPUTERNAME
+
+$eventIDs = @(15004, 15005, 15006, 15007)
+$startTime = (Get-Date).AddHours(-24)
+$events = Get-WinEvent -FilterHashtable @{
+    LogName = 'Application';
+    ProviderName = 'MSExchangeTransport';
+    StartTime = $startTime;
+    ID = $eventIDs
+} -ComputerName $server -ErrorAction SilentlyContinue
+
+
+if ($events.Count -eq 0) {
+    Write-Host "No backpressure events found in the last 24 hours on $server."
+} else {
+    Write-Host "Backpressure events found on $server in the last 24 hours:"
+    
+    # Display the events
+    foreach ($event in $events) {
+        Write-Host "Time: $($event.TimeCreated)"
+        Write-Host "Event ID: $($event.Id)"
+        Write-Host "Message: $($event.Message)"
+        Write-Host "---------------------------------------------"
+    }
+}
 
 
 # MapiConnectivity

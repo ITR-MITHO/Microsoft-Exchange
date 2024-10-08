@@ -40,7 +40,7 @@ Write-Host "There is $space left on the C-drive. It have needs atleast 20%
 
 Write-host "
 Run this script to clean up the drive.
-https://raw.githubusercontent.com/ITR-MITHO/Microsoft-Exchange/main/IISLogCleanup.ps1." -ForegroundColor Yellow
+https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/EXCH_IISLogCleanup.ps1" -ForegroundColor Yellow
 
 }
 Else

@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
 Based on your input the script will either put Exchange into maintenance mode, or take it out of it. 
-Everything is done automatically, and works by simply inputting a number into the promt when asked. 
+Everything is done automatically, and works by simply inputting a number into the prompt when asked. 
 
 .NOTES
 * MAKE SURE TO RUN THIS ON THE SERVER YOU WANT TO PUT INTO MAINTENANCE MODE

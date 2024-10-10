@@ -8,6 +8,7 @@ Enables IPv6 on all NIC
 Enables TLS 1.2 for OS and .NET
 Install Windows Feature: Telnet client
 Disables IE Enhanced Security
+Disable & Block SMBv1
 #>
 
 # Pagefile
@@ -87,6 +88,10 @@ Foreach ($N in $NIC)
 	$Name = $N.Name
 	Enable-NetAdapterBinding -Name $Name -ComponentID ms_tcpip6
 }
+
+# SMBv1 settings
+Set-SmbServerConfiguration -EnableSMB1Protocol $false | out-null
+Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -confirm:$false | out-null
 
 # Telnet Client
 Install-WindowsFeature -Name Telnet-Client | Out-Null

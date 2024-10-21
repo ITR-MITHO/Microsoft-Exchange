@@ -14,7 +14,7 @@ Disables IE Enhanced Security
 $RAM = (Get-WmiObject -Class Win32_ComputerSystem).TotalPhysicalMemory / 1MB
 function Set-PageFile-Exchange2013_2016 {
     if ($RAM -le 8192) {
-        $PageFileSize = 2048
+        $PageFileSize = 8202
     } elseif ($RAM -le 16384) {
         $PageFileSize = 16394
     } elseif ($RAM -le 32768) {

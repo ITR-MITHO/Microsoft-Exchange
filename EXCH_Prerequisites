@@ -30,8 +30,8 @@ function Set-PageFile-Exchange2013_2016 {
 Set-PageFile -InitialSize $PageFileSize -MaximumSize $PageFileSize
 }
 function Set-PageFile-Exchange2019 {
-    if ($RAM -le 8192) {
-        $PageFileSize = 16384
+    if ($RAM -le 16384) {
+        $PageFileSize = 8192
     } elseif ($RAM -le 65536) {
         $PageFileSize = 16384  
     } elseif ($RAM -le 98304) {

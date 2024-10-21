@@ -30,8 +30,10 @@ function Set-PageFile-Exchange2013_2016 {
 Set-PageFile -InitialSize $PageFileSize -MaximumSize $PageFileSize
 }
 function Set-PageFile-Exchange2019 {
-    if ($RAM -le 65536) {
+    if ($RAM -le 8192) {
         $PageFileSize = 16384
+    } elseif ($RAM -le 65536) {
+        $PageFileSize = 16384  
     } elseif ($RAM -le 98304) {
         $PageFileSize = 24576
     } elseif ($RAM -le 131072) {
@@ -91,7 +93,7 @@ Foreach ($N in $NIC)
 
 # SMBv1 settings
 Set-SmbServerConfiguration -EnableSMB1Protocol $false | out-null
-Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -confirm:$false | out-null
+Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol | out-null
 
 # Telnet Client
 Install-WindowsFeature -Name Telnet-Client | Out-Null

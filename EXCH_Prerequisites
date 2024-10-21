@@ -157,4 +157,5 @@ Power Plan: High performance
 Telnet Client: Installed
 IPv6: ENABLED
 TLS 1.2 Enabled (OS and .NET)
-Disabled IE Enhanced Security" -ForegroundColor Green
+Disabled IE Enhanced Security
+SMBv1 disabled and blocked" -ForegroundColor Green

@@ -31,10 +31,11 @@ CLS
 Write-Host "INFORMATION: Searching for $User in logs..." -foregroundcolor Yellow
 $Data = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Sort-Object -Descending
 
-$Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/Autodiscover/*"} > $home\Desktop\ExchangeLogs\Autodiscover.log
-$Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/EWS/*"} > $home\Desktop\ExchangeLogs\EWS.log
-$Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/MAPI/*"} > $home\Desktop\ExchangeLogs\MAPI.log
-$Data | Select-String -Pattern "$User" | Where {$_.Line -like "*/Microsoft-Server-ActiveSync/*"} > $home\Desktop\ExchangeLogs\ActiveSync.log
+$Data | Select-String -Pattern "$User" | sls "/Autodiscover/" > $home\Desktop\ExchangeLogs\Autodiscover.log
+$Data | Select-String -Pattern "$User" | sls "/EWS/" > $home\Desktop\ExchangeLogs\EWS.log
+$Data | Select-String -Pattern "$User" | sls "/MAPI/" > $home\Desktop\ExchangeLogs\MAPI.log
+$Data | Select-String -Pattern "$User" | sls "/Microsoft-Server-ActiveSync/" > $home\Desktop\ExchangeLogs\ActiveSync.log
+$Data | Select-String -Pattern "$User" | sls "/OAB/" > $home\Desktop\ExchangeLogs\OAB.log
 
 
 CD "C:\Program Files\Microsoft\Exchange Server\V15\Logging\HttpProxy\RpcHttp"
@@ -44,5 +45,10 @@ $DataRPC | Select-String -Pattern "$User" > $home\Desktop\ExchangeLogs\HttpProxy
 CD "C:\Program Files\Microsoft\Exchange Server\V15\Logging\HttpProxy\Mapi"
 $DataMAPI = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Sort-Object -Descending
 $DataMAPI | Select-String -Pattern "$User" > $home\Desktop\ExchangeLogs\HttpProxy-MAPI.log
+
+CD "C:\Program Files\Microsoft\Exchange Server\V15\Logging\HttpProxy\Oab"
+$DataOAB = Get-ChildItem -Recurse | Where {$_.LastWriteTime -GT $Date} | Sort-Object -Descending
+$DataOAB | Select-String -Pattern "$User" > $home\Desktop\ExchangeLogs\HttpProxy-OAB.log
+
 
 Write-Host "INFORMATION: Find your log files here: $Home\Desktop\Exchangelogs" -ForegroundColor Green

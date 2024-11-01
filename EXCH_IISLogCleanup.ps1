@@ -7,6 +7,14 @@ $($env:ExchangeInstallPath)Logging\*
 #>
 Import-Module WebAdministration
 $Days = (Get-Date).AddDays(-10)
+
+# Change IIS log rollover to Hourly instead of daily
+$RollOver = Get-WebConfigurationProperty -filter /system.applicationHost/sites/siteDefaults/logFile -Name Period
+If ($RollOver -EQ "Daily")
+{
+Set-WebConfigurationProperty -filter /system.applicationHost/sites/siteDefaults/logFile -name "period" -value "Hourly"
+}
+
 $Folder = Get-ItemProperty "IIS:\Sites\Default Web Site" -name logFile.directory | Select Value
 If ($Folder.Value -like "%Systemdrive%*")
 {

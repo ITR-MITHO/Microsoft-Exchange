@@ -1,4 +1,5 @@
 <#
+First the script will prompt if you want to check current TLS settings or change TLS Settings
 
 The script will prompt you for each of the TLS protocols; 1.0, 1.1 and 1.2
 E = Enable
@@ -6,6 +7,50 @@ D = Disable
 
 #>
 
+Function TLS { 
+$Function = Read-Host "
+Please enter one of the below numbers to proceed:
+
+    1 - CHECK TLS CONFIGURATION
+    2 - CHANGE TLS CONFIGURATION
+    0 - EXIT
+    "
+
+If ($Function -EQ "1")
+    {
+
+$protocols = @{
+    "TLS 1.0" = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0";
+    "TLS 1.1" = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1";
+    "TLS 1.2" = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2";
+}
+
+
+function Check-TLSStatus {
+    param (
+        [string]$protocol,
+        [string]$path
+    )
+    
+    $serverPath = "$path\Server"
+    $serverEnabled = (Get-ItemProperty -Path $serverPath -Name Enabled -ErrorAction SilentlyContinue).Enabled
+    $serverDisabledByDefault = (Get-ItemProperty -Path $serverPath -Name DisabledByDefault -ErrorAction SilentlyContinue).DisabledByDefault
+    $serverStatus = if ($serverEnabled -eq 1 -and $serverDisabledByDefault -eq 0) { "Enabled" } else { "Disabled" }
+    
+
+    Write-Host "$protocol"
+    Write-Host "$serverStatus"
+    Write-Host ""
+}
+
+# Check each TLS version
+foreach ($protocol in $protocols.Keys) {
+    Check-TLSStatus -protocol $protocol -path $protocols[$protocol]
+}
+    }
+
+If ($Function -EQ "2")
+    {
 
 # TLS 1.2 Settings
 $TLS12 = Read-Host "Enable or Disable TLS 1.2? (E/D)"
@@ -168,3 +213,12 @@ Write-Host 'TLS 1.0 has been enabled.' -ForegroundColor Green
 
 Write-Host "
 IMPORTANT: You need to reboot before the changes are applied" -ForeGroundColor Red
+}
+
+If ($Function -EQ "0")
+{  
+    Exit
+}
+    } 
+
+TLS

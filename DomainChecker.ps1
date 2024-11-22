@@ -56,7 +56,7 @@ If ($SPFGrabber) {
 
 # Random SPF Record
 If ($RandomSPFGrabber) {
-    Write-Host "`nRandom SPF Record:" -ForegroundColor Yellow
+    Write-Host "`nRandom SPF SubDomain Record:" -ForegroundColor Yellow
     $RandomSPFGrabber.Line -replace ".*text = ", "" -replace '"', ""  # Clean up result
 } Else {
     Write-Host "`nNo Random SPF record found for $Domain"

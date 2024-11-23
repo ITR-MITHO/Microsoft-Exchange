@@ -285,12 +285,41 @@ Write-Host "HybridEnabled: False"
 
 Get-OrganizationConfig | fl OAuth2ClientProfileEnabled, MitigationsEnabled, MapiHttpEnabled
 
-
 Write-Host "
 ###########################################################################
-Domain Checker - Looking up all DNS records
+Virtual Directories
 ###########################################################################
 " -ForegroundColor Yellow
+
+Write-Host "Autodiscover"
+Get-ClientAccessServer -WarningAction SilentlyContinue -Identity "$env:COMPUTERNAME" | fl AutodiscoverServiceInternalURI
+Get-ExchangeServer $env:computername | Get-AutodiscoverVirtualDirectory | fl InternalAuthenticationMethods, ExternalAuthenticationMethods
+
+Write-Host "OWA (Outlook Web Application)"
+Get-OwaVirtualDirectory -Identity "$env:COMPUTERNAME\OWA (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
+
+Write-Host "ECP (Exchange Control Panel)"
+Get-ECPVirtualDirectory -Identity "$env:COMPUTERNAME\ECP (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
+
+Write-Host "EWS (Exchange Web Services)"
+Get-WebServicesVirtualDirectory -Identity "$env:COMPUTERNAME\EWS (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
+
+Write-Host "MAPI"
+Get-MapiVirtualDirectory -Identity "$env:COMPUTERNAME\MAPI (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
+
+Write-Host "OAB (Offline Address Book)"
+Get-OABVirtualDirectory -Identity "$env:COMPUTERNAME\OAB (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
+
+Write-Host "EAS (Exchange Active Sync)"
+Get-ActiveSyncVirtualDirectory -Identity "$env:COMPUTERNAME\Microsoft-Server-ActiveSync (Default web site)" | fl InternalURL, ExternalURL
+
+Write-Host "Outlook Anywhere"
+Get-OutlookAnywhere -Identity "$env:COMPUTERNAME\rpc (Default web site)" | Fl InternalHostname, ExternalHostname
+Get-ExchangeServer $env:computername | Get-OutlookAnywhere | fl InternalClientAuthenticationMethod, ExternalClientAuthenticationMethod, IISAuthenticationMethods
+
+Stop-Transcript | out-null
+
+
 $ErrorActionPreference = 'SilentlyContinue'
 $Domains = Get-AcceptedDomain | Where-Object {$_.DomainName -notlike "*.local" -and $_.DomainName -notlike "*.onmicrosoft.com"}  | Select DomainName
 $Result = foreach ($Domain in $Domains) {
@@ -404,41 +433,6 @@ No CNAME found for Selector2 $DomainName
     " >> $home\Desktop\DomainChecker.txt
 }
     }
-
-
-Write-Host "
-###########################################################################
-Virtual Directories
-###########################################################################
-" -ForegroundColor Yellow
-
-Write-Host "Autodiscover"
-Get-ClientAccessServer -WarningAction SilentlyContinue -Identity "$env:COMPUTERNAME" | fl AutodiscoverServiceInternalURI
-Get-ExchangeServer $env:computername | Get-AutodiscoverVirtualDirectory | fl InternalAuthenticationMethods, ExternalAuthenticationMethods
-
-Write-Host "OWA (Outlook Web Application)"
-Get-OwaVirtualDirectory -Identity "$env:COMPUTERNAME\OWA (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "ECP (Exchange Control Panel)"
-Get-ECPVirtualDirectory -Identity "$env:COMPUTERNAME\ECP (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "EWS (Exchange Web Services)"
-Get-WebServicesVirtualDirectory -Identity "$env:COMPUTERNAME\EWS (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "MAPI"
-Get-MapiVirtualDirectory -Identity "$env:COMPUTERNAME\MAPI (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "OAB (Offline Address Book)"
-Get-OABVirtualDirectory -Identity "$env:COMPUTERNAME\OAB (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "EAS (Exchange Active Sync)"
-Get-ActiveSyncVirtualDirectory -Identity "$env:COMPUTERNAME\Microsoft-Server-ActiveSync (Default web site)" | fl InternalURL, ExternalURL
-
-Write-Host "Outlook Anywhere"
-Get-OutlookAnywhere -Identity "$env:COMPUTERNAME\rpc (Default web site)" | Fl InternalHostname, ExternalHostname
-Get-ExchangeServer $env:computername | Get-OutlookAnywhere | fl InternalClientAuthenticationMethod, ExternalClientAuthenticationMethod, IISAuthenticationMethods
-
-Stop-Transcript | out-null
 
 Write-host "Script completed. 
 Find your output files on your desktop here: $home\Desktop\ExchangeReport.txt and $home\Desktop\DomainChecker.txt" -ForegroundColor Green

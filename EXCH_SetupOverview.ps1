@@ -5,6 +5,7 @@ This script will give you an overview of how the Exchange is setup, and what con
 
 .OUTPUTS
 ExchangeReport.txt contains all information
+DomainChecker.txt contains all information about public DNS entries for each accepted domain
 
                                             
                                             Domain Controller Information

@@ -21,7 +21,7 @@ ExchangeReport.txt contains all information
                                             Exchange Certificates
                                             Organization Configuration
                                             Virtual Directory - Urls & Auth
-                                            DMARC records for accepted domains
+                                            MX, SPF, Random SPF, DMARC, Selector1 and Selector 2 lookups
                                             
                                             
                                             

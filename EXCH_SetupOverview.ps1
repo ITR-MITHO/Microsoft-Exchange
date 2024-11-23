@@ -171,24 +171,6 @@ ForEach ($GPO in $AllGPO) {
 Write-Host "
 
 ###########################################################################
-Mailflow last 24 hours
-###########################################################################
-
-" -ForegroundColor Yellow
-
-$24Hours = (Get-Date).AddDays(-1)
-$Trace = Get-ExchangeServer | Get-MessageTrackingLog -Start $24Hours -ResultSize Unlimited
-$Send = ($Trace | Where {$_.EventID -EQ "SendExternal"}).count
-Write-Host "$Send e-mails sent within the last 24 hours. "
-
-$Deliver = ($Trace | Where {$_.EventID -EQ "Deliver"}).count
-Write-Host "$Deliver e-mails delivered within the last 24 hours"
-
-
-
-Write-Host "
-
-###########################################################################
 TransportRules
 ###########################################################################
 

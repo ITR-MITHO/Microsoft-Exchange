@@ -13,7 +13,6 @@ DomainChecker.txt contains all information about public DNS entries for each acc
                                             Mailbox Database configuration
                                             Database Backup Timestamps
                                             Number and type of mailboxes
-                                            Mailflow statistics
                                             Transport Rules
                                             AcceptedDomains
                                             Retention Policy

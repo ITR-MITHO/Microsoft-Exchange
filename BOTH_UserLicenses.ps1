@@ -79,5 +79,5 @@ $LastLogonDate = ""
     }
 }
 
-$Results | Select-Object DisplayName, Username, Email, Licens, Type, Enabled, LastLogon | Export-csv $home\desktop\Licenses.csv -NotypeInformation -Encoding Unicode
+$Results | Select-Object DisplayName, Username, Email, Licens, Type, Enabled, LastLogon | Export-csv $home\desktop\Licenses.csv -NotypeInformation -Encoding Unicode -Delimiter ";"
 Write-Host "Export Completed, find your file here: $Home\Desktop\Licenses.csv" -ForeGroundColor Green

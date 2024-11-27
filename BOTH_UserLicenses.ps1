@@ -61,4 +61,5 @@ Foreach ($Mailbox in $Mailboxes) {
     }
 }
 
-$Results | Select-Object DisplayName, Username, Email, Licens, Type
+$Results | Select-Object DisplayName, Username, Email, Licens, Type | Export-csv $home\desktop\Licenses.csv -NotypeInformation -Encoding Unicode
+Write-Host "Export Completed, find your file here: $Home\Desktop\Licenses.csv" -ForeGroundColor Green

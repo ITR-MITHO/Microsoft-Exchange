@@ -5,8 +5,14 @@ If MSOnline module is missing, it will be installed
 
 #>
 
+<#
+
+The script will prompt for O365 credentials to connect to MSOnline to gather license information about all on-prem mailboxes
+
+#>
+
 Add-PSSnapin *EXC*
-Get-Mailbox -ResultSize unlimited | Select SamAccountName, DisplayName, PrimarySMTPAddress, RecipientTypeDetails | Export-csv $home\desktop\LicenseCheck.csv -NoTypeInformation -Encoding Unicode
+Get-Mailbox -ResultSize unlimited | Select SamAccountName, DisplayName, UserPrincipalName, PrimarySMTPAddress, RecipientTypeDetails | Export-csv $home\desktop\LicenseCheck.csv -NoTypeInformation -Encoding Unicode
 
 Try
 {
@@ -24,7 +30,8 @@ $Mailboxes = Import-Csv $home\desktop\LicenseCheck.csv
 $Results = @()
 
 Foreach ($Mailbox in $Mailboxes) {
-    $MailboxUPN = $Mailbox.PrimarySmtpAddress
+    $MailboxUPN = $Mailbox.UserPrincipalName
+    $MailboxMail = $Mailbox.PrimarySMTPAddress
     $MailboxType = $Mailbox.RecipientTypeDetails
     $MailboxUsername = $Mailbox.SamAccountName
 
@@ -47,7 +54,7 @@ Foreach ($Mailbox in $Mailboxes) {
 
     $Results += [PSCustomObject]@{
         Username = $MailboxUsername
-        Email    = $MailboxUPN
+        Email    = $MailboxMail
         Licens   = $License
         Type     = $MailboxType
     }

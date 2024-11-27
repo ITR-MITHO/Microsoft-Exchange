@@ -51,6 +51,8 @@ Foreach ($Mailbox in $Mailboxes) {
         $License = "Microsoft 365 E3"
     } Elseif ($License -like "*SPE_E5*") {
         $License = "Microsoft 365 E5"
+    } Elseif ($License -like "*SPB*") {
+        $License = "Microsoft Business Premium"
     }
 
     $Results += [PSCustomObject]@{

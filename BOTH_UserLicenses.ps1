@@ -15,47 +15,42 @@ Connect-MsolService -ErrorAction Stop
 Catch
 {
 
-Write-Host "Installing the missing PowerShell Module: MSOnline" -ForegroundColor Yellow
+Write-Host "Installing the missing PowerShell Module: MSOnline. Please re-run the script afterwards" -ForegroundColor Yellow
 Install-Module MSOnline -Confirm:$false
 Break
 }
 
-$Mailboxes = Import-csv $home\desktop\LicenseCheck.csv
+$Mailboxes = Import-Csv $home\desktop\LicenseCheck.csv
 $Results = @()
-Foreach ($Mailbox in $Mailboxes)
-{
-$MailboxUPN = $Mailbox.PrimarySmtpAddress
-$MailboxType = $Mailbox.RecipientTypeDetails
-$MailboxUsername = $Mailbox.SamAccountName
-$License = (Get-MsolUser -All | Where {$_.UserPrincipalName -eq $MailboxUPN} | Select @{Name='Licenses';Expression={$_.Licenses.AccountSkuId}})
-$Statistics = Get-MailboxStatistics -Identity $MailboxUPN | Select-Object TotalItemSize
 
-If (-Not $License)
-{
-$License = "No license"
-}
-
-If ($License -like "@*reseller-account:O365_w/o_Teams_Bundle_M5*")
-{
-$License = "Microsoft 365 E5 EEA (No teams)"
-}
-
-If ($Statistics) 
-{
-    $Size = $Statistics.TotalItemSize.Value.ToMB()
-} 
-Else 
-{
-    $Size = "0"
-}
+Foreach ($Mailbox in $Mailboxes) {
+    $MailboxUPN = $Mailbox.PrimarySmtpAddress
+    $MailboxType = $Mailbox.RecipientTypeDetails
+    $MailboxUsername = $Mailbox.SamAccountName
 
 
-$Results += [PSCustomObject]@{
-Username = $MailboxUsername
-Email = $MailboxUPN
-Licens = $License
-Type = $MailboxType
-SizeInMB = $Size
-}
+    $License = (Get-MsolUser -UserPrincipalName $MailboxUPN -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Licenses -ErrorAction SilentlyContinue)
+    If (-Not $License) {
+        $License = "No license"
+    } Else {
+
+        $License = $License.AccountSkuId -join ", "
     }
-$Results | Select-Object Username, Email, Licens, Type, Size
+
+    If ($License -like "*O365_w/o_Teams_Bundle_M5*") {
+        $License = "Microsoft 365 E5 EEA (No teams)"
+    } ElseIf ($License -like "*SPE_E3*") {
+        $License = "Microsoft 365 E3"
+    } Elseif ($License -like "*SPE_E5*") {
+        $License = "Microsoft 365 E5"
+    }
+
+    $Results += [PSCustomObject]@{
+        Username = $MailboxUsername
+        Email    = $MailboxUPN
+        Licens   = $License
+        Type     = $MailboxType
+    }
+}
+
+$Results | Select-Object Username, Email, Licens, Type

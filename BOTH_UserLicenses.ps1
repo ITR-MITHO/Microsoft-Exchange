@@ -12,7 +12,7 @@ The script will prompt for O365 credentials to connect to MSOnline to gather lic
 #>
 
 Add-PSSnapin *EXC*
-Get-Mailbox -ResultSize unlimited | Select SamAccountName, DisplayName, UserPrincipalName, PrimarySMTPAddress, RecipientTypeDetails | Export-csv $home\desktop\LicenseCheck.csv -NoTypeInformation -Encoding Unicode
+Get-Mailbox -ResultSize unlimited | Select DisplayName, SamAccountName, DisplayName, UserPrincipalName, PrimarySMTPAddress, RecipientTypeDetails | Export-csv $home\desktop\LicenseCheck.csv -NoTypeInformation -Encoding Unicode
 
 Try
 {
@@ -34,6 +34,7 @@ Foreach ($Mailbox in $Mailboxes) {
     $MailboxMail = $Mailbox.PrimarySMTPAddress
     $MailboxType = $Mailbox.RecipientTypeDetails
     $MailboxUsername = $Mailbox.SamAccountName
+    $MailboxDisplayName = $Mailbox.DisplayName
 
 
     $License = (Get-MsolUser -UserPrincipalName $MailboxUPN -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Licenses -ErrorAction SilentlyContinue)
@@ -60,4 +61,4 @@ Foreach ($Mailbox in $Mailboxes) {
     }
 }
 
-$Results | Select-Object Username, Email, Licens, Type
+$Results | Select-Object DisplayName, Username, Email, Licens, Type

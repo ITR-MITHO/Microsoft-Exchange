@@ -32,7 +32,7 @@ Foreach ($Mailbox in $Mailboxes) {
     $ADAtt = Get-ADUser -Identity $MailboxUserName -Properties Enabled, LastLogonDate
 
 
-    $License = (Get-MsolUser -UserPrincipalName $MailboxUPN -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Licenses -ErrorAction SilentlyContinue)
+    $License = (Get-MsolUser -UserPrincipalName $MailboxMail -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Licenses -ErrorAction SilentlyContinue)
     If (-Not $License) {
         $License = "No license"
     } Else {
@@ -40,14 +40,20 @@ Foreach ($Mailbox in $Mailboxes) {
         $License = $License.AccountSkuId -join ", "
     }
 
-    If ($License -like "*O365_w/o_Teams_Bundle_M5*") {
-        $License = "Microsoft 365 E5 EEA (No teams)"
-    } ElseIf ($License -like "*SPE_E3*") {
+    If ($License -like "*SPE_E3*") {
         $License = "Microsoft 365 E3"
+
     } Elseif ($License -like "*SPE_E5*") {
         $License = "Microsoft 365 E5"
+
     } Elseif ($License -like "*SPB*") {
         $License = "Microsoft Business Premium"
+
+    } Elseif ($License -like "*EXCHANGESTANDARD*") {
+        $License = "Exchange Online Plan 1"
+
+    } Elseif ($License -like "*EXCHANGEPREMIUM*") {
+        $License = "Exchange Online Plan 2"
     }
 
 

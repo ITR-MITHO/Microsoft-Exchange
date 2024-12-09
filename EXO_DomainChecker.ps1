@@ -8,7 +8,7 @@ For each accepted domain in Exchange it will check DNS records
 
 Connect-ExchangeOnline
 
-$ExportPath = "C:\Users\mitho\OneDrive - IT Relation\Skrivebord"
+$ExportPath = "C:\Users\mitho\Desktop"
 $ErrorActionPreference = 'SilentlyContinue'
 $Domains = Get-AcceptedDomain | Select DomainName
 $Result = foreach ($Domain in $Domains) {

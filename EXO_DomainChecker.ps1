@@ -127,3 +127,4 @@ No CNAME found for Selector2 $DomainName
     " >> "$ExportPath\DomainChecker.txt"
 }
     }
+Write-Host "Export completed, find your file here; $ExportPath\DomainCheckter.txt" -ForeGroundColor Green

@@ -25,6 +25,7 @@ Get-ClientAccessServer $env:computername -IncludeAlternateServiceAccountCredenti
 
 # Create a SPN that matches your autodiscover URL
 setspn -S http/mail.domain.com domain.com\EXCH-KERB$
+setspn -S http/webmail.domain.com domain.com\EXCH-KERB$
 
 # Verify that the SPN was created:
  setspn -L domain.com\EXCH-KERB$

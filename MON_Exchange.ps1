@@ -1,4 +1,6 @@
 # Parameters
+Add-PSSnapin *EXC*
+Import-Module ActiveDirectory
 
 $Domain = (Get-Accepteddomain | Where {$_.Default -EQ "True"}).Name
 $Sender = "ITM8_Exchange@$domain"

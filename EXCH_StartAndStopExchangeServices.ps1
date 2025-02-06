@@ -66,8 +66,8 @@ If ($Function -EQ "2")
 $Services = Import-csv $Path
 Foreach ($S in $Services)
 {
-Start-Service -Name $S.Name
 Set-Service -Name $S.Name -StartupType Automatic
+Start-Service -Name $S.Name
 }
 Write-Host "All Services found in $Path have been started again and set to automatic startup" -ForegroundColor Green
 

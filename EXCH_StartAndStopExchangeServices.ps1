@@ -70,6 +70,7 @@ Set-Service -Name $S.Name -StartupType Automatic
 Start-Service -Name $S.Name
 }
 Write-Host "All Services found in $Path have been started again and set to automatic startup" -ForegroundColor Green
+Write-Host "RECOMMENDATION: Reboot the server to be sure all services are started in the correct order" -ForegroundColor Yellow
 
     }
         }

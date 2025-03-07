@@ -19,33 +19,110 @@ Please enter one of the below numbers to proceed:
 If ($Function -EQ "1")
     {
 
-$protocols = @{
-    "TLS 1.0" = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0";
-    "TLS 1.1" = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1";
-    "TLS 1.2" = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2";
+# TLS 1.2
+# Define registry keys and expected values
+$registryKeys = @(
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Name="Enabled"; Expected=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Name="DisabledByDefault"; Expected=0},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Name="Enabled"; Expected=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Name="DisabledByDefault"; Expected=0},
+    @{Path="HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319"; Name="SystemDefaultTlsVersions"; Expected=1},
+    @{Path="HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319"; Name="SchUseStrongCrypto"; Expected=1}
+)
+
+Write-Host "Checking TLS 1.2 Registry Keys..." -ForegroundColor Cyan
+
+foreach ($entry in $registryKeys) {
+    $path = $entry.Path
+    $name = $entry.Name
+    $expectedValue = $entry.Expected
+
+    if (Test-Path $path) {
+        $actualValue = (Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue).$name
+
+        if ($null -eq $actualValue) {
+            Write-Host "$path\$name - Missing" -ForegroundColor Red
+        }
+        elseif ($actualValue -ne $expectedValue) {
+            Write-Host "$path\$name - Incorrect Value (Expected: $expectedValue, Found: $actualValue)" -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "$path\$name - OK" -ForegroundColor Green
+        }
+    }
+    else {
+        Write-Host "$path - Registry path missing" -ForegroundColor Red
+    }
 }
 
+# TLS 1.1
 
-function Check-TLSStatus {
-    param (
-        [string]$protocol,
-        [string]$path
-    )
-    
-    $serverPath = "$path\Server"
-    $serverEnabled = (Get-ItemProperty -Path $serverPath -Name Enabled -ErrorAction SilentlyContinue).Enabled
-    $serverDisabledByDefault = (Get-ItemProperty -Path $serverPath -Name DisabledByDefault -ErrorAction SilentlyContinue).DisabledByDefault
-    $serverStatus = if ($serverEnabled -eq 1 -and $serverDisabledByDefault -eq 0) { "Enabled" } else { "Disabled" }
-    
+# Define registry keys and expected values
+$registryKeys = @(
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Name="Enabled"; Expected=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Name="DisabledByDefault"; Expected=0},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Name="Enabled"; Expected=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Name="DisabledByDefault"; Expected=0}
+)
 
-    Write-Host "$protocol"
-    Write-Host "$serverStatus"
-    Write-Host ""
+Write-Host "Checking TLS 1.1 Registry Keys..." -ForegroundColor Cyan
+
+foreach ($entry in $registryKeys) {
+    $path = $entry.Path
+    $name = $entry.Name
+    $expectedValue = $entry.Expected
+
+    if (Test-Path $path) {
+        $actualValue = (Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue).$name
+
+        if ($null -eq $actualValue) {
+            Write-Host "$path\$name - Missing" -ForegroundColor Red
+        }
+        elseif ($actualValue -ne $expectedValue) {
+            Write-Host "$path\$name - Incorrect Value (Expected: $expectedValue, Found: $actualValue)" -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "$path\$name - OK" -ForegroundColor Green
+        }
+    }
+    else {
+        Write-Host "$path - Registry path missing" -ForegroundColor Red
+    }
 }
 
-# Check each TLS version
-foreach ($protocol in $protocols.Keys) {
-    Check-TLSStatus -protocol $protocol -path $protocols[$protocol]
+# TLS 1.0
+
+# Define registry keys and expected values
+$registryKeys = @(
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Name="Enabled"; Expected=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Name="DisabledByDefault"; Expected=0},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Name="Enabled"; Expected=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Name="DisabledByDefault"; Expected=0}
+)
+
+Write-Host "Checking TLS 1.0 Registry Keys..." -ForegroundColor Cyan
+
+foreach ($entry in $registryKeys) {
+    $path = $entry.Path
+    $name = $entry.Name
+    $expectedValue = $entry.Expected
+
+    if (Test-Path $path) {
+        $actualValue = (Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue).$name
+
+        if ($null -eq $actualValue) {
+            Write-Host "$path\$name - Missing" -ForegroundColor Red
+        }
+        elseif ($actualValue -ne $expectedValue) {
+            Write-Host "$path\$name - Incorrect Value (Expected: $expectedValue, Found: $actualValue)" -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "$path\$name - OK" -ForegroundColor Green
+        }
+    }
+    else {
+        Write-Host "$path - Registry path missing" -ForegroundColor Red
+    }
 }
     }
 

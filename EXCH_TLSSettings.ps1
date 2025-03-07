@@ -41,7 +41,7 @@ foreach ($entry in $registryKeys) {
         $actualValue = (Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue).$name
 
         if ($null -eq $actualValue) {
-            Write-Host "$path\$name - Missing" -ForegroundColor Red
+            Write-Host "$path\$name - Missing" -ForegroundColor Yellow
         }
         elseif ($actualValue -ne $expectedValue) {
             Write-Host "$path\$name - Incorrect Value (Expected: $expectedValue, Found: $actualValue)" -ForegroundColor Yellow
@@ -76,7 +76,7 @@ foreach ($entry in $registryKeys) {
         $actualValue = (Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue).$name
 
         if ($null -eq $actualValue) {
-            Write-Host "$path\$name - Missing" -ForegroundColor Red
+            Write-Host "$path\$name - Missing" -ForegroundColor Yellow
         }
         elseif ($actualValue -ne $expectedValue) {
             Write-Host "$path\$name - Incorrect Value (Expected: $expectedValue, Found: $actualValue)" -ForegroundColor Yellow
@@ -111,7 +111,7 @@ foreach ($entry in $registryKeys) {
         $actualValue = (Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue).$name
 
         if ($null -eq $actualValue) {
-            Write-Host "$path\$name - Missing" -ForegroundColor Red
+            Write-Host "$path\$name - Missing" -ForegroundColor Yellow
         }
         elseif ($actualValue -ne $expectedValue) {
             Write-Host "$path\$name - Incorrect Value (Expected: $expectedValue, Found: $actualValue)" -ForegroundColor Yellow

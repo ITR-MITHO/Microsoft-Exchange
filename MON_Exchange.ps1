@@ -5,7 +5,7 @@ Import-Module ActiveDirectory
 $Domain = (Get-Accepteddomain | Where {$_.Default -EQ "True"}).Name
 $Sender = "ITM8_Exchange@$domain"
 $Subject = "Customer: $Domain - Server: $Env:computername"
-$Mailbox = (Get-Mailbox).Count
+$Mailbox = (Get-Mailbox -Resultsize Unlimited).Count
 $RemoteMailbox = (Get-RemoteMailbox).count
 $ExchVer = (Get-Command Exsetup.exe).Version
 $ForestLevel = (Get-ADForest).ForestMode

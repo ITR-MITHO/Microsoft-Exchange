@@ -1,3 +1,4 @@
+Start-Transcript 'C:\TempExchangeLog.txt'
 # Parameters
 Add-PSSnapin *EXC*
 Import-Module ActiveDirectory
@@ -53,3 +54,5 @@ $Certificates
 "
 # Send mail
 Send-MailMessage -From $Sender -to exchangeteam@itm8.com -Subject $Subject -SmtpServer localhost -Body $Body
+
+Stop-Transcript

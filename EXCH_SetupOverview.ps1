@@ -404,34 +404,7 @@ No valid DMARC-record found for $DomainName
     " >> $home\Desktop\DomainChecker.txt
 }
 
-# Selector1 Record
-If ($Selector1Grabber) {
-$S1 = $Selector1Grabber.Line -replace ".*canonical name = ", ""
- Echo "Selector1:
-$S1
-    " >> $home\Desktop\DomainChecker.txt
-    
-} Else {
-    Echo "Selector1:
-No CNAME found for Selector1 $DomainName
-    " >> $home\Desktop\DomainChecker.txt
-}
 
-
-# Selector2 Rcord
-If ($Selector2Grabber) {
-$S2 = $Selector2Grabber.Line -replace ".*canonical name = ", ""
- Echo "Selector2:
-$S2
-    " >> $home\Desktop\DomainChecker.txt
-    
-} Else {
-    Echo "Selector2:
-No CNAME found for Selector2 $DomainName
-    
-    
-    " >> $home\Desktop\DomainChecker.txt
-}
     }
 
 Write-host "Script completed. 

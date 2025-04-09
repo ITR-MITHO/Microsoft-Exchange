@@ -87,6 +87,7 @@ $Data = @()
 
 foreach ($Server in $Serverlist) {
 $Items = New-Object PSObject -Property @{
+WANIP = (Invoke-WebRequest -uri "http://ifconfig.me/ip" -UseBasicParsing).Content 
 Domain = (Get-ADDomain).DNSRoot
 Servername = $Server.Name
 OS = (Get-CimInstance -ComputerName $Server.Name -ClassName Win32_OperatingSystem).Caption
@@ -97,7 +98,7 @@ MaxPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).
 }
 $Data += $Items
 }
-$Data | FL Domain, Servername, OS, RAM, Exchver, InitialPage, MaxPage
+$Data | FL WANIP, Domain, Servername, OS, RAM, Exchver, InitialPage, MaxPage
 
 Write-Host "
 

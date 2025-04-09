@@ -87,8 +87,7 @@ $Data = @()
 
 foreach ($Server in $Serverlist) {
 $Items = New-Object PSObject -Property @{
-WANIP = (Invoke-WebRequest -uri "http://ifconfig.me/ip" -UseBasicParsing).Content 
-Domain = (Get-ADDomain).DNSRoot
+WANIP = (Invoke-WebRequest -uri "http://ifconfig.me/ip" -UseBasicParsing).Content
 Servername = $Server.Name
 OS = (Get-CimInstance -ComputerName $Server.Name -ClassName Win32_OperatingSystem).Caption
 RAM = (Invoke-command $Server.Name {(systeminfo | Select-String 'Total Physical Memory:').ToString().Split(':')[1].Trim()})

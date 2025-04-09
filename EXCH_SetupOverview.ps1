@@ -97,7 +97,7 @@ MaxPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).
 }
 $Data += $Items
 }
-$Data | FL WANIP, Domain, Servername, OS, RAM, Exchver, InitialPage, MaxPage
+$Data | FL WANIP, Servername, OS, RAM, Exchver, InitialPage, MaxPage
 
 Write-Host "
 

@@ -1,0 +1,42 @@
+Spamfilter:
+https://security.microsoft.com/quarantine
+
+Retention Policies:
+https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies
+
+Get-Moverequest | Get-MoverequestStatistics
+Set-MoveRequest Mailbox1 -SkippedItemApprovalTime $(Get-Date).ToUniversalTime()
+Set-Moverequest Mailbox1 -Completeafter 1
+
+Set-Mailbox Mailbox1 -ApplyMandatoryProperties
+
+Set-MailboxFolderPermission USER:\Calendar -User Default -AccessRights LimitedDetails
+Add-RecipientPermission -Identity SharedMailbox -Trustee User -AccessRights Sendas -Confirm:$false
+Add-MailboxPermission -Identity Mailbox -User Username -AccessRights FullAccess -Automapping $true
+
+Set-User Jon@contoso.com -PermanentlyClearPreviousMailboxInfo -confirm:$false
+Get-MessageTrace -Start (Get-date).AddDays(-10) -End (Get-Date) | Select Received,RecipientAddress,Status
+
+SPF: spf.protection.outlook.com
+MX: domain-dk.mail.protection.outlook.com
+MX: domain-dk.l-v1.mx.microsoft
+
+Port: 25
+*.mail.protection.outlook.com, *.mx.microsoft
+40.92.0.0/15, 40.107.0.0/16, 52.100.0.0/14, 104.47.0.0/17, 2a01:111:f400::/48, 2a01:111:f403::/48
+
+Port: 443
+*.protection.outlook.com
+40.92.0.0/15, 40.107.0.0/16, 52.100.0.0/14, 52.238.78.88/32, 104.47.0.0/17, 2a01:111:f400::/48, 2a01:111:f403::/48
+
+# Limits
+https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits
+
+# Outlook NEW
+Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General
+DWORD: HideNewOutlookToggle
+Value: 00000000
+ 
+Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General
+DWORD: DoNewOutlookAutoMigration
+Value: 00000000

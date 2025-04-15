@@ -1,4 +1,4 @@
-# Spam settings and quarantine:
+# EOP and quarantine:
 https://security.microsoft.com/threatpolicy
 
 https://security.microsoft.com/quarantine

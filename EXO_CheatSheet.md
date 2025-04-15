@@ -1,5 +1,6 @@
 # Spam settings and quarantine:
 https://security.microsoft.com/threatpolicy
+
 https://security.microsoft.com/quarantine
 
 # Retention Policies:

@@ -3,7 +3,7 @@ https://security.microsoft.com/threatpolicy
 
 https://security.microsoft.com/quarantine
 
-# Retention Policies:
+# Legacy Retention Policies:
 https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies
 
 # Move requests

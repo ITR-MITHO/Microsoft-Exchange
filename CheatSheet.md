@@ -34,11 +34,13 @@ MX: domain-dk.l-v1.mx.microsoft
 
 # Network
 Port: 25
+
 Source/Destination:
 *.mail.protection.outlook.com, *.mx.microsoft
 40.92.0.0/15, 40.107.0.0/16, 52.100.0.0/14, 104.47.0.0/17, 2a01:111:f400::/48, 2a01:111:f403::/48
 
 Port: 443
+
 Source/Destination:
 *.protection.outlook.com
 40.92.0.0/15, 40.107.0.0/16, 52.100.0.0/14, 52.238.78.88/32, 104.47.0.0/17, 2a01:111:f400::/48, 2a01:111:f403::/48

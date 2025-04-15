@@ -57,6 +57,7 @@ DWORD: HideNewOutlookToggle
 
 Value: 00000000
 
+
 Stop automatic Outlook New Upgrade
 
 Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General

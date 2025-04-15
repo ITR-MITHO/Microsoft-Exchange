@@ -31,11 +31,11 @@ Set-Mailbox Mailbox1 -ApplyMandatoryProperties
 Get-MessageTrace -Start (Get-date).AddDays(-10) -End (Get-Date)
 
 # Mailflow
-SPF: spf.protection.outlook.com
+**SPF:** spf.protection.outlook.com
 
-MX: domain-dk.mail.protection.outlook.com
+**MX:** domain-dk.mail.protection.outlook.com
 
-MX: domain-dk.l-v1.mx.microsoft
+**MX-DANE:** domain-dk.l-v1.mx.microsoft
 
 # Network
 **Port:** 25

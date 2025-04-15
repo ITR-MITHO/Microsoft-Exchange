@@ -49,10 +49,18 @@ Source/Destination:
 https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits
 
 # Outlook NEW
+Hide Outlook New Button
+
 Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General
+
 DWORD: HideNewOutlookToggle
+
 Value: 00000000
- 
+
+Stop automatic Outlook New Upgrade
+
 Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General
+
 DWORD: DoNewOutlookAutoMigration
+
 Value: 00000000

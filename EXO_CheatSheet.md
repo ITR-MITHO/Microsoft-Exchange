@@ -26,16 +26,16 @@ https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-
 Set-User MAILBOX -PermanentlyClearPreviousMailboxInfo -confirm:$false  
 Set-Mailbox MAILBOX -ApplyMandatoryProperties  
 
-*Show moverequest status in percentage*  
+**Show moverequest status in percentage**  
 Get-Moverequest | Get-MoverequestStatistics  
 
-*Approve migration with baditems immediatly*  
+**Approve migration with baditems immediatly**  
 Set-MoveRequest MAILBOX -SkippedItemApprovalTime $(Get-Date).ToUniversalTime()  
 
-*Complete moverequest immediatly*  
+**Complete moverequest immediatly**  
 Set-Moverequest MAILBOX -Completeafter 1  
 
-*Commands to set permissions*  
+**Commands to set permissions**  
 Set-MailboxFolderPermission ALIAS:\Calendar -User Default -AccessRights LimitedDetails  
 Add-RecipientPermission MAILBOX -Trustee USERNAME -AccessRights Sendas -Confirm:$false  
 Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automapping $true  

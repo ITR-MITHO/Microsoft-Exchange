@@ -41,7 +41,7 @@ Get-MessageTrace -Start (Get-date).AddDays(-10) -End (Get-Date)
 
 # Outlook New
 **Hide Outlook New Button**  
-Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General
+Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General  
 DWORD: HideNewOutlookToggle  
 Value: 00000000  
 

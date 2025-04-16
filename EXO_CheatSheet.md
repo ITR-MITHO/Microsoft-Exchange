@@ -1,9 +1,9 @@
 # Links:
 Exchange Online: https://admin.exchange.microsoft.com
 
-EOP Spam settings: https://security.microsoft.com/threatpolicy
+EOP Settings: https://security.microsoft.com/threatpolicy
 
-EOP Quarantine: https://security.microsoft.com/quarantine
+Quarantine: https://security.microsoft.com/quarantine
 
 # Inbound DANE
 https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane-with-dnssec-for-exchange-online-mail-flow/3939694
@@ -11,7 +11,7 @@ https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane
 # Legacy Retention Policies:
 https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies
 
-# Limits
+# Exchange Online Limits
 https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits
 
 # Move requests

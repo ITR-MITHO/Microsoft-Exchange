@@ -28,7 +28,11 @@ Set-Mailbox MAILBOX -ApplyMandatoryProperties
 
 *Move Request commands*  
 Get-Moverequest | Get-MoverequestStatistics  
+
+*Approve migration with baditems immediatly*  
 Set-MoveRequest MAILBOX -SkippedItemApprovalTime $(Get-Date).ToUniversalTime()  
+
+*Complete moverequest immediatly*  
 Set-Moverequest MAILBOX -Completeafter 1  
 
 *Commands to set permissions*  

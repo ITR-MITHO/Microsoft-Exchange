@@ -17,16 +17,16 @@ https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-
 # Move requests
 Get-Moverequest | Get-MoverequestStatistics
 
-Set-MoveRequest Mailbox1 -SkippedItemApprovalTime $(Get-Date).ToUniversalTime()
+Set-MoveRequest MAILBOX -SkippedItemApprovalTime $(Get-Date).ToUniversalTime()
 
-Set-Moverequest Mailbox1 -Completeafter 1
+Set-Moverequest MAILBOX -Completeafter 1
 
 # Permissions
-Set-MailboxFolderPermission USER:\Calendar -User Default -AccessRights LimitedDetails
+Set-MailboxFolderPermission ALIAS:\Calendar -User Default -AccessRights LimitedDetails
 
-Add-RecipientPermission -Identity SharedMailbox -Trustee User -AccessRights Sendas -Confirm:$false
+Add-RecipientPermission MAILBOX -Trustee USERNAME -AccessRights Sendas -Confirm:$false
 
-Add-MailboxPermission -Identity Mailbox -User Username -AccessRights FullAccess -Automapping $true
+Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automapping $true
 
 # Nice to know
 Set-User Jon@contoso.com -PermanentlyClearPreviousMailboxInfo -confirm:$false

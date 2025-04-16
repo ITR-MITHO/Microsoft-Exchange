@@ -1,7 +1,9 @@
-# EOP and quarantine:
-https://security.microsoft.com/threatpolicy
+# Links:
+Exchange Online: https://admin.exchange.microsoft.com
 
-https://security.microsoft.com/quarantine
+EOP Spam settings: https://security.microsoft.com/threatpolicy
+
+EOP Quarantine: https://security.microsoft.com/quarantine
 
 # Inbound DANE
 https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane-with-dnssec-for-exchange-online-mail-flow/3939694

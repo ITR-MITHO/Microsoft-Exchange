@@ -3,7 +3,7 @@ https://security.microsoft.com/threatpolicy
 
 https://security.microsoft.com/quarantine
 
-# DANE
+# Inbound DANE
 https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane-with-dnssec-for-exchange-online-mail-flow/3939694
 
 # Legacy Retention Policies:

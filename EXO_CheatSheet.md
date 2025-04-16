@@ -1,23 +1,25 @@
-## Exchange Online Administrative Center  
-https://admin.exchange.microsoft.com
+# Helpful links
 
-## Exchange Online Protection Settings  
-https://security.microsoft.com/threatpolicy
+Exchange Online Administrative Center  
+https://admin.exchange.microsoft.com  
 
-## Quarantine  
-https://security.microsoft.com/quarantine
+Exchange Online Protection Settings  
+https://security.microsoft.com/threatpolicy  
 
-## Exchange Online URLs and IPs  
-https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online
+Quarantine  
+https://security.microsoft.com/quarantine  
 
-## Inbound DANE  
-https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane-with-dnssec-for-exchange-online-mail-flow/3939694
+Exchange Online URLs and IPs  
+https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online  
 
-## Legacy Retention Policies  
-https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies
+Inbound DANE  
+https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane-with-dnssec-for-exchange-online-mail-flow/3939694  
 
-## Exchange Online Limits 
-https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits
+Legacy Retention Policies  
+https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies  
+
+Exchange Online Limits 
+https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits  
 
 # Move requests
 Get-Moverequest | Get-MoverequestStatistics  

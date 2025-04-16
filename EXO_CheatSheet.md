@@ -22,7 +22,7 @@ Exchange Online Limits
 https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits  
 
 # PowerShell Commands
-*Nice to know commands*  
+**Nice to know commands**  
 Set-User MAILBOX -PermanentlyClearPreviousMailboxInfo -confirm:$false  
 Set-Mailbox MAILBOX -ApplyMandatoryProperties  
 

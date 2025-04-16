@@ -12,23 +12,21 @@ https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies
 # Limits
 https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits
 
-# PowerShell Commands
-
-## Move requests
+# Move requests
 Get-Moverequest | Get-MoverequestStatistics
 
 Set-MoveRequest Mailbox1 -SkippedItemApprovalTime $(Get-Date).ToUniversalTime()
 
 Set-Moverequest Mailbox1 -Completeafter 1
 
-## Permissions
+# Permissions
 Set-MailboxFolderPermission USER:\Calendar -User Default -AccessRights LimitedDetails
 
 Add-RecipientPermission -Identity SharedMailbox -Trustee User -AccessRights Sendas -Confirm:$false
 
 Add-MailboxPermission -Identity Mailbox -User Username -AccessRights FullAccess -Automapping $true
 
-## Nice to know
+# Nice to know
 Set-User Jon@contoso.com -PermanentlyClearPreviousMailboxInfo -confirm:$false
 
 Set-Mailbox Mailbox1 -ApplyMandatoryProperties

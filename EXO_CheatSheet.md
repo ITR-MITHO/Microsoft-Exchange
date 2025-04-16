@@ -29,9 +29,9 @@ Add-RecipientPermission MAILBOX -Trustee USERNAME -AccessRights Sendas -Confirm:
 Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automapping $true
 
 # Nice to know
-Set-User Jon@contoso.com -PermanentlyClearPreviousMailboxInfo -confirm:$false
+Set-User MAILBOX -PermanentlyClearPreviousMailboxInfo -confirm:$false
 
-Set-Mailbox Mailbox1 -ApplyMandatoryProperties
+Set-Mailbox MAILBOX -ApplyMandatoryProperties
 
 Get-MessageTrace -Start (Get-date).AddDays(-10) -End (Get-Date)
 

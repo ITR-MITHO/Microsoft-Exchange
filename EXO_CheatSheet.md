@@ -26,7 +26,7 @@ https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-
 Set-User MAILBOX -PermanentlyClearPreviousMailboxInfo -confirm:$false  
 Set-Mailbox MAILBOX -ApplyMandatoryProperties  
 
-*Move Request commands*  
+*Show moverequest status in percentage*  
 Get-Moverequest | Get-MoverequestStatistics  
 
 *Approve migration with baditems immediatly*  

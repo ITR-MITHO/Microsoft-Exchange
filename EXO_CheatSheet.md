@@ -5,6 +5,8 @@ EOP Settings: https://security.microsoft.com/threatpolicy
 
 Quarantine: https://security.microsoft.com/quarantine
 
+Exchange Online IPs: https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online
+
 # Inbound DANE
 https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane-with-dnssec-for-exchange-online-mail-flow/3939694
 

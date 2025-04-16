@@ -1,30 +1,23 @@
 # Helpful links to Exchange Online and Exchange Online Protection
-Exchange Online Administrative Center
-
+## Exchange Online Administrative Center
 https://admin.exchange.microsoft.com
 
-Exchange Online Protection Settings
-
+## Exchange Online Protection Settings
 https://security.microsoft.com/threatpolicy
 
-Quarantine
-
+## Quarantine
 https://security.microsoft.com/quarantine
 
-Exchange Online URLs and IPs
-
+## Exchange Online URLs and IPs
 https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online
 
-Inbound DANE
-
+## Inbound DANE
 https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane-with-dnssec-for-exchange-online-mail-flow/3939694
 
-Legacy Retention Policies
-
+## Legacy Retention Policies
 https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies
 
-Exchange Online Limits
-
+## Exchange Online Limits
 https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits
 
 # Move requests

@@ -31,7 +31,7 @@ If ($Archive)
 }
 else
 {
-    $ArchiveInMB = "0"
+    $ArchiveInMB = "No Archive"
 }
 
 $Statistics = Get-MailboxStatistics -Identity $Mailbox.SamAccountName | Select TotalItemSize

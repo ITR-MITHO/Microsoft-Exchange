@@ -21,6 +21,9 @@ https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies
 Exchange Online Limits  
 https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits  
 
+M365 Licenses  
+https://m365maps.com/
+
 # PowerShell Commands
 **Nice to know commands**  
 Set-User MAILBOX -PermanentlyClearPreviousMailboxInfo -confirm:$false  

@@ -18,7 +18,7 @@ https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane
 Legacy Retention Policies  
 https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies  
 
-Exchange Online Limits 
+Exchange Online Limits  
 https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits  
 
 # PowerShell Commands

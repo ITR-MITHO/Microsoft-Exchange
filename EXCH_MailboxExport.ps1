@@ -51,7 +51,7 @@ If ($ArchiveSize)
 }
 Else
 {
-    $ArchiveInMB = "0"
+    $ArchiveInMB = "No Archive"
 }
 
 If ($Statistics) 

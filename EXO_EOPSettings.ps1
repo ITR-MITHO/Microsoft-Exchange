@@ -5,6 +5,7 @@
     
     - Mailtips
     - Audit Log
+    - External Senders Notification
     - Safe Attachments
     - Safe Links
     - Anti-Phishing Policy

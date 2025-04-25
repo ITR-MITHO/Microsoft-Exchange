@@ -17,7 +17,7 @@ Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipients
 Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
 Set-ExternalInOutlook –Enabled $true
 
-# New Safe Attachment Policy
+# Safe Attachment Policy for Exchange, Sharepoint and Teams
 New-SafeAttachmentPolicy -Name "ITM8 - Safe Attachments" -Action Block -Enable $true
 New-SafeAttachmentRule -Name "ITM8 - Safe Attachments" -SafeAttachmentPolicy "ITM8 - Safe Attachments"  -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true
 Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB $true

@@ -27,13 +27,13 @@ $SafeLinks = @{
 	EnableSafeLinksForEmail		= $true
 	EnableSafeLinksForTeams 	= $true
 	EnableSafeLinksForOffice 	= $true
-	TrackClicks 				= $true
-	AllowClickThrough			= $false
-	ScanUrls					= $true
+	TrackClicks 			= $true
+	AllowClickThrough		= $false
+	ScanUrls			= $true
 	EnableForInternalSenders	= $true
-    EnableOrganizationBranding  = $true
+    	EnableOrganizationBranding  	= $true
 	DeliverMessageAfterScan		= $true
-	DisableUrlRewrite			= $false
+	DisableUrlRewrite		= $false
 }
 New-SafeLinksPolicy @Safelinks
 # Create the rule for all users in all valid domains and associate with policy.
@@ -42,8 +42,8 @@ New-SafeLinksRule -Name "ITM8 - Safe Links Policy" -SafeLinksPolicy "ITM8 - Safe
 # New anti-phishing policy
 $AntiPhish = @{
 	Name = "ITM8 - Anti-Phishing policy"
-    AdminDisplayName = "ITM8 - Anti-Phishing policy"
-    PhishThresholdLevel                 = 3
+    	AdminDisplayName = "ITM8 - Anti-Phishing policy"
+    	PhishThresholdLevel                 = 3
 	EnableTargetedUserProtection		= $true
 	EnableOrganizationDomainsProtection	= $true
 	EnableMailboxIntelligence		= $true
@@ -58,7 +58,7 @@ $Actions = @{
 	TargetedDomainProtectionAction		= "Quarantine"
 	MailboxIntelligenceProtectionAction	= "Quarantine"
 	AuthenticationFailAction		= "Quarantine"
-    EnableFirstContactSafetyTips		= $true
+    	EnableFirstContactSafetyTips		= $true
 	EnableSimilarUsersSafetyTips 		= $true
 	EnableSimilarDomainsSafetyTips 		= $true
 	EnableUnusualCharactersSafetyTips 	= $true

@@ -1,6 +1,7 @@
 <#
 
     Optimizing security for Exchange Online mailboxes
+    Based on: https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365
     
     - Mailtips
     - Audit Log

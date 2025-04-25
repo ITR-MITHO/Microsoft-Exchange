@@ -112,5 +112,5 @@ QuarantineRetentionPeriod 			  = "30"
 }
 Set-HostedContentFilterPolicy @AntiSpamSettings
 
-# Apply the policy to domains
+# Apply the policy to all Accepted Domains
 New-HostedContentFilterRule -Name "ITM8 - Inbound Anti-Spam policy" -HostedContentFilterPolicy "ITM8 - Inbound Anti-Spam policy" -RecipientDomainIs (Get-AcceptedDomain).Name

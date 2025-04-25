@@ -109,3 +109,16 @@ $AntiSpam = @{
 New-HostedContentFilterPolicy @AntiSpam
 New-HostedContentFilterRule -Name "ITM8 - Inbound Anti-Spam policy" -HostedContentFilterPolicy "ITM8 - Inbound Anti-Spam policy" -RecipientDomainIs (Get-AcceptedDomain).Name
 
+# New Outbound Anti-Spam Policy
+$Outbound = @{
+	Name					= "ITM8 - Outbound Anti-Spam policy"
+ 	RecipientLimitExternalPerHour		= "500"
+  	RecipientLimitInternalPerHour		= "100"
+   	RecipientLimitPerDay			= "1000"
+    	ActionWhenThresholdReached		= "BlockUser"
+     	AutoForwardingMode			= "Off"
+      	BccSuspiciousOutboundMail 		= $false
+       	NotifyOutboundSpam 			= $false
+}
+New-HostedOutboundSpamFilterPolicy @Outbound
+New-HostedOutboundSpamFilterRule -Name "ITM8 - Outbound Anti-Spam policy" -HostedOutboundSpamFilterPolicy "ITM8 - Outbound Anti-Spam policy" -SenderDomainIs (Get-AcceptedDomain).Name

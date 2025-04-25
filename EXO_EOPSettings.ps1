@@ -75,6 +75,7 @@ $Actions = @{
     	SpoofQuarantineTag                  	= "DefaultFullAccessPolicy"
 	TargetedDomainQuarantineTag		= "DefaultFullAccessWithNotificationPolicy"
  	MailboxIntelligenceQuarantineTag	= "DefaultFullAccessPolicy"
+  	TargetedUserQuarantineTag		= "DefaultFullAccessWithNotificationPolicy"
   	
 }
 Set-AntiPhishPolicy -Identity "ITM8 - Anti-Phishing policy" @Actions

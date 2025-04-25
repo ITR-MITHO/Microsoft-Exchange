@@ -13,7 +13,8 @@
     - Safe Attachments
     - Safe Links
     - Anti-Phishing Policy
-    - Anti-Spam Policy
+    - Inbound Anti-Spam Policy
+    - Outbound Anti-Spam Policy
 
 #>
 # Enable MailTips, Audit Log and Notify users about External Senders

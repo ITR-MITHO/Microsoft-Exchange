@@ -20,7 +20,7 @@ Set-ExternalInOutlook –Enabled $true
 # Safe Attachment Policy for Exchange, Sharepoint and Teams
 New-SafeAttachmentPolicy -Name "ITM8 - Safe Attachments" -Action Block -Enable $true
 New-SafeAttachmentRule -Name "ITM8 - Safe Attachments" -SafeAttachmentPolicy "ITM8 - Safe Attachments"  -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true
-Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB $true
+Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB $true -EnableSafeDocs $true -AllowSafeDocsOpen $false
 
 # New Safe Links Policy
 $SafeLinks = @{
@@ -32,7 +32,7 @@ $SafeLinks = @{
 	AllowClickThrough		= $false
 	ScanUrls			= $true
 	EnableForInternalSenders	= $true
-    	EnableOrganizationBranding  	= $true
+    	EnableOrganizationBranding  	= $false
 	DeliverMessageAfterScan		= $true
 	DisableUrlRewrite		= $false
 }
@@ -57,7 +57,7 @@ New-AntiPhishPolicy @AntiPhish
 $Actions = @{
 	TargetedUserProtectionAction		= "Quarantine"
 	TargetedDomainProtectionAction		= "Quarantine"
-	MailboxIntelligenceProtectionAction	= "Quarantine"
+	MailboxIntelligenceProtectionAction	= "MoveToJmf"
 	AuthenticationFailAction		= "MoveToJmf"
     	DmarcQuarantineAction              	= "Quarantine"
     	DmarcRejectAction                   	= "Reject"
@@ -70,6 +70,9 @@ $Actions = @{
     	EnableSpoofIntelligence             	= $true
     	HonorDmarcPolicy                    	= $true
     	SpoofQuarantineTag                  	= "DefaultFullAccessPolicy"
+	TargetedDomainQuarantineTag		= "DefaultFullAccessWithNotificationPolicy"
+ 	MailboxIntelligenceQuarantineTag	= "DefaultFullAccessPolicy"
+  	
 }
 Set-AntiPhishPolicy -Identity "ITM8 - Anti-Phishing policy" @Actions
 New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - Anti-Phishing policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $true -Priority 0
@@ -77,9 +80,10 @@ New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - A
 # New Inbound Anti-Spam Policy
 $AntiSpam = @{
     	Name                                	 = "ITM8 - Inbound Anti-Spam policy"
-	SpamAction		                 = "Quarantine"
+	SpamAction		                 = "MoveToJmf"
 	HighConfidenceSpamAction		 = "Quarantine"
-	BulkSpamAction	                    	 = "Quarantine"
+	BulkSpamAction	                    	 = "MoveToJmf"
+ 	PhishSpamAction				 = "Quarantine"
 }
 New-HostedContentFilterPolicy @AntiSpam
 
@@ -104,11 +108,12 @@ MarkAsSpamFromAddressAuthFail 			  = "Off"
 MarkAsSpamNdrBackscatter 			  = "Off"
 BulkThreshold 					  = "6"
 SpamQuarantineTag 				  = "DefaultFullAccessPolicy"
-HighConfidenceSpamQuarantineTag 		  = "DefaultFullAccessPolicy"
+HighConfidenceSpamQuarantineTag 		  = "DefaultFullAccessWithNotificationPolicy"
 BulkQuarantineTag 				  = "DefaultFullAccessPolicy"
-PhishQuarantineTag 				  = "AdminOnlyAccessPolicy"
+PhishQuarantineTag 				  = "DefaultFullAccessWithNotificationPolicy"
 HighConfidencePhishQuarantineTag 		  = "AdminOnlyAccessPolicy"
 QuarantineRetentionPeriod 			  = "30"
+
 }
 Set-HostedContentFilterPolicy @AntiSpamSettings
 

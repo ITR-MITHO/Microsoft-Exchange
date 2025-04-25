@@ -3,8 +3,9 @@
 Exchange Online Administrative Center  
 https://admin.exchange.microsoft.com  
 
-Exchange Online Protection Settings  
+Exchange Online Protection Settings & Recommendations  
 https://security.microsoft.com/threatpolicy  
+Recommendations: https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365  
 
 Quarantine  
 https://security.microsoft.com/quarantine  

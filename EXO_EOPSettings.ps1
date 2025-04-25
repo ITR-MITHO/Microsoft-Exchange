@@ -15,7 +15,7 @@
     - Anti-Phishing Policy
     - Inbound Anti-Spam Policy
     - Outbound Anti-Spam Policy
-    - Perhaps... Custom Quarantine Policies?
+    - Perhaps... Custom Quarantine Policies, that enables notifications on all 3 policies?
 
 #>
 # Enable MailTips, Audit Log and Notify users about External Senders

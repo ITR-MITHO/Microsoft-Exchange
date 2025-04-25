@@ -32,9 +32,9 @@ $AntiPhish = @{
     PhishThresholdLevel                 = 3
 	EnableTargetedUserProtection		= $true
 	EnableOrganizationDomainsProtection	= $true
-	EnableMailboxIntelligence			= $true
+	EnableMailboxIntelligence		= $true
 	EnableMailboxIntelligenceProtection	= $true
-	EnableSpoofIntelligence				= $true
+	EnableSpoofIntelligence			= $true
 }
 New-AntiPhishPolicy @AntiPhish
 
@@ -43,13 +43,13 @@ $Actions = @{
 	TargetedUserProtectionAction		= "Quarantine"
 	TargetedDomainProtectionAction		= "Quarantine"
 	MailboxIntelligenceProtectionAction	= "Quarantine"
-	AuthenticationFailAction			= "Quarantine"
+	AuthenticationFailAction		= "Quarantine"
     EnableFirstContactSafetyTips		= $true
 	EnableSimilarUsersSafetyTips 		= $true
 	EnableSimilarDomainsSafetyTips 		= $true
 	EnableUnusualCharactersSafetyTips 	= $true
 	EnableUnauthenticatedSender 		= $true
-	EnableViaTag 						= $true
+	EnableViaTag 				= $true
 }
 Set-AntiPhishPolicy -Identity "ITM8 - Anti-Phishing policy" @Actions
 New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - Anti-Phishing policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $true

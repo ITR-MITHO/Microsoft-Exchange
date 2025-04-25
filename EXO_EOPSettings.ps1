@@ -1,7 +1,8 @@
 <#
 
     Optimizing security for Exchange Online mailboxes
-    Anti-Spam Settings: https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365#eop-anti-spam-policy-settings
+    Inbound Anti-Spam Settings: https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365#eop-anti-spam-policy-settings
+    Outbound Anti-Spam Settings: https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365#eop-outbound-spam-policy-settings
     Anti-Phish Settings: https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365#eop-anti-phishing-policy-settings
     Safe Attachments: https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365#safe-attachments-settings
     Safe Links: https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365#safe-links-policy-settings

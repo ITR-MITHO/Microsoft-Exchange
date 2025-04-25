@@ -43,8 +43,8 @@ New-SafeLinksRule -Name "ITM8 - Safe Links Policy" -SafeLinksPolicy "ITM8 - Safe
 # New anti-phishing policy
 $AntiPhish = @{
 	Name = "ITM8 - Anti-Phishing policy"
-    	AdminDisplayName = "ITM8 - Anti-Phishing policy"
-    	PhishThresholdLevel                 = 3
+    	AdminDisplayName 			= "ITM8 - Anti-Phishing policy"
+    	PhishThresholdLevel             	= 3
 	EnableTargetedUserProtection		= $true
 	EnableOrganizationDomainsProtection	= $true
 	EnableMailboxIntelligence		= $true
@@ -58,16 +58,23 @@ $Actions = @{
 	TargetedUserProtectionAction		= "Quarantine"
 	TargetedDomainProtectionAction		= "Quarantine"
 	MailboxIntelligenceProtectionAction	= "Quarantine"
-	AuthenticationFailAction		= "Quarantine"
+	AuthenticationFailAction		= "MoveToJmf"
+    	DmarcQuarantineAction              	= "Quarantine"
+    	DmarcRejectAction                   	= "Reject"
     	EnableFirstContactSafetyTips		= $true
 	EnableSimilarUsersSafetyTips 		= $true
 	EnableSimilarDomainsSafetyTips 		= $true
 	EnableUnusualCharactersSafetyTips 	= $true
 	EnableUnauthenticatedSender 		= $true
 	EnableViaTag 				= $true
+    	EnableSpoofIntelligence             	= $true
+    	HonorDmarcPolicy                    	= $true
+    	SpoofQuarantineTag                  	= "DefaultFullAccessPolicy"
+
 }
 Set-AntiPhishPolicy -Identity "ITM8 - Anti-Phishing policy" @Actions
-New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - Anti-Phishing policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $true
+New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - Anti-Phishing policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $true -Priority 0
+
 
 # New Anti-spam inbound policy
 New-HostedContentFilterPolicy -Name "ITM8 - Inbound Anti-Spam policy" `

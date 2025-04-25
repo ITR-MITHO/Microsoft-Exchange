@@ -40,7 +40,7 @@ New-SafeLinksPolicy @Safelinks
 # Create the rule for all users in all valid domains and associate with policy.
 New-SafeLinksRule -Name "ITM8 - Safe Links Policy" -SafeLinksPolicy "ITM8 - Safe Links Policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true
 
-# New anti-phishing policy
+# New Anti-Phishing Policy
 $AntiPhish = @{
 	Name = "ITM8 - Anti-Phishing policy"
     	AdminDisplayName 			= "ITM8 - Anti-Phishing policy"
@@ -53,7 +53,7 @@ $AntiPhish = @{
 }
 New-AntiPhishPolicy @AntiPhish
 
-# Anti-Phish Settings
+# Anti-Phish Policy Settings
 $Actions = @{
 	TargetedUserProtectionAction		= "Quarantine"
 	TargetedDomainProtectionAction		= "Quarantine"
@@ -70,45 +70,47 @@ $Actions = @{
     	EnableSpoofIntelligence             	= $true
     	HonorDmarcPolicy                    	= $true
     	SpoofQuarantineTag                  	= "DefaultFullAccessPolicy"
-
 }
 Set-AntiPhishPolicy -Identity "ITM8 - Anti-Phishing policy" @Actions
 New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - Anti-Phishing policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $true -Priority 0
 
+# New Inbound Anti-Spam Policy
+$AntiSpam = @{
+    	Name                                	 = "ITM8 - Inbound Anti-Spam policy"
+	SpamAction		                 = "Quarantine"
+	HighConfidenceSpamAction		 = "Quarantine"
+	BulkSpamAction	                    	 = "Quarantine"
+}
+New-HostedContentFilterPolicy @AntiSpam
 
-# New Anti-spam inbound policy
-New-HostedContentFilterPolicy -Name "ITM8 - Inbound Anti-Spam policy" `
-    -SpamAction Quarantine `
-    -HighConfidenceSpamAction Quarantine `
-    -BulkSpamAction Quarantine `
-    -EnableEndUserSpamNotifications $true `
-    -EndUserSpamNotificationFrequency 3
-
-# Set Anti-Spam Settings
-Set-HostedContentFilterPolicy -Identity "ITM8 - Inbound Anti-Spam policy" `
-    -IncreaseScoreWithImageLinks "Off" `
-    -IncreaseScoreWithNumericIps "Off" `
-    -IncreaseScoreWithRedirectToOtherPort "Off" `
-    -IncreaseScoreWithBizOrInfoUrls "Off" `
-    -MarkAsSpamBulkMail "On" `
-    -MarkAsSpamEmptyMessages "Off" `
-    -MarkAsSpamEmbedTagsInHtml "Off" `
-    -MarkAsSpamFormTags "On" `
-    -MarkAsSpamFrames "On" `
-    -MarkAsSpamJavaScript "Off" `
-    -MarkAsSpamWebBugsInHtml "Off" `
-    -MarkAsSpamObjectTags "On" `
-    -MarkAsSpamSensitiveWordList "Off" `
-    -MarkAsSpamSpfRecordHardFail "Off" `
-    -MarkAsSpamFromAddressAuthFail "Off" `
-    -MarkAsSpamNdrBackscatter "Off" `
-    -BulkThreshold 6 `
-    -SpamQuarantineTag DefaultFullAccessPolicy `
-    -HighConfidenceSpamQuarantineTag DefaultFullAccessPolicy `
-    -BulkQuarantineTag DefaultFullAccessPolicy `
-    -PhishQuarantineTag AdminOnlyAccessPolicy `
-    -HighConfidencePhishQuarantineTag AdminOnlyAccessPolicy `
-    -QuarantineRetentionPeriod 30
+# Anti-Spam Policy Settings
+$AntiSpamSettings = @{
+Identity 					  = "ITM8 - Inbound Anti-Spam policy"
+IncreaseScoreWithImageLinks			  = "Off"
+IncreaseScoreWithNumericIps			  = "Off"
+IncreaseScoreWithRedirectToOtherPort		  = "Off"
+IncreaseScoreWithBizOrInfoUrls			  = "Off"
+MarkAsSpamBulkMail				  = "On"
+MarkAsSpamEmptyMessages				  = "Off"
+MarkAsSpamEmbedTagsInHtml 			  = "Off"
+MarkAsSpamFormTags 				  = "On"
+MarkAsSpamFrames 				  = "On"
+MarkAsSpamJavaScript 				  = "Off"
+MarkAsSpamWebBugsInHtml 			  = "Off"
+MarkAsSpamObjectTags 				  = "On"
+MarkAsSpamSensitiveWordList 			  = "Off"
+MarkAsSpamSpfRecordHardFail 			  = "Off"
+MarkAsSpamFromAddressAuthFail 			  = "Off"
+MarkAsSpamNdrBackscatter 			  = "Off"
+BulkThreshold 					  = "6"
+SpamQuarantineTag 				  = "DefaultFullAccessPolicy"
+HighConfidenceSpamQuarantineTag 		  = "DefaultFullAccessPolicy"
+BulkQuarantineTag 				  = "DefaultFullAccessPolicy"
+PhishQuarantineTag 				  = "AdminOnlyAccessPolicy"
+HighConfidencePhishQuarantineTag 		  = "AdminOnlyAccessPolicy"
+QuarantineRetentionPeriod 			  = "30"
+}
+Set-HostedContentFilterPolicy @AntiSpamSettings
 
 # Apply the policy to domains
 New-HostedContentFilterRule -Name "ITM8 - Inbound Anti-Spam policy" -HostedContentFilterPolicy "ITM8 - Inbound Anti-Spam policy" -RecipientDomainIs (Get-AcceptedDomain).Name

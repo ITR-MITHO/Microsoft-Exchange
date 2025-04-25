@@ -76,10 +76,6 @@ New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - A
 # New Inbound Anti-Spam Policy
 $AntiSpam = @{
     	Name                                	 = "ITM8 - Inbound Anti-Spam policy"
-	SpamAction		                 = "MoveToJmf"
-	HighConfidenceSpamAction		 = "Quarantine"
-	BulkSpamAction	                    	 = "MoveToJmf"
- 	PhishSpamAction				 = "Quarantine"
 	IncreaseScoreWithImageLinks		 = "Off"
 	IncreaseScoreWithNumericIps		 = "Off"
 	IncreaseScoreWithRedirectToOtherPort	 = "Off"
@@ -97,12 +93,17 @@ $AntiSpam = @{
 	MarkAsSpamFromAddressAuthFail 		 = "Off"
 	MarkAsSpamNdrBackscatter 		 = "Off"
 	BulkThreshold 				 = "6"
+ 	SpamAction		                 = "MoveToJmf"
 	SpamQuarantineTag 			 = "DefaultFullAccessPolicy"
+ 	HighConfidenceSpamAction		 = "Quarantine"
 	HighConfidenceSpamQuarantineTag 	 = "DefaultFullAccessWithNotificationPolicy"
-	BulkQuarantineTag 			 = "DefaultFullAccessPolicy"
+   	PhishSpamAction				 = "Quarantine"
 	PhishQuarantineTag 			 = "DefaultFullAccessWithNotificationPolicy"
 	HighConfidencePhishQuarantineTag 	 = "AdminOnlyAccessPolicy"
+	BulkSpamAction	                    	 = "MoveToJmf"	
+	BulkQuarantineTag 			 = "DefaultFullAccessPolicy"
 	QuarantineRetentionPeriod 		 = "30"
+ 	EnableLanguageBlockList 		 = $false
 }
 New-HostedContentFilterPolicy @AntiSpam
 New-HostedContentFilterRule -Name "ITM8 - Inbound Anti-Spam policy" -HostedContentFilterPolicy "ITM8 - Inbound Anti-Spam policy" -RecipientDomainIs (Get-AcceptedDomain).Name

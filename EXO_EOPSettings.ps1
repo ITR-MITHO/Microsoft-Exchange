@@ -125,7 +125,9 @@ $Outbound = @{
 New-HostedOutboundSpamFilterPolicy @Outbound
 New-HostedOutboundSpamFilterRule -Name "ITM8 - Outbound Anti-Spam policy" -HostedOutboundSpamFilterPolicy "ITM8 - Outbound Anti-Spam policy" -SenderDomainIs (Get-AcceptedDomain).Name
 
-# Read Only Policy - With Notification
+<# Maybe... Maybe not? Quarantine policies, where all have notifications enabled??
+
+Read Only Policy - With Notification
 $ReadOnly = @{
 	Name					= "ITM8 - ReadOnlyPolicy"
  	EndUserSpamNotificationFrequency	= "1.00:00:00"
@@ -160,3 +162,4 @@ $AdminOnly = @{
 	EndUserQuarantinePermissionsValue	= "0"
   }
 New-QuarantinePolicy @AdminOnly
+<#

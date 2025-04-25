@@ -6,6 +6,7 @@
     - Mailtips
     - Audit Log
     - Safe Attachments
+    - Safe Links
     - Anti-Phishing Policy
     - Anti-Spam Policy
 

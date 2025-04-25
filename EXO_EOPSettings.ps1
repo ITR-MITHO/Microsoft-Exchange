@@ -29,15 +29,16 @@ Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB $true -EnableSafeDocs $true -Allow
 $SafeLinks = @{
 	Name = "ITM8 - Safe Links Policy"
 	EnableSafeLinksForEmail		= $true
+	EnableForInternalSenders	= $true
+	ScanUrls			= $true
+	DeliverMessageAfterScan		= $true
+	DisableUrlRewrite		= $false
 	EnableSafeLinksForTeams 	= $true
 	EnableSafeLinksForOffice 	= $true
 	TrackClicks 			= $true
 	AllowClickThrough		= $false
-	ScanUrls			= $true
-	EnableForInternalSenders	= $true
     	EnableOrganizationBranding  	= $false
-	DeliverMessageAfterScan		= $true
-	DisableUrlRewrite		= $false
+        UseTranslatedNotificationText   = $false
 }
 New-SafeLinksPolicy @Safelinks
 New-SafeLinksRule -Name "ITM8 - Safe Links Policy" -SafeLinksPolicy "ITM8 - Safe Links Policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true
@@ -46,29 +47,29 @@ New-SafeLinksRule -Name "ITM8 - Safe Links Policy" -SafeLinksPolicy "ITM8 - Safe
 $AntiPhish = @{
 	Name 					= "ITM8 - Anti-Phishing policy"
     	AdminDisplayName 			= "ITM8 - Anti-Phishing policy"
+     	EnableSpoofIntelligence			= $true
+        HonorDmarcPolicy                   	= $true
+    	DmarcQuarantineAction              	= "Quarantine"
+    	DmarcRejectAction                   	= "Reject"
+	AuthenticationFailAction		= "MoveToJmf"
+    	SpoofQuarantineTag                 	= "DefaultFullAccessPolicy"
+    	EnableFirstContactSafetyTips		= $true
+	EnableUnauthenticatedSender 		= $true
+	EnableViaTag 				= $true
     	PhishThresholdLevel             	= 3
 	EnableTargetedUserProtection		= $true
 	EnableOrganizationDomainsProtection	= $true
 	EnableMailboxIntelligence		= $true
 	EnableMailboxIntelligenceProtection	= $true
-	EnableSpoofIntelligence			= $true
 	TargetedUserProtectionAction		= "Quarantine"
+ 	TargetedUserQuarantineTag		= "DefaultFullAccessWithNotificationPolicy"
 	TargetedDomainProtectionAction		= "Quarantine"
+	TargetedDomainQuarantineTag		= "DefaultFullAccessWithNotificationPolicy"
 	MailboxIntelligenceProtectionAction	= "MoveToJmf"
-	AuthenticationFailAction		= "MoveToJmf"
-    	DmarcQuarantineAction              	= "Quarantine"
-    	DmarcRejectAction                   	= "Reject"
-    	EnableFirstContactSafetyTips		= $true
+	MailboxIntelligenceQuarantineTag	= "DefaultFullAccessPolicy"
 	EnableSimilarUsersSafetyTips 		= $true
 	EnableSimilarDomainsSafetyTips 		= $true
 	EnableUnusualCharactersSafetyTips 	= $true
-	EnableUnauthenticatedSender 		= $true
-	EnableViaTag 				= $true
-    	HonorDmarcPolicy                   	= $true
-    	SpoofQuarantineTag                 	= "DefaultFullAccessPolicy"
-	TargetedDomainQuarantineTag		= "DefaultFullAccessWithNotificationPolicy"
-	MailboxIntelligenceQuarantineTag	= "DefaultFullAccessPolicy"
-	TargetedUserQuarantineTag		= "DefaultFullAccessWithNotificationPolicy"
 }	
 New-AntiPhishPolicy @AntiPhish
 New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - Anti-Phishing policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $true -Priority 0

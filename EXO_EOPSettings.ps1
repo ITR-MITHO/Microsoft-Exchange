@@ -10,20 +10,33 @@
     - Anti-Spam Policy
 
 #>
-# Enable MailTips & Audit Log
+# Enable MailTips, Audit Log and Notify users about External Senders
 Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipientsTipsEnabled $true -MailTipsGroupMetricsEnabled $true -MailTipsLargeAudienceThreshold '25' -AuditDisabled $false
 Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
-
-# Notify users about External Senders
 Set-ExternalInOutlook –Enabled $true
 
 # New Safe Attachment Policy
 New-SafeAttachmentPolicy -Name "ITM8 - Safe Attachments" -Action Block -Enable $true
 New-SafeAttachmentRule -Name "ITM8 - Safe Attachments" -SafeAttachmentPolicy "ITM8 - Safe Attachments"  -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true
-
-# Enable Safe Attachment for Sharepoint, OneDrive and Teams
 Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB $true
 
+# New Safe Links Policy
+$SafeLinks = @{
+	Name = "ITM8 - Safe Links Policy"
+	EnableSafeLinksForEmail		= $true
+	EnableSafeLinksForTeams 	= $true
+	EnableSafeLinksForOffice 	= $true
+	TrackClicks 				= $true
+	AllowClickThrough			= $false
+	ScanUrls					= $true
+	EnableForInternalSenders	= $true
+    EnableOrganizationBranding  = $true
+	DeliverMessageAfterScan		= $true
+	DisableUrlRewrite			= $false
+}
+New-SafeLinksPolicy @Safelinks
+# Create the rule for all users in all valid domains and associate with policy.
+New-SafeLinksRule -Name "ITM8 - Safe Links Policy" -SafeLinksPolicy "ITM8 - Safe Links Policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true
 
 # New anti-phishing policy
 $AntiPhish = @{

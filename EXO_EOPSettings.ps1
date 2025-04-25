@@ -128,9 +128,9 @@ New-HostedOutboundSpamFilterRule -Name "ITM8 - Outbound Anti-Spam policy" -Hoste
 
 <# Maybe... Maybe not? Quarantine policies, where all have notifications enabled??
 
-Read Only Policy - With Notification
-$ReadOnly = @{
-	Name					= "ITM8 - ReadOnlyPolicy"
+Request Only Policy - With Notification
+$RequestOnly = @{
+	Name					= "ITM8 - RequestOnlyPolicy"
  	EndUserSpamNotificationFrequency	= "1.00:00:00"
   	EndUserSpamNotificationLanguage		= "Default"
    	ESNEnabled				= $true
@@ -138,7 +138,7 @@ $ReadOnly = @{
     	QuarantinePolicyType			= "QuarantinePolicy"
 	EndUserQuarantinePermissionsValue	= "43" 	
   }
-New-QuarantinePolicy @ReadOnly
+New-QuarantinePolicy @RequestOnly
 
 # Full Access Policy - With Notification
 $FullAccess = @{

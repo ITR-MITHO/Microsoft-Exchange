@@ -124,3 +124,40 @@ $Outbound = @{
 }
 New-HostedOutboundSpamFilterPolicy @Outbound
 New-HostedOutboundSpamFilterRule -Name "ITM8 - Outbound Anti-Spam policy" -HostedOutboundSpamFilterPolicy "ITM8 - Outbound Anti-Spam policy" -SenderDomainIs (Get-AcceptedDomain).Name
+
+# New Quarantine Policies
+$ReadOnly = @{
+	Name					= "ITM8 - ReadOnlyPolicy"
+ 	EndUserSpamNotificationFrequency	= "1.00:00:00"
+  	EndUserSpamNotificationLanguage		= "Default"
+   	ESNEnabled				= $true
+    	IncludeMessagesFromBlockedSenderAddress = $false
+    	QuarantinePolicyType			= "QuarantinePolicy"
+	EndUserQuarantinePermissionsValue	= "43"
+ 	
+  }
+New-QuarantinePolicy @ReadOnly
+
+$FullAccess = @{
+	Name					= "ITM8 - FullAccessPolicy"
+ 	EndUserSpamNotificationFrequency	= "1.00:00:00"
+  	EndUserSpamNotificationLanguage		= "Default"
+   	ESNEnabled				= $true
+    	IncludeMessagesFromBlockedSenderAddress = $false
+    	QuarantinePolicyType			= "QuarantinePolicy"
+	EndUserQuarantinePermissionsValue	= "39"
+ 	
+  }
+New-QuarantinePolicy @FullAccess
+
+$RequestOnly = @{
+	Name					= "ITM8 - AdminOnlyPolicy"
+ 	EndUserSpamNotificationFrequency	= "1.00:00:00"
+  	EndUserSpamNotificationLanguage		= "Default"
+   	ESNEnabled				= $true
+    	IncludeMessagesFromBlockedSenderAddress = $false
+    	QuarantinePolicyType			= "QuarantinePolicy"
+	EndUserQuarantinePermissionsValue	= "0"
+ 	
+  }
+New-QuarantinePolicy @RequestOnly

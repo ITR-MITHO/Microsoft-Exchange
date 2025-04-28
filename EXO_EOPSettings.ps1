@@ -16,15 +16,15 @@
     -	Safe Links
     	https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365#safe-links-policy-settings
 
-    								- Mailtips
-    								- Audit Log
-    								- External Senders Notification
-								- Safe Attachments
-    								- Safe Links
-    								- Anti-Phishing Policy
-    								- Inbound Anti-Spam Policy
-								- Outbound Anti-Spam Policy
-    								- Perhaps... Custom Quarantine Policies, that enables notifications on RequestOnly and FullAccess
+    		- Mailtips
+    		- Audit Log
+    		- External Senders Notification
+		- Safe Attachments
+    		- Safe Links
+    		- Anti-Phishing Policy
+    		- Inbound Anti-Spam Policy
+		- Outbound Anti-Spam Policy
+    		- Perhaps... Custom Quarantine Policies, that enables notifications on RequestOnly and FullAccess
 	    
 
 #>

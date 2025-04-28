@@ -19,14 +19,16 @@
 
 #>
 # Enable MailTips, Audit Log and Notify users about External Senders
-Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipientsTipsEnabled $true -MailTipsGroupMetricsEnabled $true -MailTipsLargeAudienceThreshold '25' -AuditDisabled $false
+Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipientsTipsEnabled $true -MailTipsGroupMetricsEnabled $true -MailTipsLargeAudienceThreshold '25' -AuditDisabled $false | Out-null
+Write-Host "Mailtips, External in Outlook and Auditlogging enabled" -ForegroundColor Green
 Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
 Set-ExternalInOutlook –Enabled $true
 
 # Safe Attachment Policy for Exchange, Sharepoint and Teams
-New-SafeAttachmentPolicy -Name "ITM8 - Safe Attachments" -Action Block -Enable $true
-New-SafeAttachmentRule -Name "ITM8 - Safe Attachments" -SafeAttachmentPolicy "ITM8 - Safe Attachments"  -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true
-Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB $true -EnableSafeDocs $true -AllowSafeDocsOpen $false
+New-SafeAttachmentPolicy -Name "ITM8 - Safe Attachments" -Action Block -Enable $true | Out-Null
+New-SafeAttachmentRule -Name "ITM8 - Safe Attachments" -SafeAttachmentPolicy "ITM8 - Safe Attachments"  -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true | Out-Null
+Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB $true -EnableSafeDocs $true -AllowSafeDocsOpen $false | Out-Null
+Write-Host "ITM8 - Safe Attachments created." -ForegroundColor Green
 
 # New Safe Links Policy
 $SafeLinks = @{
@@ -43,8 +45,9 @@ $SafeLinks = @{
     	EnableOrganizationBranding  	= $false
         UseTranslatedNotificationText   = $false
 }
-New-SafeLinksPolicy @Safelinks
-New-SafeLinksRule -Name "ITM8 - Safe Links Policy" -SafeLinksPolicy "ITM8 - Safe Links Policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true
+New-SafeLinksPolicy @Safelinks | Out-Null
+New-SafeLinksRule -Name "ITM8 - Safe Links Policy" -SafeLinksPolicy "ITM8 - Safe Links Policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true | Out-Null
+Write-Host "ITM8 - Safe Links Policy Created"
 
 # New Anti-Phishing Policy
 $AntiPhish = @{
@@ -74,8 +77,9 @@ $AntiPhish = @{
 	EnableSimilarDomainsSafetyTips 		= $true
 	EnableUnusualCharactersSafetyTips 	= $true
 }	
-New-AntiPhishPolicy @AntiPhish
-New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - Anti-Phishing policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $true -Priority 0
+New-AntiPhishPolicy @AntiPhish | Out-Null
+New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - Anti-Phishing policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $false -Priority 0 | Out-Null
+Write-Host "ITM8 - Anti-Phishing policy created." -ForeGroundColor Green
 
 # New Inbound Anti-Spam Policy
 $AntiSpam = @{
@@ -109,9 +113,9 @@ $AntiSpam = @{
 	QuarantineRetentionPeriod 		 = "30"
  	EnableLanguageBlockList 		 = $false
 }
-New-HostedContentFilterPolicy @AntiSpam
-New-HostedContentFilterRule -Name "ITM8 - Inbound Anti-Spam policy" -HostedContentFilterPolicy "ITM8 - Inbound Anti-Spam policy" -RecipientDomainIs (Get-AcceptedDomain).Name
-
+New-HostedContentFilterPolicy @AntiSpam | Out-Null
+New-HostedContentFilterRule -Name "ITM8 - Inbound Anti-Spam policy" -HostedContentFilterPolicy "ITM8 - Inbound Anti-Spam policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $false | Out-Null
+Write-Host "ITM8 - Inbound Anti-Spam policy created." -ForegroundColor Green
 # New Outbound Anti-Spam Policy
 $Outbound = @{
 	Name					= "ITM8 - Outbound Anti-Spam policy"
@@ -123,8 +127,9 @@ $Outbound = @{
       	BccSuspiciousOutboundMail 		= $false
        	NotifyOutboundSpam 			= $false
 }
-New-HostedOutboundSpamFilterPolicy @Outbound
-New-HostedOutboundSpamFilterRule -Name "ITM8 - Outbound Anti-Spam policy" -HostedOutboundSpamFilterPolicy "ITM8 - Outbound Anti-Spam policy" -SenderDomainIs (Get-AcceptedDomain).Name
+New-HostedOutboundSpamFilterPolicy @Outbound | Out-Null
+New-HostedOutboundSpamFilterRule -Name "ITM8 - Outbound Anti-Spam policy" -HostedOutboundSpamFilterPolicy "ITM8 - Outbound Anti-Spam policy" -SenderDomainIs (Get-AcceptedDomain).Name -Enabled $false | Out-Null
+Write-Host "ITM8 - Outbound Anti-Spam policy created." -ForegroundColor Green
 
 <# Maybe... Maybe not? Quarantine policies, where all have notifications enabled??
 
@@ -163,4 +168,7 @@ $AdminOnly = @{
 	EndUserQuarantinePermissionsValue	= "0"
   }
 New-QuarantinePolicy @AdminOnly
-<#
+#>
+
+Write-Host "
+Inbound/Outbound and Phishing policies are all 'disabled' they need to be enabled before they take effect." -ForeGroundColor Yellow

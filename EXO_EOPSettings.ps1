@@ -24,25 +24,29 @@
     		- Anti-Phishing Policy
     		- Inbound Anti-Spam Policy
 		- Outbound Anti-Spam Policy
-    		- Perhaps... Custom Quarantine Policies, that enables notifications on RequestOnly and FullAccess
+    		- Custom Quarantine Policies, that enables notifications on RequestOnly and FullAccess
 	    
 
 #>
 # Enable MailTips, Audit Log and Notify users about External Senders
 Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipientsTipsEnabled $true -MailTipsGroupMetricsEnabled $true -MailTipsLargeAudienceThreshold '25' -AuditDisabled $false | Out-null
-Write-Host "Mailtips, External in Outlook and Auditlogging enabled" -ForegroundColor Green
 Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
-Set-ExternalInOutlook –Enabled $true
+Set-ExternalInOutlook -Enabled $true
+
+Write-Host '
+Mailtips, External in Outlook and Auditlogging enabled' -ForegroundColor Green
 
 # Safe Attachment Policy for Exchange, Sharepoint and Teams
-New-SafeAttachmentPolicy -Name "ITM8 - Safe Attachments" -Action Block -Enable $true | Out-Null
-New-SafeAttachmentRule -Name "ITM8 - Safe Attachments" -SafeAttachmentPolicy "ITM8 - Safe Attachments"  -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true | Out-Null
+New-SafeAttachmentPolicy -Name 'ITM8 - Safe Attachments' -Action Block -Enable $true | Out-Null
+New-SafeAttachmentRule -Name 'ITM8 - Safe Attachments' -SafeAttachmentPolicy 'ITM8 - Safe Attachments'  -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true | Out-Null
 Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB $true -EnableSafeDocs $true -AllowSafeDocsOpen $false | Out-Null
-Write-Host "ITM8 - Safe Attachments created." -ForegroundColor Green
+
+Write-Host '
+ITM8 - Safe Attachments created.' -ForegroundColor Green
 
 # New Safe Links Policy
 $SafeLinks = @{
-	Name = "ITM8 - Safe Links Policy"
+	Name = 'ITM8 - Safe Links Policy'
 	EnableSafeLinksForEmail		= $true
 	EnableForInternalSenders	= $true
 	ScanUrls			= $true
@@ -56,19 +60,21 @@ $SafeLinks = @{
         UseTranslatedNotificationText   = $false
 }
 New-SafeLinksPolicy @Safelinks | Out-Null
-New-SafeLinksRule -Name "ITM8 - Safe Links Policy" -SafeLinksPolicy "ITM8 - Safe Links Policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true | Out-Null
-Write-Host "ITM8 - Safe Links Policy Created"
+New-SafeLinksRule -Name 'ITM8 - Safe Links Policy' -SafeLinksPolicy 'ITM8 - Safe Links Policy' -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true | Out-Null
+
+Write-Host '
+ITM8 - Safe Links Policy Created' -ForeGroundColor Green
 
 # New Anti-Phishing Policy
 $AntiPhish = @{
-	Name 					= "ITM8 - Anti-Phishing policy"
-    	AdminDisplayName 			= "ITM8 - Anti-Phishing policy"
+	Name 					= 'ITM8 - Anti-Phishing policy'
+    	AdminDisplayName 			= 'ITM8 - Anti-Phishing policy'
      	EnableSpoofIntelligence			= $true
         HonorDmarcPolicy                   	= $true
-    	DmarcQuarantineAction              	= "Quarantine"
-    	DmarcRejectAction                   	= "Reject"
-	AuthenticationFailAction		= "MoveToJmf"
-    	SpoofQuarantineTag                 	= "DefaultFullAccessPolicy"
+    	DmarcQuarantineAction              	= 'Quarantine'
+    	DmarcRejectAction                   	= 'Reject'
+	AuthenticationFailAction		= 'MoveToJmf'
+    	SpoofQuarantineTag                 	= 'DefaultFullAccessPolicy'
     	EnableFirstContactSafetyTips		= $true
 	EnableUnauthenticatedSender 		= $true
 	EnableViaTag 				= $true
@@ -77,108 +83,117 @@ $AntiPhish = @{
 	EnableOrganizationDomainsProtection	= $true
 	EnableMailboxIntelligence		= $true
 	EnableMailboxIntelligenceProtection	= $true
-	TargetedUserProtectionAction		= "Quarantine"
- 	TargetedUserQuarantineTag		= "DefaultFullAccessWithNotificationPolicy"
-	TargetedDomainProtectionAction		= "Quarantine"
-	TargetedDomainQuarantineTag		= "DefaultFullAccessWithNotificationPolicy"
-	MailboxIntelligenceProtectionAction	= "MoveToJmf"
-	MailboxIntelligenceQuarantineTag	= "DefaultFullAccessPolicy"
+	TargetedUserProtectionAction		= 'Quarantine'
+ 	TargetedUserQuarantineTag		= 'DefaultFullAccessWithNotificationPolicy'
+	TargetedDomainProtectionAction		= 'Quarantine'
+	TargetedDomainQuarantineTag		= 'DefaultFullAccessWithNotificationPolicy'
+	MailboxIntelligenceProtectionAction	= 'MoveToJmf'
+	MailboxIntelligenceQuarantineTag	= 'DefaultFullAccessPolicy'
 	EnableSimilarUsersSafetyTips 		= $true
 	EnableSimilarDomainsSafetyTips 		= $true
 	EnableUnusualCharactersSafetyTips 	= $true
 }	
 New-AntiPhishPolicy @AntiPhish | Out-Null
-New-AntiPhishRule -Name "ITM8 - Anti-Phishing policy" -AntiPhishPolicy "ITM8 - Anti-Phishing policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $false -Priority 0 | Out-Null
-Write-Host "ITM8 - Anti-Phishing policy created." -ForeGroundColor Green
+New-AntiPhishRule -Name 'ITM8 - Anti-Phishing policy' -AntiPhishPolicy 'ITM8 - Anti-Phishing policy' -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $false -Priority 0 | Out-Null
+
+Write-Host '
+ITM8 - Anti-Phishing policy created.' -ForeGroundColor Green
 
 # New Inbound Anti-Spam Policy
 $AntiSpam = @{
-    	Name                                	 = "ITM8 - Inbound Anti-Spam policy"
-	IncreaseScoreWithImageLinks		 = "Off"
-	IncreaseScoreWithNumericIps		 = "Off"
-	IncreaseScoreWithRedirectToOtherPort	 = "Off"
-	IncreaseScoreWithBizOrInfoUrls		 = "Off"
-	MarkAsSpamBulkMail			 = "On"
-	MarkAsSpamEmptyMessages			 = "Off"
-	MarkAsSpamEmbedTagsInHtml 		 = "Off"
-	MarkAsSpamFormTags 			 = "On"
-	MarkAsSpamFrames 			 = "On"
-	MarkAsSpamJavaScript 			 = "Off"
-	MarkAsSpamWebBugsInHtml 		 = "Off"
-	MarkAsSpamObjectTags 			 = "On"
-	MarkAsSpamSensitiveWordList 		 = "Off"
-	MarkAsSpamSpfRecordHardFail 		 = "Off"
-	MarkAsSpamFromAddressAuthFail 		 = "Off"
-	MarkAsSpamNdrBackscatter 		 = "Off"
-	BulkThreshold 				 = "6"
- 	SpamAction		                 = "MoveToJmf"
-	SpamQuarantineTag 			 = "DefaultFullAccessPolicy"
- 	HighConfidenceSpamAction		 = "Quarantine"
-	HighConfidenceSpamQuarantineTag 	 = "DefaultFullAccessWithNotificationPolicy"
-   	PhishSpamAction				 = "Quarantine"
-	PhishQuarantineTag 			 = "DefaultFullAccessWithNotificationPolicy"
-	HighConfidencePhishQuarantineTag 	 = "AdminOnlyAccessPolicy"
-	BulkSpamAction	                    	 = "MoveToJmf"	
-	BulkQuarantineTag 			 = "DefaultFullAccessPolicy"
-	QuarantineRetentionPeriod 		 = "30"
+    	Name                                	 = 'ITM8 - Inbound Anti-Spam policy'
+	IncreaseScoreWithImageLinks		 = 'Off'
+	IncreaseScoreWithNumericIps		 = 'Off'
+	IncreaseScoreWithRedirectToOtherPort	 = 'Off'
+	IncreaseScoreWithBizOrInfoUrls		 = 'Off'
+	MarkAsSpamBulkMail			 = 'On'
+	MarkAsSpamEmptyMessages			 = 'Off'
+	MarkAsSpamEmbedTagsInHtml 		 = 'Off'
+	MarkAsSpamFormTags 			 = 'On'
+	MarkAsSpamFrames 			 = 'On'
+	MarkAsSpamJavaScript 			 = 'Off'
+	MarkAsSpamWebBugsInHtml 		 = 'Off'
+	MarkAsSpamObjectTags 			 = 'On'
+	MarkAsSpamSensitiveWordList 		 = 'Off'
+	MarkAsSpamSpfRecordHardFail 		 = 'Off'
+	MarkAsSpamFromAddressAuthFail 		 = 'Off'
+	MarkAsSpamNdrBackscatter 		 = 'Off'
+	BulkThreshold 				 = '6'
+ 	SpamAction		                 = 'MoveToJmf'
+	SpamQuarantineTag 			 = 'DefaultFullAccessPolicy'
+ 	HighConfidenceSpamAction		 = 'Quarantine'
+	HighConfidenceSpamQuarantineTag 	 = 'DefaultFullAccessWithNotificationPolicy'
+   	PhishSpamAction				 = 'Quarantine'
+	PhishQuarantineTag 			 = 'DefaultFullAccessWithNotificationPolicy'
+	HighConfidencePhishQuarantineTag 	 = 'AdminOnlyAccessPolicy'
+	BulkSpamAction	                    	 = 'MoveToJmf'	
+	BulkQuarantineTag 			 = 'DefaultFullAccessPolicy'
+	QuarantineRetentionPeriod 		 = '30'
  	EnableLanguageBlockList 		 = $false
 }
 New-HostedContentFilterPolicy @AntiSpam | Out-Null
-New-HostedContentFilterRule -Name "ITM8 - Inbound Anti-Spam policy" -HostedContentFilterPolicy "ITM8 - Inbound Anti-Spam policy" -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $false | Out-Null
-Write-Host "ITM8 - Inbound Anti-Spam policy created." -ForegroundColor Green
+New-HostedContentFilterRule -Name 'ITM8 - Inbound Anti-Spam policy' -HostedContentFilterPolicy 'ITM8 - Inbound Anti-Spam policy' -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $false | Out-Null
+
+Write-Host '
+ITM8 - Inbound Anti-Spam policy created.' -ForegroundColor Green
+
 # New Outbound Anti-Spam Policy
 $Outbound = @{
-	Name					= "ITM8 - Outbound Anti-Spam policy"
- 	RecipientLimitExternalPerHour		= "500"
-  	RecipientLimitInternalPerHour		= "100"
-   	RecipientLimitPerDay			= "1000"
-    	ActionWhenThresholdReached		= "BlockUser"
-     	AutoForwardingMode			= "Off"
+	Name					= 'ITM8 - Outbound Anti-Spam policy'
+ 	RecipientLimitExternalPerHour		= '500'
+  	RecipientLimitInternalPerHour		= '100'
+   	RecipientLimitPerDay			= '1000'
+    	ActionWhenThresholdReached		= 'BlockUser'
+     	AutoForwardingMode			= 'Off'
       	BccSuspiciousOutboundMail 		= $false
        	NotifyOutboundSpam 			= $false
 }
 New-HostedOutboundSpamFilterPolicy @Outbound | Out-Null
-New-HostedOutboundSpamFilterRule -Name "ITM8 - Outbound Anti-Spam policy" -HostedOutboundSpamFilterPolicy "ITM8 - Outbound Anti-Spam policy" -SenderDomainIs (Get-AcceptedDomain).Name -Enabled $false | Out-Null
-Write-Host "ITM8 - Outbound Anti-Spam policy created." -ForegroundColor Green
+New-HostedOutboundSpamFilterRule -Name 'ITM8 - Outbound Anti-Spam policy' -HostedOutboundSpamFilterPolicy 'ITM8 - Outbound Anti-Spam policy' -SenderDomainIs (Get-AcceptedDomain).Name -Enabled $false | Out-Null
 
-<# Maybe... Maybe not? Quarantine policies, where all have notifications enabled??
+Write-Host '
+ITM8 - Outbound Anti-Spam policy created.' -ForegroundColor Green
 
-Request Only Policy - With Notification
+# Request Only Policy - With Notification
 $RequestOnly = @{
-	Name					= "ITM8 - RequestOnlyPolicy"
- 	EndUserSpamNotificationFrequency	= "1.00:00:00"
-  	EndUserSpamNotificationLanguage		= "Default"
+	Name					= 'ITM8 - RequestOnlyPolicy'
+ 	EndUserSpamNotificationFrequency	= '1.00:00:00'
+  	EndUserSpamNotificationLanguage		= 'Default'
    	ESNEnabled				= $true
     	IncludeMessagesFromBlockedSenderAddress = $false
-    	QuarantinePolicyType			= "QuarantinePolicy"
-	EndUserQuarantinePermissionsValue	= "43" 	
+    	QuarantinePolicyType			= 'QuarantinePolicy'
+	EndUserQuarantinePermissionsValue	= '43' 	
   }
-New-QuarantinePolicy @RequestOnly
+New-QuarantinePolicy @RequestOnly | Out-Null
 
 # Full Access Policy - With Notification
 $FullAccess = @{
-	Name					= "ITM8 - FullAccessPolicy"
- 	EndUserSpamNotificationFrequency	= "1.00:00:00"
-  	EndUserSpamNotificationLanguage		= "Default"
+	Name					= 'ITM8 - FullAccessPolicy'
+ 	EndUserSpamNotificationFrequency	= '1.00:00:00'
+  	EndUserSpamNotificationLanguage		= 'Default'
    	ESNEnabled				= $true
     	IncludeMessagesFromBlockedSenderAddress = $false
-    	QuarantinePolicyType			= "QuarantinePolicy"
-	EndUserQuarantinePermissionsValue	= "39"
+    	QuarantinePolicyType			= 'QuarantinePolicy'
+	EndUserQuarantinePermissionsValue	= '39'
   }
-New-QuarantinePolicy @FullAccess
+New-QuarantinePolicy @FullAccess | Out-Null
 
 # Admin Only Policy - With Notification
 $AdminOnly = @{
-	Name					= "ITM8 - AdminOnlyPolicy"
- 	EndUserSpamNotificationFrequency	= "1.00:00:00"
-  	EndUserSpamNotificationLanguage		= "Default"
+	Name					= 'ITM8 - AdminOnlyPolicy'
+ 	EndUserSpamNotificationFrequency	= '1.00:00:00'
+  	EndUserSpamNotificationLanguage		= 'Default'
    	ESNEnabled				= $false
     	IncludeMessagesFromBlockedSenderAddress = $false
-    	QuarantinePolicyType			= "QuarantinePolicy"
-	EndUserQuarantinePermissionsValue	= "0"
+    	QuarantinePolicyType			= 'QuarantinePolicy'
+	EndUserQuarantinePermissionsValue	= '0'
   }
-New-QuarantinePolicy @AdminOnly
-#>
+New-QuarantinePolicy @AdminOnly | Out-Null
 
 Write-Host "
-Inbound/Outbound and Phishing policies are all 'disabled' they need to be enabled before they take effect." -ForeGroundColor Yellow
+ITM8 - Quarantine policies created." -ForeGroundColor Green
+
+
+Write-Host '
+
+IMPORTANT: Inbound/Outbound and Phishing Policies are all DISABLED. They need to be enabled before they take effect' -ForeGroundColor Yellow

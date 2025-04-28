@@ -196,4 +196,4 @@ ITM8 - Quarantine policies created." -ForeGroundColor Green
 
 Write-Host '
 
-IMPORTANT: Inbound/Outbound and Phishing Policies are all DISABLED. They need to be enabled before they take effect' -ForeGroundColor Yellow
+IMPORTANT: Inbound Anti-Spam, Outbound Anti-Spam and Phishing Policies are all DISABLED. They need to be enabled before they take effect' -ForeGroundColor Yellow

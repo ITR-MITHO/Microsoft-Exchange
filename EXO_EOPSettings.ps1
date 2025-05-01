@@ -33,6 +33,45 @@ Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipients
 Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
 Set-ExternalInOutlook -Enabled $true
 
+# Request Only Policy - With Notification
+$RequestOnly = @{
+	Name					= 'ITM8 - RequestOnlyPolicy'
+ 	EndUserSpamNotificationFrequency	= '1.00:00:00'
+  	EndUserSpamNotificationLanguage		= 'Default'
+   	ESNEnabled				= $true
+    	IncludeMessagesFromBlockedSenderAddress = $false
+    	QuarantinePolicyType			= 'QuarantinePolicy'
+	EndUserQuarantinePermissionsValue	= '43' 	
+  }
+New-QuarantinePolicy @RequestOnly | Out-Null
+
+# Full Access Policy - With Notification
+$FullAccess = @{
+	Name					= 'ITM8 - FullAccessPolicy'
+ 	EndUserSpamNotificationFrequency	= '1.00:00:00'
+  	EndUserSpamNotificationLanguage		= 'Default'
+   	ESNEnabled				= $true
+    	IncludeMessagesFromBlockedSenderAddress = $false
+    	QuarantinePolicyType			= 'QuarantinePolicy'
+	EndUserQuarantinePermissionsValue	= '39'
+  }
+New-QuarantinePolicy @FullAccess | Out-Null
+
+# Admin Only Policy - With Notification
+$AdminOnly = @{
+	Name					= 'ITM8 - AdminOnlyPolicy'
+ 	EndUserSpamNotificationFrequency	= '1.00:00:00'
+  	EndUserSpamNotificationLanguage		= 'Default'
+   	ESNEnabled				= $false
+    	IncludeMessagesFromBlockedSenderAddress = $false
+    	QuarantinePolicyType			= 'QuarantinePolicy'
+	EndUserQuarantinePermissionsValue	= '0'
+  }
+New-QuarantinePolicy @AdminOnly | Out-Null
+
+Write-Host "
+ITM8 - Quarantine policies created." -ForeGroundColor Green
+
 Write-Host '
 Mailtips, External in Outlook and Auditlogging enabled' -ForegroundColor Green
 
@@ -74,7 +113,7 @@ $AntiPhish = @{
     	DmarcQuarantineAction              	= 'Quarantine'
     	DmarcRejectAction                   	= 'Reject'
 	AuthenticationFailAction		= 'MoveToJmf'
-    	SpoofQuarantineTag                 	= 'DefaultFullAccessPolicy'
+    	SpoofQuarantineTag                 	= 'ITM8 - RequestOnlyPolicy'
     	EnableFirstContactSafetyTips		= $true
 	EnableUnauthenticatedSender 		= $true
 	EnableViaTag 				= $true
@@ -84,11 +123,11 @@ $AntiPhish = @{
 	EnableMailboxIntelligence		= $true
 	EnableMailboxIntelligenceProtection	= $true
 	TargetedUserProtectionAction		= 'Quarantine'
- 	TargetedUserQuarantineTag		= 'DefaultFullAccessWithNotificationPolicy'
+ 	TargetedUserQuarantineTag		= 'ITM8 - RequestOnlyPolicy'
 	TargetedDomainProtectionAction		= 'Quarantine'
-	TargetedDomainQuarantineTag		= 'DefaultFullAccessWithNotificationPolicy'
+	TargetedDomainQuarantineTag		= 'ITM8 - RequestOnlyPolicy'
 	MailboxIntelligenceProtectionAction	= 'MoveToJmf'
-	MailboxIntelligenceQuarantineTag	= 'DefaultFullAccessPolicy'
+	MailboxIntelligenceQuarantineTag	= 'ITM8 - RequestOnlyPolicy'
 	EnableSimilarUsersSafetyTips 		= $true
 	EnableSimilarDomainsSafetyTips 		= $true
 	EnableUnusualCharactersSafetyTips 	= $true
@@ -120,14 +159,14 @@ $AntiSpam = @{
 	MarkAsSpamNdrBackscatter 		 = 'Off'
 	BulkThreshold 				 = '6'
  	SpamAction		                 = 'MoveToJmf'
-	SpamQuarantineTag 			 = 'DefaultFullAccessPolicy'
+	SpamQuarantineTag 			 = 'ITM8 - FullAccessPolicy'
  	HighConfidenceSpamAction		 = 'Quarantine'
-	HighConfidenceSpamQuarantineTag 	 = 'DefaultFullAccessWithNotificationPolicy'
+	HighConfidenceSpamQuarantineTag 	 = 'ITM8 - FullAccessPolicy'
    	PhishSpamAction				 = 'Quarantine'
-	PhishQuarantineTag 			 = 'DefaultFullAccessWithNotificationPolicy'
+	PhishQuarantineTag 			 = 'ITM8 - FullAccessPolicy'
 	HighConfidencePhishQuarantineTag 	 = 'AdminOnlyAccessPolicy'
 	BulkSpamAction	                    	 = 'MoveToJmf'	
-	BulkQuarantineTag 			 = 'DefaultFullAccessPolicy'
+	BulkQuarantineTag 			 = 'ITM8 - AdminOnlyPolicy'
 	QuarantineRetentionPeriod 		 = '30'
  	EnableLanguageBlockList 		 = $false
 }
@@ -153,46 +192,6 @@ New-HostedOutboundSpamFilterRule -Name 'ITM8 - Outbound Anti-Spam policy' -Hoste
 
 Write-Host '
 ITM8 - Outbound Anti-Spam policy created.' -ForegroundColor Green
-
-# Request Only Policy - With Notification
-$RequestOnly = @{
-	Name					= 'ITM8 - RequestOnlyPolicy'
- 	EndUserSpamNotificationFrequency	= '1.00:00:00'
-  	EndUserSpamNotificationLanguage		= 'Default'
-   	ESNEnabled				= $true
-    	IncludeMessagesFromBlockedSenderAddress = $false
-    	QuarantinePolicyType			= 'QuarantinePolicy'
-	EndUserQuarantinePermissionsValue	= '43' 	
-  }
-New-QuarantinePolicy @RequestOnly | Out-Null
-
-# Full Access Policy - With Notification
-$FullAccess = @{
-	Name					= 'ITM8 - FullAccessPolicy'
- 	EndUserSpamNotificationFrequency	= '1.00:00:00'
-  	EndUserSpamNotificationLanguage		= 'Default'
-   	ESNEnabled				= $true
-    	IncludeMessagesFromBlockedSenderAddress = $false
-    	QuarantinePolicyType			= 'QuarantinePolicy'
-	EndUserQuarantinePermissionsValue	= '39'
-  }
-New-QuarantinePolicy @FullAccess | Out-Null
-
-# Admin Only Policy - With Notification
-$AdminOnly = @{
-	Name					= 'ITM8 - AdminOnlyPolicy'
- 	EndUserSpamNotificationFrequency	= '1.00:00:00'
-  	EndUserSpamNotificationLanguage		= 'Default'
-   	ESNEnabled				= $false
-    	IncludeMessagesFromBlockedSenderAddress = $false
-    	QuarantinePolicyType			= 'QuarantinePolicy'
-	EndUserQuarantinePermissionsValue	= '0'
-  }
-New-QuarantinePolicy @AdminOnly | Out-Null
-
-Write-Host "
-ITM8 - Quarantine policies created." -ForeGroundColor Green
-
 
 Write-Host '
 

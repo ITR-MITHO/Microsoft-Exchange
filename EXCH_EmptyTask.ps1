@@ -1,3 +1,9 @@
+<#
+
+Creates a scheduled task, where only the .ps1 file and the user the task runs with should be changed.
+
+#>
+
 # Folder Paths
 $folderPath = "C:\ITM8 - Scripts"
 $batFilePath = Join-Path $folderPath "ExchangePowerShell.bat"

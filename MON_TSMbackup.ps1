@@ -52,3 +52,10 @@ if ($ServiceHealth)
 Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - Stopped Exchange services" -SmtpServer Localhost -Body "Exchange services are stopped"
 
 }
+
+# Server component
+$Component = Get-ServerComponentState -Identity $env:computername | Where {$_.Component -NE "ForwardSyncDaemon" -and $_.Component -NE "ProvisioningRps" -and $_.State -eq "inactive"}
+if ($Component)
+{
+Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - Inactive Compoenents found" -SmtpServer Localhost -Body "Use the cmdlet: Get-ServerComponentState"
+}

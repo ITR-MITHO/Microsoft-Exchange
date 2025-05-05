@@ -28,29 +28,3 @@ If ($FullBackupBody) {
 If ($IncrementalBackupBody) {
     Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - INCREMENTAL BACKUP" -SmtpServer Localhost -Body "Incremental backups that have failed for 3 days:`r`n`r`n$IncrementalBackupBody"
 }
-
-# DAG Health 
-$DAG = Get-DatabaseAvailabilityGroup
-If ($DAG -NE $null)
-{
-$Health = Test-ReplicationHealth | Where {$_.Result -like "*Failed*"}
-If ($Health)
-{
-Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - Replication Health" -SmtpServer Localhost -Body "Replication Health Issues found
-Use the cmdlet: Test-ReplicationHealth"
-}
-    }
-
-# Exchange Services, that SHOULD be running
-$ServiceHealth = Test-ServiceHealth |Where {$_.RequiredServicesRunning -NE $true}
-if ($ServiceHealth)
-{
-Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - Stopped Exchange services" -SmtpServer Localhost -Body "Exchange services are stopped"
-}
-
-# Server component
-$Component = Get-ServerComponentState -Identity $env:computername | Where {$_.Component -NE "ForwardSyncDaemon" -and $_.Component -NE "ProvisioningRps" -and $_.State -eq "inactive"}
-if ($Component)
-{
-Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - Inactive Compoenents found" -SmtpServer Localhost -Body "Use the cmdlet: Get-ServerComponentState"
-}

@@ -2,6 +2,7 @@ Add-PSSnapin *EXC*
 Import-Module ActiveDirectory
 $Domain = (Get-Accepteddomain | Where {$_.Default -EQ "True"}).Name
 $Sender = "ITM8-EXCH@$domain"
+$Databases = Get-MailboxDatabase -Status | Select Name, LastFullBackup, LastIncrementalBackup
 
 # Export data about failed backups
 If (Test-Path C:\ITM8\IncrementalLog.txt)
@@ -10,7 +11,6 @@ Remove-Item C:\ITM8\IncrementalLog.txt -force
 Remove-Item C:\ITM8\FullLog.txt -force
 }
 
-$Databases = Get-MailboxDatabase -Status | Select Name, LastFullBackup, LastIncrementalBackup
 Foreach ($DB in $Databases)
 {
 $Data = $DB.Name

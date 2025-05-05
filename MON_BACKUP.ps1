@@ -28,7 +28,7 @@ If ($DB.LastIncrementalBackup -LT (Get-date).AddDays(-3))
 {
     Echo "$Data - Last Incremental: $LastIncrementalBackup" >> C:\ITM8\IncrementalLog.txt
 
-Send-MailMessage -to ExchangeTeam@itm8.com -From $Sender -Subject "CUTOMER - INCREMENTAL BACKUP" -SmtpServer Localhost -Attachments C:\ITM8\incrementalLog.txt -Body "
+Send-MailMessage -to ExchangeTeam@itm8.com -From $Sender -Subject "CUSTOMER - INCREMENTAL BACKUP" -SmtpServer Localhost -Attachments C:\ITM8\incrementalLog.txt -Body "
 Incremental that have failed for 3 days"
 } 
     }

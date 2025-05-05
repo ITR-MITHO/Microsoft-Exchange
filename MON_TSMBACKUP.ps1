@@ -1,4 +1,3 @@
-$Customer = "CUSTOMER NAME" # Remember to change
 Add-PSSnapin *EXC*
 Import-Module ActiveDirectory
 $Domain = (Get-Accepteddomain | Where {$_.Default -EQ "True"}).Name
@@ -23,9 +22,9 @@ Foreach ($DB in $Databases) {
 
 # Send email if there is anything to report
 If ($FullBackupBody) {
-    Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Customer - FULL BACKUP" -SmtpServer Localhost -Body "Full backups that have failed for 8 days:`r`n`r`n$FullBackupBody"
+    Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - FULL BACKUP" -SmtpServer Localhost -Body "Full backups that have failed for 8 days:`r`n`r`n$FullBackupBody"
 }
 
 If ($IncrementalBackupBody) {
-    Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Customer - INCREMENTAL BACKUP" -SmtpServer Localhost -Body "Incremental backups that have failed for 3 days:`r`n`r`n$IncrementalBackupBody"
+    Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - INCREMENTAL BACKUP" -SmtpServer Localhost -Body "Incremental backups that have failed for 3 days:`r`n`r`n$IncrementalBackupBody"
 }

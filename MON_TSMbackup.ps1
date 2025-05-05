@@ -15,7 +15,7 @@ Foreach ($DB in $Databases) {
         $FullBackupBody += "$Data - Last Full: $LastFullBackup`r`n"
     }
 
-    If ($LastIncrementalBackup -lt (Get-Date).AddDays(-3)) {
+    If ($LastIncrementalBackup -ne $null -and $LastIncrementalBackup -lt (Get-Date).AddDays(-3)) {
         $IncrementalBackupBody += "$Data - Last Incremental: $LastIncrementalBackup`r`n"
     }
 }

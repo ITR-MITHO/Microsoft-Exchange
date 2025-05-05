@@ -4,6 +4,7 @@ $Domain = (Get-Accepteddomain | Where {$_.Default -EQ "True"}).Name
 $Sender = "ITM8-EXCH@$Domain"
 $Databases = Get-MailboxDatabase -Status | Select Name, LastFullBackup, LastIncrementalBackup
 
+# Backup monitoring
 $FullBackupBody = ""
 $IncrementalBackupBody = ""
 Foreach ($DB in $Databases) {
@@ -20,11 +21,34 @@ Foreach ($DB in $Databases) {
     }
 }
 
-# Send email if there is anything to report
 If ($FullBackupBody) {
     Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - FULL BACKUP" -SmtpServer Localhost -Body "Full backups that have failed for 8 days:`r`n`r`n$FullBackupBody"
 }
 
 If ($IncrementalBackupBody) {
     Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - INCREMENTAL BACKUP" -SmtpServer Localhost -Body "Incremental backups that have failed for 3 days:`r`n`r`n$IncrementalBackupBody"
+}
+
+
+# DAG Health 
+$DAG = Get-DatabaseAvailabilityGroup
+If ($DAG -NE $null)
+{
+$Health = Test-ReplicationHealth | Where {$_.Result -like "*Failed*"}
+If ($Health)
+{
+
+Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - Replication Health" -SmtpServer Localhost -Body "Replication Health Issues found
+Use the cmdlet: Test-ReplicationHealth"
+
+}
+    }
+
+# Exchange Services, that SHOULD be running
+$ServiceHealth = Test-ServiceHealth |Where {$_.RequiredServicesRunning -NE $true}
+if ($ServiceHealth)
+{
+
+Send-MailMessage -To ExchangeTeam@itm8.com -From $Sender -Subject "$Domain - Stopped Exchange services" -SmtpServer Localhost -Body "Exchange services are stopped"
+
 }

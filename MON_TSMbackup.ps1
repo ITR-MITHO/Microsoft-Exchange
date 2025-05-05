@@ -3,7 +3,6 @@ Import-Module ActiveDirectory
 $Domain = (Get-Accepteddomain | Where {$_.Default -EQ "True"}).Name
 $Sender = "ITM8-EXCH@$Domain"
 
-
 # Backup monitoring
 $Databases = Get-MailboxDatabase -Status | Select Name, LastFullBackup, LastIncrementalBackup
 $FullBackupBody = ""

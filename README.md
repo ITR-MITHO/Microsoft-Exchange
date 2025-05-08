@@ -1,0 +1,4 @@
+# EXCH_ script are for on-premise Exchange Servers  
+# EXO_ scripts are for Exchange Online  
+# BOTH_ scripts are working on both on-premise and Exchange Online  
+# MON_ scripts are for monitoring Exchange  

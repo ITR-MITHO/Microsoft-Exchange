@@ -8,6 +8,7 @@ Enables IPv6 on all NIC
 Enables TLS 1.2 for OS and .NET
 Install Windows Feature: Telnet client
 Disables IE Enhanced Security
+Security, Application, System and MSExchange Management logs set to 4GB max size
 #>
 
 # Pagefile
@@ -130,6 +131,31 @@ Set-ItemProperty -Path $UserKey -Name "IsInstalled" -Value 0 -Force
 Stop-Process -Name Explorer -Force
 
 $PageSize = (Get-CimInstance Win32_PageFileSetting).MaximumSize
+
+
+# Desired max size in KB
+$maxSizeKB = 4194240
+
+# Convert to bytes (wevtutil expects bytes)
+$maxSizeBytes = $maxSizeKB * 1024
+
+# Clamp max to 4GB - 1 byte (DWORD limit)
+if ($maxSizeBytes -gt 4294967295) {
+    $maxSizeBytes = 4294967295
+}
+
+# List of logs to update
+$logsToUpdate = @("Application", "System", "Security", "MSExchange Management")
+
+foreach ($log in $logsToUpdate) {
+        $logInfo = wevtutil gl "$log" 2>$null
+
+        $currentSize = $logInfo | Where-Object { $_ -like "maxSize:*" } | ForEach-Object {
+            ($_ -split ":")[1].Trim()
+        }
+
+}
+
 Write-Host "
 Adjusted the following settings!" -ForegroundColor Yellow
 
@@ -142,4 +168,5 @@ Power Plan: High performance
 Telnet Client: Installed
 IPv6: ENABLED
 TLS 1.2 Enabled (OS and .NET)
+Security, Application, System and MSExchange Management logs set to 4GB max size
 Disabled IE Enhanced Security" -ForegroundColor Green

@@ -8,7 +8,7 @@ Enables IPv6 on all NIC
 Enables TLS 1.2 for OS and .NET
 Install Windows Feature: Telnet client
 Disables IE Enhanced Security
-Security, Application, System and MSExchange Management logs set to 4GB max size
+Security and MSExchange Management event log size set to 4GB
 #>
 
 # Pagefile
@@ -145,7 +145,7 @@ if ($maxSizeBytes -gt 4294967295) {
 }
 
 # List of logs to update
-$logsToUpdate = @("Application", "System", "Security", "MSExchange Management")
+$logsToUpdate = @("Application", "MSExchange Management")
 
 foreach ($log in $logsToUpdate) {
         $logInfo = wevtutil gl "$log" 2>$null
@@ -168,5 +168,5 @@ Power Plan: High performance
 Telnet Client: Installed
 IPv6: ENABLED
 TLS 1.2 Enabled (OS and .NET)
-Security, Application, System and MSExchange Management logs set to 4GB max size
+Security and MSExchange Management event log size set to 4GB
 Disabled IE Enhanced Security" -ForegroundColor Green

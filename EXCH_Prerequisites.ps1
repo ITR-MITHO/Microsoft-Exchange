@@ -130,32 +130,20 @@ Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 -Force
 Set-ItemProperty -Path $UserKey -Name "IsInstalled" -Value 0 -Force
 Stop-Process -Name Explorer -Force
 
-$PageSize = (Get-CimInstance Win32_PageFileSetting).MaximumSize
-
-
-# Desired max size in KB
+# Set Security and MSExchange Management event log size set to 4GB
 $maxSizeKB = 4194240
-
-# Convert to bytes (wevtutil expects bytes)
 $maxSizeBytes = $maxSizeKB * 1024
-
-# Clamp max to 4GB - 1 byte (DWORD limit)
 if ($maxSizeBytes -gt 4294967295) {
     $maxSizeBytes = 4294967295
 }
-
-# List of logs to update
 $logsToUpdate = @("Application", "MSExchange Management")
-
-foreach ($log in $logsToUpdate) {
+foreach ($log in $logsToUpdate) 
+{
         $logInfo = wevtutil gl "$log" 2>$null
-
-        $currentSize = $logInfo | Where-Object { $_ -like "maxSize:*" } | ForEach-Object {
-            ($_ -split ":")[1].Trim()
-        }
-
+        $currentSize = $logInfo | Where-Object { $_ -like "maxSize:*" } | ForEach-Object {($_ -split ":")[1].Trim()}
 }
 
+$PageSize = (Get-CimInstance Win32_PageFileSetting).MaximumSize
 Write-Host "
 Adjusted the following settings!" -ForegroundColor Yellow
 

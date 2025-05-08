@@ -11,6 +11,14 @@ Disables IE Enhanced Security
 Security and MSExchange Management event log size set to 4GB
 #>
 
+# Elevated PowerShell Check
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+{
+Write-Host "PowerShell needs to be elevated" -ForeGroundColor Yellow
+Break
+}
+
 # Pagefile
 $RAM = (Get-WmiObject -Class Win32_ComputerSystem).TotalPhysicalMemory / 1MB
 function Set-PageFile-Exchange2013_2016 {

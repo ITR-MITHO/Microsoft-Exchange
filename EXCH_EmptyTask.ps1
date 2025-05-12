@@ -1,36 +1,11 @@
-<#
-
-Creates a scheduled task, where only the .ps1 file and the user the task runs with should be changed.
-
-#>
-
-# Folder Paths
-$folderPath = "C:\ITM8 - Scripts"
-$batFilePath = Join-Path $folderPath "ExchangePowerShell.bat"
-$ps1FilePath = Join-Path $folderPath "ExchangePowerShell.ps1"
-
-# Create the folder if it doesn't exist
-if (-not (Test-Path -Path $folderPath)) {
-    New-Item -Path $folderPath -ItemType Directory -Force | Out-Null
+$Path = Test-Path "C:\ITM8 - Scripts"
+If (-Not $Path)
+{
+mkdir "C:\ITM8 - Scripts" | Out-Null
 }
 
-# Create the .bat file
-$batContent = @'
-CD "C:\ITM8 - Scripts"
-PowerShell.exe -ExecutionPolicy Bypass -File .\ExchangePowerShell.ps1
-'@
-Set-Content -Path $batFilePath -Value $batContent -Encoding ASCII
+$PS = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/ITR-MITHO/Test-Scripts/refs/heads/main/PowerShell"
+$Bat = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/ITR-MITHO/Test-Scripts/refs/heads/main/Bat"
 
-# Create the .ps1 file 
-$ps1Content = @'
-Add-PSSnapin *EXC*
-Import-Module ActiveDirectory
-'@
-Set-Content -Path $ps1FilePath -Value $ps1Content -Encoding UTF8
-
-# Scheduled task params
-$Name = Read-host "Enter Scheduled task name"
-$batFilePath = "C:\ITM8 - Scripts\ExchangePowerShell.bat"
-
-# Create the scheduled task
-schtasks.exe /Create /TN "$Name" /TR "`"$batFilePath`"" /SC DAILY /ST 05:00 /RU "SYSTEM" /RL HIGHEST /F
+$PS | Out-File -FilePath "C:\ITM8 - Scripts\ExchangePowerShell.ps1" -Encoding UTF8
+$BAT | Out-File -FilePath "C:\ITM8 - Scripts\ExchangePowerShell.BAT" -Encoding ASCII

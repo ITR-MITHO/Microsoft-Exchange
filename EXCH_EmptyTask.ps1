@@ -9,3 +9,10 @@ $Bat = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/ITR-MITHO/Test-
 
 $PS | Out-File -FilePath "C:\ITM8 - Scripts\ExchangePowerShell.ps1" -Encoding UTF8
 $BAT | Out-File -FilePath "C:\ITM8 - Scripts\ExchangePowerShell.BAT" -Encoding ASCII
+
+# Scheduled task params
+$Name = Read-host "Enter Scheduled task name"
+$batFilePath = "C:\ITM8 - Scripts\ExchangePowerShell.bat"
+
+# Create the scheduled task
+schtasks.exe /Create /TN "$Name" /TR "`"$batFilePath`"" /SC DAILY /ST 05:00 /RU "SYSTEM" /RL HIGHEST /F

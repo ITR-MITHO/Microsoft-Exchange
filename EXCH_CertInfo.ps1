@@ -3,7 +3,8 @@
 Can be used before changing a certificate on-prem to show where it is currently used.
 
 #>
-
+Add-PSSnapin *EXC*
+Import-Module ActiveDirectory
 # Receive Connectors
 Write-Host "Receive Connectors" 
 Get-ReceiveConnector | Where {$_.TlsCertificateName -NE $null} | Select Identity, Enabled, TlsCertificateName, FQDN

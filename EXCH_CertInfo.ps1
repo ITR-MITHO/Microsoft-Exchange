@@ -7,23 +7,8 @@
 #>
 
 # Ensure necessary snap-ins and modules are loaded
-if (-not (Get-PSSnapin -Name Microsoft.Exchange.Management.PowerShell.* -ErrorAction SilentlyContinue)) {
-    try {
-        Add-PSSnapin *Exchange* -ErrorAction Stop
-    } catch {
-        Write-Error "Failed to load Exchange snap-in. Ensure the Exchange Management Shell is installed."
-        exit
-    }
-}
-
-if (-not (Get-Module -Name ActiveDirectory)) {
-    try {
-        Import-Module ActiveDirectory -ErrorAction Stop
-    } catch {
-        Write-Error "Failed to import Active Directory module. Ensure RSAT is installed."
-        exit
-    }
-}
+Add-PSSnapin *EXC*
+Import-Module ActiveDirectory
 
 # Output current TLS certificate usage
 Write-Host "`n=== Receive Connectors Using TLS Certificates ===" -ForegroundColor Cyan

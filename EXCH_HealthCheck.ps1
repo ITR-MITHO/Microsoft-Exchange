@@ -1,197 +1,141 @@
-<# 
+<#
+.SYNOPSIS
+    Exchange Server Daily Health Check
 
 .DESCRIPTION  
-Version 1.0
-The script is designed to help you check how Exchange is feeling today.
+    Version 1.1
+    Performs a local health check on an Exchange Server.
 
-* Can be run without editing
-* Free space on C-drive
-* Exchange ServerComponents
-* MessageQueue higher than 100
-* Backpressure events
-* DAG Replication Test
-* Microsoft Exchange Services
-* MAPI Connectivity
-* Outlook Connectivity
+    Checks:
+    * C: drive free space
+    * Exchange server component states
+    * Message queue length
+    * Backpressure events (last 24h)
+    * DAG replication status
+    * Exchange services
+    * MAPI connectivity
+    * Outlook MAPI/HTTP probe
 
 .NOTES
-* Run in a elevated Exchange Shell
-* Run on each server individually. The script doesn't check every Exchange Server there is automatically.
-
+    * Run in an elevated Exchange Management Shell
+    * Run on each Exchange server individually
 #>
 
+# Ensure the script runs as Administrator
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
-{
-write-host "Script is not running as Administrator" -ForegroundColor Yellow
-Break
+if (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "ERROR: Script must be run as Administrator." -ForegroundColor Red
+    return
 }
 
-
-Import-Module ActiveDirectory
-Add-PSSnapin *EXC*
-# Free space on C:\
-$Space = get-psdrive c | % { $_.free/($_.used + $_.free) } | % tostring p
-If ($Space -lt "20 %")
-{
-
-Write-Host "There is $space left on the C-drive. It needs atleast 20%
-" -ForegroundColor Red
-
-Write-host "
-Run this script to clean up the drive.
-https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/EXCH_IISLogCleanup.ps1" -ForegroundColor Yellow
-
-}
-Else
-{
-
-Write-Host "SystemDrive: *PASSED*" -ForegroundColor Green
-
+# Load required modules
+try {
+    Import-Module ActiveDirectory -ErrorAction Stop
+    Add-PSSnapin *Exchange* -ErrorAction Stop
+} catch {
+    Write-Error "Failed to load required modules or snap-ins: $_"
+    return
 }
 
-
-# MessageQueue
-$Queue = (Get-ExchangeServer | Get-Message -ErrorAction SilentlyContinue).count
-$Date = Get-Date -Format "dd-MM-yy HH:mm"
-If ($Queue -GT 100)
-{
-Write-Host "Over 100 e-mails are in queue!
-" -ForegroundColor Red
-}
-Else
-{
-Write-Host "
-
-Exchange Message Queue: *PASSED*
-
-" -ForegroundColor Green
+# --- Check C: drive free space ---
+$spacePercent = Get-PSDrive C | ForEach-Object { [math]::Round($_.Free / ($_.Used + $_.Free) * 100, 2) }
+Write-Host "`n=== Disk Space Check ===" -ForegroundColor Cyan
+if ($spacePercent -lt 20) {
+    Write-Host "C: drive has only $spacePercent% free space! Minimum required is 20%." -ForegroundColor Red
+    Write-Host "Consider running IIS log cleanup: https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/EXCH_IISLogCleanup.ps1" -ForegroundColor Yellow
+} else {
+    Write-Host "C: drive space: OK ($spacePercent%)" -ForegroundColor Green
 }
 
-
-# ComponentState
-$Component = Get-ServerComponentState -Identity $env:computername | Where {$_.Component -NE "ForwardSyncDaemon" -and $_.Component -NE "ProvisioningRps"}
-if ($Component | Where {$_.State -eq "inactive"})
-{
-Write-Host "Exchange componenets are inactive!" -ForegroundColor Red
-$Component
-}
-Else
-{
-Write-Host "Exchange Server Components: *PASSED*
-
-" -ForegroundColor Green
+# --- Check message queue ---
+Write-Host "`n=== Message Queue ===" -ForegroundColor Cyan
+try {
+    $queueCount = (Get-ExchangeServer | Get-Message -ErrorAction Stop).Count
+    if ($queueCount -gt 100) {
+        Write-Host "Warning: $queueCount messages in queue." -ForegroundColor Red
+    } else {
+        Write-Host "Message queue count: OK ($queueCount)" -ForegroundColor Green
+    }
+} catch {
+    Write-Warning "Unable to get message queue count. $_"
 }
 
+# --- Check component states ---
+Write-Host "`n=== Component States ===" -ForegroundColor Cyan
+$components = Get-ServerComponentState -Identity $env:COMPUTERNAME |
+    Where-Object { $_.Component -notin @("ForwardSyncDaemon", "ProvisioningRps") }
 
-# ServiceHealth
-$ServiceHealth = Test-ServiceHealth $env:computername
-if ($ServiceHealth | Where {$_.RequiredServicesRunning -NE $true})
-{
-Write-Host "Microsoft Exchange Services are not running!" -ForegroundColor Red
-$ServiceHealth | Where {$_.ServicesNotRunning -NE $null} | Select Role, ServicesnotRunning
-}
-else
-{
-Write-Host "Exchange Server Services: *PASSED*
-
-" -ForegroundColor Green
+$inactive = $components | Where-Object { $_.State -eq "Inactive" }
+if ($inactive) {
+    Write-Host "Inactive Exchange components detected:" -ForegroundColor Red
+    $inactive | Format-Table -AutoSize
+} else {
+    Write-Host "All Exchange components active." -ForegroundColor Green
 }
 
-# Backpressure events
-$server = $env:COMPUTERNAME
+# --- Check Exchange services ---
+Write-Host "`n=== Exchange Services ===" -ForegroundColor Cyan
+$serviceHealth = Test-ServiceHealth $env:COMPUTERNAME
+$missing = $serviceHealth | Where-Object { $_.RequiredServicesRunning -ne $true }
+if ($missing) {
+    Write-Host "Some required Exchange services are not running:" -ForegroundColor Red
+    $missing | Select-Object Role, ServicesNotRunning | Format-Table -AutoSize
+} else {
+    Write-Host "All required Exchange services are running." -ForegroundColor Green
+}
 
-$eventIDs = @(15004, 15005, 15006, 15007)
-$startTime = (Get-Date).AddHours(-24)
+# --- Check for backpressure events ---
+Write-Host "`n=== Backpressure Events (last 24h) ===" -ForegroundColor Cyan
+$backpressureIDs = @(15004, 15005, 15006, 15007)
 $events = Get-WinEvent -FilterHashtable @{
-    LogName = 'Application';
-    ProviderName = 'MSExchangeTransport';
-    StartTime = $startTime;
-    ID = $eventIDs
-} -ComputerName $server -ErrorAction SilentlyContinue
-
+    LogName = 'Application'
+    ProviderName = 'MSExchangeTransport'
+    ID = $backpressureIDs
+    StartTime = (Get-Date).AddHours(-24)
+} -ErrorAction SilentlyContinue
 
 if ($events.Count -eq 0) {
-    Write-Host "No backpressure events found in the last 24 hours on $server.
-
-" -ForeGroundColor Green
+    Write-Host "No backpressure events in the last 24 hours." -ForegroundColor Green
 } else {
-    Write-Host "Backpressure events found on $server in the last 24 hours:" -ForeGroundColor Red
-    
-    # Display the events
-    foreach ($event in $events) {
-        Write-Host "Time: $($event.TimeCreated)"
-        Write-Host "Event ID: $($event.Id)"
-        Write-Host "Message: $($event.Message)"
-        Write-Host "---------------------------------------------"
+    Write-Host "Backpressure events found:" -ForegroundColor Red
+    $events | Select-Object TimeCreated, Id, Message | Format-Table -AutoSize
+}
+
+# --- MAPI connectivity ---
+Write-Host "`n=== MAPI Connectivity ===" -ForegroundColor Cyan
+$mapiResults = Test-MAPIConnectivity
+$failedMapi = $mapiResults | Where-Object { $_.Result -eq "Failed" }
+if ($failedMapi) {
+    Write-Host "MAPI connectivity test failed:" -ForegroundColor Red
+    $failedMapi | Format-Table -AutoSize
+} else {
+    Write-Host "MAPI connectivity: OK" -ForegroundColor Green
+}
+
+# --- Outlook connectivity ---
+Write-Host "`n=== Outlook Connectivity ===" -ForegroundColor Cyan
+$outlookResult = Test-OutlookConnectivity -ProbeIdentity OutlookMapiHttp.Protocol\OutlookMapiHttpSelfTestProbe -ErrorAction SilentlyContinue
+if ($outlookResult -and $outlookResult.Result -eq "Failed") {
+    Write-Host "Outlook MAPI/HTTP probe failed:" -ForegroundColor Red
+    $outlookResult | Format-Table -AutoSize
+} else {
+    Write-Host "Outlook connectivity: OK" -ForegroundColor Green
+}
+
+# --- DAG replication ---
+Write-Host "`n=== DAG Replication Health ===" -ForegroundColor Cyan
+$dag = Get-DatabaseAvailabilityGroup -ErrorAction SilentlyContinue
+if ($dag) {
+    $dagResults = Test-ReplicationHealth -Identity $env:COMPUTERNAME | Where-Object { $_.Result -like "*Failed*" }
+    if ($dagResults) {
+        Write-Host "DAG replication health issues found:" -ForegroundColor Red
+        $dagResults | Select-Object Server, Check, Result | Format-Table -AutoSize
+    } else {
+        Write-Host "DAG replication: OK" -ForegroundColor Green
     }
+} else {
+    Write-Host "No DAG found on this server. Skipping DAG replication check." -ForegroundColor Yellow
 }
 
-
-# MapiConnectivity
-$MAPIConnectivity = Test-MAPIConnectivity
-If ($MAPIConnectivity | Where {$_.Result -EQ "Failed"})
-{
-Write-Host "MapiConnectivity failed." -ForegroundColor Red
-$MapiConnectivity
-}
-Else
-{
-Write-Host "MAPIConnectivity: *PASSED*
-
-" -ForegroundColor Green
-}
-
-
-# OutlookConnectivity
-$OutlookConnectivity = Test-OutlookConnectivity -ProbeIdentity OutlookMapiHttp.Protocol\OutlookMapiHttpSelfTestProbe
-If ($OutlookConnectivity -EQ "Failed")
-{
-Write-Host "OutlookConnectivity failed." -ForegroundColor Red
-$OutlookConnectivity
-}
-Else
-{
-Write-Host "OutlookConnectivity: *PASSED*
-
-" -ForegroundColor Green
-}
-
-
-# DAGReplicationHealth
-$DAGTest = Test-ReplicationHealth $env:computername | Where {$_.Result -like "*failed*"} | Select Server, Check, Result
-$DAG = Get-DatabaseAvailabilityGroup
-If ($DAG)
-{
-
-Write-Host "Exchange DAG Found.. Testing replication" -ForegroundColor Yellow
-If (-Not $DagTEST)
-{
-Write-Host "Exchange DAG replication: *PASSED*" -ForegroundColor Green
-}
-{
-
-}
-}
-Else
-{
-Write-Host "No Exchange DAG found, skipping replication check.
-" -ForegroundColor Yellow
-}
-
-sleep 5
-
-If ($DAG -ne $null)
-{
-
-if ($DAGTest -ne $null)
-{
-cls
-    Write-Host "Exchange DAG replication is unhealthy! (Test-ReplicationHealth)
-    
-    " -ForegroundColor Red
-}
-
-}
-
-Write-Host "Healthcheck completed." -ForegroundColor Yellow
+# --- Wrap up ---
+Write-Host "`nHealth check completed for $env:COMPUTERNAME at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Cyan

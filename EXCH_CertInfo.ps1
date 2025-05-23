@@ -1,42 +1,64 @@
-<# 
+<#
+.SYNOPSIS
+    Audits current usage of TLS certificates in an Exchange on-premises environment.
 
-Can be used before changing a certificate on-prem to show where it is currently used.
-
+.DESCRIPTION
+    Run this script before replacing a certificate to identify all components currently using it.
 #>
-Add-PSSnapin *EXC*
-Import-Module ActiveDirectory
-# Receive Connectors
-Write-Host "Receive Connectors" 
-Get-ReceiveConnector | Where {$_.TlsCertificateName -NE $null} | Select Identity, Enabled, TlsCertificateName, FQDN
 
+# Ensure necessary snap-ins and modules are loaded
+if (-not (Get-PSSnapin -Name Microsoft.Exchange.Management.PowerShell.* -ErrorAction SilentlyContinue)) {
+    try {
+        Add-PSSnapin *Exchange* -ErrorAction Stop
+    } catch {
+        Write-Error "Failed to load Exchange snap-in. Ensure the Exchange Management Shell is installed."
+        exit
+    }
+}
 
-# Send Connectors
-Write-Host "
-Send connectors"
-Get-SendConnector | Where {$_.TlsCertificateName -NE $null} | Select Identity, Enabled, TlsCertificateName, FQDN
+if (-not (Get-Module -Name ActiveDirectory)) {
+    try {
+        Import-Module ActiveDirectory -ErrorAction Stop
+    } catch {
+        Write-Error "Failed to import Active Directory module. Ensure RSAT is installed."
+        exit
+    }
+}
 
-# Mailboxes on-prem
-Write-Host "
-Mailboxes on-prem)"
-(Get-Mailbox).count
+# Output current TLS certificate usage
+Write-Host "`n=== Receive Connectors Using TLS Certificates ===" -ForegroundColor Cyan
+Get-ReceiveConnector | Where-Object { $_.TlsCertificateName } | 
+    Select-Object Identity, Enabled, TlsCertificateName, FQDN | 
+    Format-Table -AutoSize
 
-# Default SMTP Cert
+Write-Host "`n=== Send Connectors Using TLS Certificates ===" -ForegroundColor Cyan
+Get-SendConnector | Where-Object { $_.TlsCertificateName } | 
+    Select-Object Identity, Enabled, TlsCertificateName, FQDN | 
+    Format-Table -AutoSize
 
-$DNAME = (Get-ExchangeServer -Identity $env:computername).distinguishedname
-$TransportCert = (Get-ADObject -Identity $DNAME -Properties *).msExchServerInternalTLSCert
-$Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
-$CertBlob = [System.Convert]::ToBase64String($TransportCert)
-$Cert.Import([Convert]::FromBase64String($CertBlob))
+# Count on-prem mailboxes
+$mailboxCount = (Get-Mailbox -ResultSize Unlimited).Count
+Write-Host "`n=== On-Prem Mailbox Count ===" -ForegroundColor Cyan
+Write-Host "Total on-prem mailboxes: $mailboxCount"
 
-$CertThumb = $Cert.Thumbprint
-$CertName = $Cert.FriendlyName
-$CertIssuer = $Cert.Issuer
+# Identify the default SMTP certificate
+Write-Host "`n=== Default SMTP Certificate ===" -ForegroundColor Cyan
 
-Write-Host "
-Default SMTP Certificate
+try {
+    $serverDN = (Get-ExchangeServer -Identity $env:COMPUTERNAME).DistinguishedName
+    $adObject = Get-ADObject -Identity $serverDN -Properties msExchServerInternalTLSCert
 
-Thumbprint: $CertThumb
-Friendly: $CertName
-Issuer: $CertIssuer
+    if ($adObject.msExchServerInternalTLSCert) {
+        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $cert.Import([Convert]::FromBase64String([Convert]::ToBase64String($adObject.msExchServerInternalTLSCert)))
 
-"
+        Write-Host "Thumbprint : $($cert.Thumbprint)"
+        Write-Host "Friendly   : $($cert.FriendlyName)"
+        Write-Host "Issuer     : $($cert.Issuer)"
+        Write-Host "Subject    : $($cert.Subject)"
+    } else {
+        Write-Warning "No internal TLS certificate found in AD for this server."
+    }
+} catch {
+    Write-Error "Failed to retrieve or parse the internal TLS certificate: $_"
+}

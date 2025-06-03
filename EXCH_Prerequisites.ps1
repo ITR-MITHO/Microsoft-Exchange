@@ -9,6 +9,7 @@ Enables TLS 1.2 for OS and .NET
 Install Windows Feature: Telnet client
 Disables IE Enhanced Security
 Security and MSExchange Management event log size set to 4GB
+Stop and disable Print Spooler service
 #>
 
 # Elevated PowerShell Check
@@ -151,6 +152,12 @@ foreach ($log in $logsToUpdate)
         $logInfo = wevtutil gl "$log" 2>$null
         $currentSize = $logInfo | Where-Object { $_ -like "maxSize:*" } | ForEach-Object {($_ -split ":")[1].Trim()}
 }
+
+
+# Stop the Print Spooler service
+Stop-Service -Name Spooler -Force
+Set-Service -Name Spooler -StartupType Disabled
+
 
 $PageSize = (Get-CimInstance Win32_PageFileSetting).MaximumSize
 Write-Host "

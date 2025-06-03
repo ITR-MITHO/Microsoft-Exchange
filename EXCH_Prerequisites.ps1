@@ -8,7 +8,7 @@ Enables IPv6 on all NIC
 Enables TLS 1.2 for OS and .NET
 Install Windows Feature: Telnet client
 Disables IE Enhanced Security
-Security and MSExchange Management event log size set to 4GB
+Application and MSExchange Management event log size set to 4GB
 Stop and disable Print Spooler service
 #>
 
@@ -172,6 +172,6 @@ Power Plan: High performance
 Telnet Client: Installed
 IPv6: ENABLED
 TLS 1.2 Enabled (OS and .NET)
-Security and MSExchange Management event log size set to 4GB
+Application and MSExchange Management event log size set to 4GB
 Disabled IE Enhanced Security
 Stopped and disabled Print Spooler service" -ForegroundColor Green

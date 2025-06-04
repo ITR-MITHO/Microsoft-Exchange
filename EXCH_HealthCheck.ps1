@@ -8,6 +8,7 @@
 
     Checks:
     * C: drive free space
+    * Database and log drive free space
     * Exchange server component states
     * Message queue length
     * Backpressure events (last 24h)
@@ -38,13 +39,60 @@ try {
 }
 
 # --- Check C: drive free space ---
-$spacePercent = Get-PSDrive C | ForEach-Object { [math]::Round($_.Free / ($_.Used + $_.Free) * 100, 2) }
+# Minimum free space threshold
+$minPercent = 20
+
+function Get-FreeSpacePercent {
+    param ([string]$driveLetter)
+
+    $drive = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='$driveLetter'"
+    if ($null -eq $drive) {
+        Write-Warning "Drive $driveLetter not found or inaccessible."
+        return $null
+    }
+    return [math]::Round(($drive.FreeSpace / $drive.Size) * 100, 2)
+}
+
 Write-Host "`n=== Disk Space Check ===" -ForegroundColor Cyan
-if ($spacePercent -lt 20) {
-    Write-Host "C: drive has only $spacePercent% free space! Minimum required is 20%." -ForegroundColor Red
-    Write-Host "Consider running IIS log cleanup: https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/EXCH_IISLogCleanup.ps1" -ForegroundColor Yellow
-} else {
-    Write-Host "C: drive space: OK ($spacePercent%)" -ForegroundColor Green
+
+# Check C: drive
+$cPercent = Get-FreeSpacePercent -driveLetter "C:"
+if ($cPercent -ne $null) {
+    if ($cPercent -lt $minPercent) {
+        Write-Host "C: drive has only $cPercent% free space! Minimum required is $minPercent%." -ForegroundColor Red
+        Write-Host "Consider running IIS log cleanup: https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/EXCH_IISLogCleanup.ps1" -ForegroundColor Yellow
+    } else {
+        Write-Host "C: drive space: OK ($cPercent%)" -ForegroundColor Green
+    }
+}
+
+# Get Exchange database and log file paths
+$dbs = Get-MailboxDatabase -Status | Select-Object Name, EdbFilePath, LogFolderPath
+
+# Extract unique drive letters from paths
+$paths = @()
+foreach ($db in $dbs) {
+    if ($db.EdbFilePath -and $db.LogFolderPath) {
+        $paths += $db.EdbFilePath.PathName
+        $paths += $db.LogFolderPath
+    }
+}
+$driveLetters = $paths |
+    Where-Object { $_ -match '^[A-Z]:\\' } |
+    ForEach-Object { ($_ -split ':')[0] + ':' } |
+    Sort-Object -Unique
+
+# Check space on each drive
+foreach ($driveLetter in $driveLetters) {
+    if ($driveLetter -eq 'C:') { continue }  # Already checked
+    $percent = Get-FreeSpacePercent -driveLetter $driveLetter
+    if ($percent -ne $null) {
+        if ($percent -lt $minPercent) {
+            Write-Host "$driveLetter drive has only $percent% free space! Minimum required is $minPercent%." -ForegroundColor Red
+        } else {
+            Write-Host "$driveLetter drive space: OK ($percent%)" -ForegroundColor Green
+        }
+    }
 }
 
 # --- Check message queue ---

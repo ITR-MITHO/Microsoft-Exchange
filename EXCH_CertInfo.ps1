@@ -41,6 +41,7 @@ try {
         Write-Host "Friendly   : $($cert.FriendlyName)"
         Write-Host "Issuer     : $($cert.Issuer)"
         Write-Host "Subject    : $($cert.Subject)"
+        Write-Host "Expires    : $($cert.Notafter)"
     } else {
         Write-Warning "No internal TLS certificate found in AD for this server."
     }

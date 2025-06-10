@@ -10,6 +10,16 @@
 Add-PSSnapin *EXC*
 Import-Module ActiveDirectory
 
+# On-prem mailboxes
+$mailboxCount = (Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox).Count
+Write-Host "`n=== On-Prem Mailbox Count ===" -ForegroundColor Cyan
+Write-Host "Total on-prem mailboxes: $mailboxCount"
+
+# Remote Mailbox Count
+$RemoteCount = (Get-RemoteMailbox -ResultSize Unlimited).Count
+Write-Host "`n=== Remote Mailbox Count ===" -ForegroundColor Cyan
+Write-Host "Total Remote Mailboxes: $RemoteCount"
+
 # Output current TLS certificate usage
 Write-Host "`n=== Receive Connectors Using TLS Certificates ===" -ForegroundColor Cyan
 Get-ReceiveConnector | Where-Object { $_.TlsCertificateName } | 
@@ -20,11 +30,6 @@ Write-Host "`n=== Send Connectors Using TLS Certificates ===" -ForegroundColor C
 Get-SendConnector | Where-Object { $_.TlsCertificateName } | 
     Select-Object Identity, Enabled, TlsCertificateName, FQDN | 
     Format-Table -AutoSize
-
-# Count on-prem mailboxes
-$mailboxCount = (Get-Mailbox -ResultSize Unlimited).Count
-Write-Host "`n=== On-Prem Mailbox Count ===" -ForegroundColor Cyan
-Write-Host "Total on-prem mailboxes: $mailboxCount"
 
 # Identify the default SMTP certificate
 Write-Host "`n=== Default SMTP Certificate ===" -ForegroundColor Cyan
@@ -48,3 +53,5 @@ try {
 } catch {
     Write-Error "Failed to retrieve or parse the internal TLS certificate: $_"
 }
+
+

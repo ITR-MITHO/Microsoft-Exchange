@@ -11,12 +11,12 @@ Add-PSSnapin *EXC*
 Import-Module ActiveDirectory
 
 # On-prem mailboxes
-$mailboxCount = (Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox).Count
+$mailboxCount = (Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox -WarningAction SilentlyContinue).Count
 Write-Host "`n=== On-Prem Mailbox Count ===" -ForegroundColor Cyan
 Write-Host "Total on-prem mailboxes: $mailboxCount"
 
 # Remote Mailbox Count
-$RemoteCount = (Get-RemoteMailbox -ResultSize Unlimited).Count
+$RemoteCount = (Get-RemoteMailbox -ResultSize Unlimited -WarningAction SilentlyContinue).Count
 Write-Host "`n=== Remote Mailbox Count ===" -ForegroundColor Cyan
 Write-Host "Total Remote Mailboxes: $RemoteCount"
 
@@ -53,5 +53,4 @@ try {
 } catch {
     Write-Error "Failed to retrieve or parse the internal TLS certificate: $_"
 }
-
 

@@ -140,18 +140,9 @@ Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 -Force
 Set-ItemProperty -Path $UserKey -Name "IsInstalled" -Value 0 -Force
 Stop-Process -Name Explorer -Force
 
-# Set Security and MSExchange Management event log size set to 4GB
-$maxSizeKB = 4194240
-$maxSizeBytes = $maxSizeKB * 1024
-if ($maxSizeBytes -gt 4294967295) {
-    $maxSizeBytes = 4294967295
-}
-$logsToUpdate = @("Application", "MSExchange Management")
-foreach ($log in $logsToUpdate) 
-{
-        $logInfo = wevtutil gl "$log" 2>$null
-        $currentSize = $logInfo | Where-Object { $_ -like "maxSize:*" } | ForEach-Object {($_ -split ":")[1].Trim()}
-}
+# Set Application and MSExchange Management event log size set to 4GB
+wevtutil sl "MSExchange Management" /ms:4294967296
+wevtutil sl "Application" /ms:4294967296
 
 
 # Stop the Print Spooler service

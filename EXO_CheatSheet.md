@@ -53,7 +53,7 @@ Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automappi
 **Hide Outlook New Button**  
 Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General  
 DWORD: HideNewOutlookToggle  
-Value: 00000000  
+Value: 00000001 
 
 
 **Stop automatic Outlook New Upgrade**  

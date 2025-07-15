@@ -44,6 +44,9 @@ Set-MailboxFolderPermission ALIAS:\Calendar -User Default -AccessRights LimitedD
 Add-RecipientPermission MAILBOX -Trustee USERNAME -AccessRights Sendas -Confirm:$false  
 Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automapping $true  
 
+**10 days messagetrace**  
+Get-MessageTrace -StartDate (Get-Date).AddDays(-10) -EndDate (Get-Date)  
+
 # Mailflow
 **SPF:** v=spf1 spf.protection.outlook.com -all  
 **Random SPF:** v=spf1 redirect=domain.com  

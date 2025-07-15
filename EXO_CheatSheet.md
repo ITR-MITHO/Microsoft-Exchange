@@ -48,7 +48,7 @@ Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automappi
 **SPF:** v=spf1 spf.protection.outlook.com -all  
 **Random SPF:** v=spf1 redirect=domain.com  
 **DMARC**: v=DMARC1; p=reject; pct=100; adkim=s; aspf=s  
-**MX:** domain-dk.mail.protection.outlook.com  
+**MX:** domain-com.mail.protection.outlook.com  
 **MX-DANE:** domain-dk.l-v1.mx.microsoft  
 
 # Outlook New Registries

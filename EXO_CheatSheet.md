@@ -54,7 +54,7 @@ Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automappi
 **10 days messagetrace**  
 Get-MessageTrace -StartDate (Get-Date).AddDays(-10) -EndDate (Get-Date)    
 
-# Outlook New Registries
+# Outlook New Registry Keys
 **Hide Outlook New Button**  
 Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General  
 DWORD: HideNewOutlookToggle  

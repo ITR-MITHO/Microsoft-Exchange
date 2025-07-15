@@ -45,7 +45,8 @@ Add-RecipientPermission MAILBOX -Trustee USERNAME -AccessRights Sendas -Confirm:
 Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automapping $true  
 
 # Mailflow
-**SPF:** spf.protection.outlook.com  
+**SPF:** v=spf1 spf.protection.outlook.com -all  
+**Random SPF:** v=spf1 redirect=domain.com  
 **MX:** domain-dk.mail.protection.outlook.com  
 **MX-DANE:** domain-dk.l-v1.mx.microsoft  
 

@@ -25,6 +25,13 @@ https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-
 M365 Licenses  
 https://m365maps.com/
 
+# Mailflow
+**SPF:** v=spf1 spf.protection.outlook.com -all  
+**Random SPF:** v=spf1 redirect=domain.com  
+**DMARC**: v=DMARC1; p=reject; pct=100; adkim=s; aspf=s  
+**MX:** domain-com.mail.protection.outlook.com  
+**MX-DANE:** domain-dk.l-v1.mx.microsoft
+
 # PowerShell Commands
 **Nice to know commands**  
 Set-User MAILBOX -PermanentlyClearPreviousMailboxInfo -confirm:$false  
@@ -45,14 +52,7 @@ Add-RecipientPermission MAILBOX -Trustee USERNAME -AccessRights Sendas -Confirm:
 Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automapping $true  
 
 **10 days messagetrace**  
-Get-MessageTrace -StartDate (Get-Date).AddDays(-10) -EndDate (Get-Date)  
-
-# Mailflow
-**SPF:** v=spf1 spf.protection.outlook.com -all  
-**Random SPF:** v=spf1 redirect=domain.com  
-**DMARC**: v=DMARC1; p=reject; pct=100; adkim=s; aspf=s  
-**MX:** domain-com.mail.protection.outlook.com  
-**MX-DANE:** domain-dk.l-v1.mx.microsoft  
+Get-MessageTrace -StartDate (Get-Date).AddDays(-10) -EndDate (Get-Date)    
 
 # Outlook New Registries
 **Hide Outlook New Button**  

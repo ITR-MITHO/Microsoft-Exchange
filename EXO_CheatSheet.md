@@ -49,7 +49,7 @@ Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automappi
 **MX:** domain-dk.mail.protection.outlook.com  
 **MX-DANE:** domain-dk.l-v1.mx.microsoft  
 
-# Outlook New
+# Outlook New Registries
 **Hide Outlook New Button**  
 Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General  
 DWORD: HideNewOutlookToggle  

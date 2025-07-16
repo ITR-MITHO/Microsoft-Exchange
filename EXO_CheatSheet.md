@@ -61,7 +61,7 @@ DWORD: HideNewOutlookToggle
 Value: 1
 
 
-**Stop automatic Outlook New Upgrade**  
+**Stop Outlook from becoming Outlook NEW**  
 Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General  
 DWORD: DoNewOutlookAutoMigration  
 Value: 0  

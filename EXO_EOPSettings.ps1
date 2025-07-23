@@ -33,7 +33,8 @@ Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipients
 Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
 Set-ExternalInOutlook -Enabled $true
 
-# Request Only Policy - With Notification
+# Request Only Policy
+# Allows end-user to request an e-mail to be released or unblocked. The end-user receives an e-mail about quarantined e-mails.
 $RequestOnly = @{
 	Name					= 'ITM8 - RequestOnlyPolicy'
  	EndUserSpamNotificationFrequency	= '1.00:00:00'
@@ -45,7 +46,8 @@ $RequestOnly = @{
   }
 New-QuarantinePolicy @RequestOnly | Out-Null
 
-# Full Access Policy - With Notification
+# Full Access Policy
+# Allows the end-user to release e-mails or unblock senders. The end-user receives an e-mail about quarantined e-mails.
 $FullAccess = @{
 	Name					= 'ITM8 - FullAccessPolicy'
  	EndUserSpamNotificationFrequency	= '1.00:00:00'
@@ -58,6 +60,7 @@ $FullAccess = @{
 New-QuarantinePolicy @FullAccess | Out-Null
 
 # Admin Only Policy - With Notification
+# Administrators will be notified about e-mails quarantined that the user cannot request/unblock from quarantine.
 $AdminOnly = @{
 	Name					= 'ITM8 - AdminOnlyPolicy'
  	EndUserSpamNotificationFrequency	= '1.00:00:00'

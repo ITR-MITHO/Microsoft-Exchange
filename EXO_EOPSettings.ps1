@@ -180,7 +180,7 @@ ITM8 - Inbound Anti-Spam policy created.' -ForegroundColor Green
 $Outbound = @{
 	Name					= 'ITM8 - Outbound Anti-Spam policy'
  	RecipientLimitExternalPerHour		= '500'
-  	RecipientLimitInternalPerHour		= '100'
+  	RecipientLimitInternalPerHour		= '1000'
    	RecipientLimitPerDay			= '1000'
     	ActionWhenThresholdReached		= 'BlockUser'
      	AutoForwardingMode			= 'Off'

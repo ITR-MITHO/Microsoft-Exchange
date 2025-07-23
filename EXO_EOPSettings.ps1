@@ -195,4 +195,4 @@ ITM8 - Outbound Anti-Spam policy created.' -ForegroundColor Green
 
 Write-Host '
 
-IMPORTANT: Inbound Anti-Spam, Outbound Anti-Spam and Phishing Policies are all DISABLED. They need to be enabled before they take effect' -ForeGroundColor Yellow
+IMPORTANT: Anti-spam inbound/outbound and Phishing Policies are all DISABLED. They need to be enabled before they take effect' -ForeGroundColor Yellow

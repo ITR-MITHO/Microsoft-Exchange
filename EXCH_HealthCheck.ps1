@@ -127,7 +127,7 @@ $serviceHealth = Test-ServiceHealth $env:COMPUTERNAME
 $missing = $serviceHealth | Where-Object { $_.RequiredServicesRunning -ne $true }
 if ($missing) {
     Write-Host "Some required Exchange services are not running:" -ForegroundColor Red
-    $missing | Select-Object Role, ServicesNotRunning | Format-Table -AutoSize
+    $missing | Select-Object Role, DependingServicesNotRunning | Format-Table -AutoSize
 } else {
     Write-Host "All required Exchange services are running." -ForegroundColor Green
 }

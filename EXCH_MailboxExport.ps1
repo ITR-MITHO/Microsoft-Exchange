@@ -9,6 +9,7 @@ The script will export the following information from all mailboxes:
                             RecipientTypeDetails
                             DatabaseName
                             LastLogonTime
+                            RetentionPolicy
                             ADEnabled
                             TotalItemSize.To.MB
                             ArchiveSize.To.MB
@@ -82,12 +83,13 @@ $Results += [PSCustomObject]@{
     ADEnabled = $ADAtt.Enabled
     SizeInMB = $Size
     ArchiveInMB = $ArchiveInMB
+    Retention = $Mailbox.RetentionPolicy
 
 }
 $Count++ # End of status bar
     }
 
 # Select-Object in a specific order instead of random.
-$Results | Select-Object Username, Name, Email, UPN, Type, SizeInMB, ArchiveInMB, DB, LastLogon, ADEnabled | 
+$Results | Select-Object Username, Name, Email, UPN, Type, SizeInMB, ArchiveInMB, Retention, DB, LastLogon, ADEnabled | 
 Export-csv $CSVPATH -NoTypeInformation -Encoding Unicode
 Write-Host "Find your exported data here: $CSVPATH" -ForeGroundColor Green

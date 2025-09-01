@@ -11,7 +11,7 @@ LimitedDetails as default calendar permission
 #>
 
 $ErrorActionPreference = 'SilentlyContinue'
-$Customer = Import-csv "C:\Users\mitho\OneDrive - itm8\Skrivebord\Customers.csv"
+$Customer = Import-csv "C:\ITM8\Customers.csv"
 Foreach ($C in $Customer)
 {
 

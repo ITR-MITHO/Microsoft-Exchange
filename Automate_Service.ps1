@@ -1,6 +1,6 @@
 <#
 
-ITM8 Exchange Server - STANDARD
+ITM8 Exchange Service - STANDARD
 This script sets our baseline/standard settings for a Exchange Online environment
 
 MailTips

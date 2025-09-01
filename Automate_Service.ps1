@@ -4,9 +4,9 @@ ITM8 Exchange Server - STANDARD
 This script sets our baseline/standard settings for a Exchange Online environment
 
 MailTips
-Calendar Permissions; Default = LimitedDetails
 Safe Attachment Policy
 Safe Links Policy
+LimitedDetails as default calendar permission
 
 
 #>

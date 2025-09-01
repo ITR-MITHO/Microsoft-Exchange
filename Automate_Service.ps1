@@ -3,15 +3,15 @@
 ITM8 Exchange Service - STANDARD
 This script sets our baseline/standard settings for a Exchange Online environment
 
-MailTips
+ExternalInOutlook
 Safe Attachment Policy
 Safe Links Policy
 LimitedDetails as default calendar permission
 
-
 #>
 
-$Customer = Import-csv $home\Desktop\Customers.csv
+$ErrorActionPreference = 'SilentlyContinue'
+$Customer = Import-csv "C:\Users\mitho\OneDrive - itm8\Skrivebord\Customers.csv"
 Foreach ($C in $Customer)
 {
 
@@ -19,7 +19,6 @@ Foreach ($C in $Customer)
 Connect-ExchangeOnline -AppID $C.App -CertificateThumbprint $C.Thumb -Organization $C.Org
 
 # MailTips
-Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipientsTipsEnabled $true -MailTipsGroupMetricsEnabled $true -MailTipsLargeAudienceThreshold '25' -AuditDisabled $false | Out-null
 Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
 Set-ExternalInOutlook -Enabled $true
 
@@ -46,7 +45,6 @@ $SafeLinks = @{
 New-SafeLinksPolicy @Safelinks | Out-Null
 New-SafeLinksRule -Name 'ITM8 - Safe Links Policy' -SafeLinksPolicy 'ITM8 - Safe Links Policy' -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0 -Enabled $true | Out-Null
 
-
 # Default UserMailbox Calendar Permissions
 $User = 'Default'
 $AccessRight = 'LimitedDetails'
@@ -56,9 +54,7 @@ Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails Use
     $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Where { $_.FolderType -eq 'Calendar'}).Name
 Try 
 {
-    
     Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
-
 }
 Catch
 {
@@ -66,4 +62,13 @@ Catch
     Continue
 }
     }
-        }
+
+# Simple logging
+$Name = $C.Org
+$Count = (Get-Mailbox -RecipientTypeDetails UserMailbox).count
+$Date = Get-Date
+Echo "$DATE - changes made to $Count mailboxes" >> "C:\ITM8\Logs\$Name.log"
+
+# Close ExchangeOnline Session before starting a new
+Disconnect-ExchangeOnline -Confirm:$false       
+    }

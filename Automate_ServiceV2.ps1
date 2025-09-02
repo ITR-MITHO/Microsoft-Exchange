@@ -6,7 +6,7 @@ This script sets our baseline/standard settings for a Exchange Online environmen
 ExternalInOutlook - Is set for everyone
 LimitedDetails - Is set as the default calendar permission on UserMailboxes
 RoomMailbox - A set of default parameters
-Backup - Every 15 day a export of all mailboxes Set-Mailbox attributes is exported
+Backup - Every 15 day a export of all mailboxes attributes is exported
 
 #>
 

@@ -83,7 +83,7 @@ Disconnect-ExchangeOnline -Confirm:$false
 
 # Re-connecting
 Connect-ExchangeOnline -AppID $C.App -CertificateThumbprint $C.Thumb -Organization $C.Org
-$File = Get-ChildItem -Path "C:\ITM8\$OrgName\$Date-Backup.csv"
+$File = Get-ChildItem -Path "C:\ITM8\$OrgName\Backup.csv"
 If ($File.LastModified -LT (Get-Date).AddDays(-15))
 {
 Get-Mailbox | Select * | Export-csv C:\ITM8\$OrgName\$Date-Backup.csv -NotypeInformation -Encoding UNICODE

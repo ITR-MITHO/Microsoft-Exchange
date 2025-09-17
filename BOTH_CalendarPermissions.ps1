@@ -7,7 +7,7 @@ Try
 { 
     Add-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -SendNotificationToUser $false -ErrorAction Stop
     Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -SendNotificationToUser $false -WarningAction Stop
-    Write-Host "$User with $AccessRight to $UserPrincipalName" -ForegroundColor Green
+    Write-Host "$User with $AccessRight added to $UserPrincipalName" -ForegroundColor Green
 }
 Catch
 {

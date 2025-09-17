@@ -1,4 +1,4 @@
-# Default UserMailbox Calendar Permissions
+# Default Calendar Permissions - USERMAILBOX ONLY
 $User = 'Default'
 $AccessRight = 'Reviewer'
 Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)

@@ -7,7 +7,7 @@ $UserPrincipalName = $Mailbox.UserPrincipalName
 $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Where { $_.FolderType -eq 'Calendar'}).Name
 Try
 { 
-    Add-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -SendNotificationToUser $false -ErrorAction Stop
+    # Only use this if user is not DEFAULT # Add-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -SendNotificationToUser $false -ErrorAction Stop
     Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -SendNotificationToUser $false -WarningAction Stop
     Write-Host "$User with $AccessRight added to $UserPrincipalName" -ForegroundColor Green
 }

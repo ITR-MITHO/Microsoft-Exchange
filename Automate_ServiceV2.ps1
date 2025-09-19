@@ -83,7 +83,7 @@ Catch
 # Simple logging
 Echo "$DATE - changes made to $Count mailboxes" >> "C:\ITM8\$OrgName\$OrgName.log"
 
-# Close ExchangeOnline Session before starting a export
+# Close ExchangeOnline Session before starting a export a huge export of all mailbox attributes
 Disconnect-ExchangeOnline -Confirm:$false
 
 # Re-connecting

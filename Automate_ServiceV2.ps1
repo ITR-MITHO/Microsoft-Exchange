@@ -29,7 +29,7 @@ Set-ExternalInOutlook -Enabled $true
 # Shared Mailbox - Save sent items in the mailbox
 $Mailbox | Where {$_.RecipientTypeDetails -EQ 'SharedMailbox'} | Set-Mailbox -MessageCopyForSendOnBehalfEnabled $true -MessageCopyForSentAsEnabled $true
 
-# ALL Mailboxes - Send/Receive Limits, RetentionPolicy and RetainDeletedItemsFor
+# User and Shared mailboxes - Send/Receive Limits, RetentionPolicy and RetainDeletedItemsFor
 Foreach ($M in $Mailbox)
 {
 Set-Mailbox -Identity $M.Alias -MaxSendSize '150MB' -MaxReceiveSize '150MB' -RetentionPolicy 'ITM8 Default Retention' -RetainDeletedItemsFor '30.00:00:00'

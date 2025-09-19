@@ -6,6 +6,7 @@ This script sets our baseline/standard settings for a Exchange Online environmen
 ExternalInOutlook - Is set for everyone
 LimitedDetails - Is set as the default calendar permission on UserMailboxes
 RoomMailbox - A set of default parameters
+SharedMailbox - Save sent items in the mailbox
 Backup - Every 15 day a export of all mailboxes attributes is exported
 
 #>
@@ -28,6 +29,8 @@ Connect-ExchangeOnline -AppID $C.App -CertificateThumbprint $C.Thumb -Organizati
 Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
 Set-ExternalInOutlook -Enabled $true
 
+# Shared Mailbox - Save sent items in the mailbox
+Get-Mailbox -RecipientTypeDetails SharedMailbox | Set-Mailbox -MessageCopyForSendOnBehalfEnabled $true -MessageCopyForSentAsEnabled $true
 
 # Default UserMailbox Calendar Permissions
 $User = 'Default'

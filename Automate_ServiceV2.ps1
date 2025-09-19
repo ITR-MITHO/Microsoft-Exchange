@@ -10,14 +10,11 @@ SharedMailbox - Save sent items in the mailbox
 Backup - Every 15 day a export of all mailboxes attributes is exported
 
 #>
-
 $ErrorActionPreference = 'SilentlyContinue'
 $Customer = Import-csv "C:\ITM8\Customers.csv"
 Foreach ($C in $Customer)
 {
-
-# Veriables
-$Mailbox = Get-Mailbox -RecipientTypeDetails UserMailbox
+$Mailbox = Get-Mailbox -RecipientTypeDetails UserMailbox, SharedMailbox
 $Count = ($Mailbox.Count)
 $Date = Get-Date
 $OrgName = $C.Org
@@ -30,7 +27,13 @@ Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
 Set-ExternalInOutlook -Enabled $true
 
 # Shared Mailbox - Save sent items in the mailbox
-Get-Mailbox -RecipientTypeDetails SharedMailbox | Set-Mailbox -MessageCopyForSendOnBehalfEnabled $true -MessageCopyForSentAsEnabled $true
+$Mailbox | Where {$_.RecipientTypeDetails -EQ 'SharedMailbox'} | Set-Mailbox -MessageCopyForSendOnBehalfEnabled $true -MessageCopyForSentAsEnabled $true
+
+# ALL Mailboxes - Send/Receive Limits, RetentionPolicy and RetainDeletedItemsFor
+Foreach ($M in $Mailbox)
+{
+Set-Mailbox -Identity $M.Alias -MaxSendSize '150MB' -MaxReceiveSize '150MB' -RetentionPolicy 'ITM8 Default Retention' -RetainDeletedItemsFor '30.00:00:00'
+}
 
 # Default UserMailbox Calendar Permissions
 $User = 'Default'
@@ -49,7 +52,6 @@ Catch
     Continue
 }
     }
-
 
 <# Default RoomMailbox Calendar Processing
 $Parameter = @{
@@ -77,8 +79,8 @@ Catch
     }
 
 #>
-# Simple logging
 
+# Simple logging
 Echo "$DATE - changes made to $Count mailboxes" >> "C:\ITM8\$OrgName\$OrgName.log"
 
 # Close ExchangeOnline Session before starting a export
@@ -96,5 +98,4 @@ Else
 {
 Disconnect-ExchangeOnline -Confirm:$false
 }
-
     }

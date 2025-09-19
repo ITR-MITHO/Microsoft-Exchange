@@ -51,7 +51,7 @@ Catch
     }
 
 
-# Default RoomMailbox Calendar Processing
+<# Default RoomMailbox Calendar Processing
 $Parameter = @{
 AutomateProcessing = "AutoAccept"
 DeleteComments = $true
@@ -76,7 +76,7 @@ Catch
 }
     }
 
-
+#>
 # Simple logging
 
 Echo "$DATE - changes made to $Count mailboxes" >> "C:\ITM8\$OrgName\$OrgName.log"

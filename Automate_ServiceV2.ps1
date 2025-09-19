@@ -7,6 +7,7 @@ ExternalInOutlook - Is set for everyone
 LimitedDetails - Is set as the default calendar permission on UserMailboxes
 RoomMailbox - A set of default parameters
 SharedMailbox - Save sent items in the mailbox
+User and Shared - Max Send/Receive 150MB and RetainDeletedItems set to 30 days
 Backup - Every 15 day a export of all mailboxes attributes is exported
 
 #>

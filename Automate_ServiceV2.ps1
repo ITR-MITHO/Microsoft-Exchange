@@ -16,7 +16,7 @@ $Customer = Import-csv "C:\ITM8\Customers.csv"
 Foreach ($C in $Customer)
 {
 $Mailbox = Get-Mailbox -RecipientTypeDetails UserMailbox, SharedMailbox -ResultSize Unlimited
-$Count = ($Mailbox.Count)
+$Count = ($Mailbox).Count
 $Date = Get-Date
 $OrgName = $C.Org
 

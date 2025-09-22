@@ -39,13 +39,14 @@ Set-Mailbox -Identity $M.Alias -MaxSendSize '150MB' -MaxReceiveSize '150MB' -Ret
 # Default UserMailbox Calendar Permissions
 $User = 'Default'
 $AccessRight = 'LimitedDetails'
-Foreach ($Mailbox in Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox)
+$MailBoxCal = $Mailbox | Where {$_.RecipientTypeDetails -EQ 'UserMailbox'}
+Foreach ($Cal in $MailboxCal)
 {
-    $UserPrincipalName = $Mailbox.UserPrincipalName
-    $Calendar = (Get-MailboxFolderStatistics -Identity $Mailbox.UserPrincipalName -FolderScope Calendar | Where { $_.FolderType -eq 'Calendar'}).Name
+    $UserPrincipalName = $Cal.UserPrincipalName
+    $Calendar = (Get-MailboxFolderStatistics -Identity $Cal.UserPrincipalName -FolderScope Calendar | Where { $_.FolderType -eq 'Calendar'}).Name
 Try 
 {
-    Set-MailboxFolderPermission -Identity ($Mailbox.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
+    Set-MailboxFolderPermission -Identity ($Cal.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
 }
 Catch
 {

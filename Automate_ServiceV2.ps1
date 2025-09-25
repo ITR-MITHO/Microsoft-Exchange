@@ -11,93 +11,67 @@ User and Shared - Max Send/Receive 150MB and RetainDeletedItems set to 30 days
 Backup - Every 15 day a export of all mailboxes attributes is exported
 
 #>
-$ErrorActionPreference = 'SilentlyContinue'
-$Customer = Import-csv "C:\ITM8\Customers.csv"
-Foreach ($C in $Customer)
+# -DO NOT CHANGE THESE VALUES-
+$ResourceGroup = "rg-exchange"
+$AutomationAccount = 'AA-Exchange'
+
+# Change these to fit the customer specific information.
+$CertThumb = 'CERTIFICATETHUMBPRINT'
+$AppID = 'APPID'
+$OrganizationName = 'domain-com.onmicrosoft.com'
+
+# Change these variables to match the customers wishes
+$RetainDeletedItems = '30.00:00:00'
+$Receive = '150MB'
+$Send = '150MB'
+$ExternalInOutlook = $true
+$RetentionPolicy = 'ITM8 - Deleted Items - 30 days'
+$CalPer = 'Reviewer' # This value is to set the permissions for 'default' on all calendars
+
+$Start = Get-Date
+# Import Exchange Online Module
+Import-Module ExchangeOnlineManagement -ErrorAction Stop
+
+# Connect to Exchange Online using the Certificate Thumbprint of the Certificate imported into the Automation Account
+Try {
+Connect-ExchangeOnline -CertificateThumbPrint $CertThumb -AppID "$AppID" -Organization "$OrganizationName" -ErrorAction Stop
+Write-Output "$Start - Connected to Exchange Online"
+    }
+Catch
 {
-$Mailbox = Get-Mailbox -RecipientTypeDetails UserMailbox, SharedMailbox -ResultSize Unlimited
+    Write-Output 'Failed to connect to Exchange Online for $OrganizationName'
+}
+
+# Start of the actual script; 
+$Mailbox = Get-Mailbox -Resultsize Unlimited
 $Count = ($Mailbox).Count
-$Date = Get-Date
-$OrgName = $C.Org
 
-# Connect to Exchange Online
-Connect-ExchangeOnline -AppID $C.App -CertificateThumbprint $C.Thumb -Organization $C.Org
+# Nice to have settings
+Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true | Out-Null
+Set-ExternalInOutlook -Enabled $ExternalInOutlook | Out-Null
 
-# MailTips
-Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
-Set-ExternalInOutlook -Enabled $true
-
-# Shared Mailbox - Save sent items in the mailbox
+# Sent items in original folder
 $Mailbox | Where {$_.RecipientTypeDetails -EQ 'SharedMailbox'} | Set-Mailbox -MessageCopyForSendOnBehalfEnabled $true -MessageCopyForSentAsEnabled $true
 
-# User and Shared mailboxes - Send/Receive Limits, RetentionPolicy and RetainDeletedItemsFor
+# Max Send/Receive Size
 Foreach ($M in $Mailbox)
 {
-Set-Mailbox -Identity $M.Alias -MaxSendSize '150MB' -MaxReceiveSize '150MB' -RetentionPolicy 'ITM8 Default Retention' -RetainDeletedItemsFor '30.00:00:00'
+Set-Mailbox -Identity $M.ExchangeGuid -MaxSendSize $Send -MaxReceiveSize $Receive -RetentionPolicy $RetentionPolicy -RetainDeletedItemsFor $RetainDeletedItems
 }
 
-# Default UserMailbox Calendar Permissions
-$User = 'Default'
-$AccessRight = 'LimitedDetails'
-$MailBoxCal = $Mailbox | Where {$_.RecipientTypeDetails -EQ 'UserMailbox'}
-Foreach ($Cal in $MailboxCal)
+# Calendar Permissions
+Foreach ($M in $Mailbox)
 {
-    $UserPrincipalName = $Cal.UserPrincipalName
-    $Calendar = (Get-MailboxFolderStatistics -Identity $Cal.UserPrincipalName -FolderScope Calendar | Where { $_.FolderType -eq 'Calendar'}).Name
+    $Calendar = (Get-MailboxFolderStatistics -Identity $M.ExchangeGuid -FolderScope Calendar | Where { $_.FolderType -eq 'Calendar'}).Name
 Try 
 {
-    Set-MailboxFolderPermission -Identity ($Cal.UserPrincipalName+":\$Calendar") -User $User -AccessRights $AccessRight -WarningAction SilentlyContinue -ErrorAction Stop
+    Set-MailboxFolderPermission -Identity ($M.ExchangeGuid+":\$Calendar") -User Default -AccessRights $CalPer -WarningAction SilentlyContinue -ErrorAction Stop
 }
 Catch
 {
-    Write-Warning "Failed to add the user '$User' with calendar permission '$AccessRight' on Mailbox: $UserPrincipalName"
+    Write-Warning "Failed to add the calendar permission '$AccessRight' on Mailbox: $UserPrincipalName"
     Continue
 }
     }
-
-<# Default RoomMailbox Calendar Processing
-$Parameter = @{
-AutomateProcessing = "AutoAccept"
-DeleteComments = $true
-AddOrganizerToSubject = $true
-AllowConflicts = $false
-ProcessExternalMeetingMessages = $false
-BookingWindowInDays = "180"
-MaximumDurationInMinutes = "600"
-MinimumDurationInMinutes = "5"
-}
-Foreach ($Room in Get-Mailbox -Resultsize Unlimited -RecipientTypeDetails RoomMailbox)
-{
-Try
-{
-    $UserPrincipalName = $Room.UserPrincipalName
-    Set-CalendarProcessing -identity $UserPrincipalName @Parameter
-}
-Catch
-{
-    Write-Warning "Failed to update CalendarProcessing on $UserPrincipalName"
-    Continue
-}
-    }
-
-#>
-
-# Simple logging
-Echo "$DATE - changes made to $Count mailboxes" >> "C:\ITM8\$OrgName\$OrgName.log"
-
-# Close ExchangeOnline Session before starting a export a huge export of all mailbox attributes
-Disconnect-ExchangeOnline -Confirm:$false
-
-# Re-connecting
-Connect-ExchangeOnline -AppID $C.App -CertificateThumbprint $C.Thumb -Organization $C.Org
-$File = Get-ChildItem -Path "C:\ITM8\$OrgName\Backup.csv"
-If ($File.LastModified -LT (Get-Date).AddDays(-15))
-{
-Get-Mailbox -ResultSize Unlimited | Select * | Export-csv C:\ITM8\$OrgName\$Date-Backup.csv -NotypeInformation -Encoding UNICODE
-Disconnect-ExchangeOnline -Confirm:$false
-}
-Else
-{
-Disconnect-ExchangeOnline -Confirm:$false
-}
-    }
+$End = Get-Date
+Write-Output "$End - Changes made to $Count Mailboxes"

@@ -8,7 +8,7 @@ LimitedDetails - Is set as the default calendar permission on UserMailboxes
 RoomMailbox - A set of default parameters
 SharedMailbox - Save sent items in the mailbox
 User and Shared - Max Send/Receive 150MB and RetainDeletedItems set to 30 days
-Backup - Every 15 day a export of all mailboxes attributes is exported
+
 
 #>
 # -DO NOT CHANGE THESE VALUES-
@@ -26,7 +26,7 @@ $Receive = '150MB'
 $Send = '150MB'
 $ExternalInOutlook = $true
 $RetentionPolicy = 'ITM8 - Deleted Items - 30 days'
-$CalPer = 'Reviewer' # This value is to set the permissions for 'default' on all calendars
+$CalPer = 'LimitedDetails' # This value is to set the permissions for 'default' on all calendars
 
 $Start = Get-Date
 # Import Exchange Online Module

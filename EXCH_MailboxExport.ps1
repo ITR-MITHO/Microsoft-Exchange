@@ -84,12 +84,13 @@ $Results += [PSCustomObject]@{
     SizeInMB = $Size
     ArchiveInMB = $ArchiveInMB
     Retention = $Mailbox.RetentionPolicy
+    Forward = $Mailbox.ForwardingAddress
 
 }
 $Count++ # End of status bar
     }
 
 # Select-Object in a specific order instead of random.
-$Results | Select-Object Username, Name, Email, UPN, Type, SizeInMB, ArchiveInMB, Retention, DB, LastLogon, ADEnabled | 
+$Results | Select-Object Username, Name, Email, UPN, Type, SizeInMB, ArchiveInMB, Retention, Foward, DB, LastLogon, ADEnabled | 
 Export-csv $CSVPATH -NoTypeInformation -Encoding Unicode
 Write-Host "Find your exported data here: $CSVPATH" -ForeGroundColor Green

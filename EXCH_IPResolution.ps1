@@ -25,6 +25,7 @@ foreach ($Entry in $Data) {
     }
 
     $Results += [PSCustomObject]@{
+        TimeStamp        = $Entry.TimeStamp
         Sender           = $Entry.Sender
         Recipients       = ($Entry.Recipients -join ", ")
         Subject          = $Entry.MessageSubject

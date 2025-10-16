@@ -8,7 +8,7 @@ Collects 'Receive' event logs from all Exchange servers within the last 5 days,
 resolves each unique OriginalClientIP to a hostname, and exports the data to a CSV.
 Unresolvable IPs are listed as 'Unresolved'.
 
-.OUTPUT
+.OUTPUTS
 A .csv-file will be placed on your desktop named SenderResolution.csv
 
 #>

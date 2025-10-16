@@ -1,9 +1,12 @@
 <#
 
-The script is designed to resolve IP's that uses Exchange to relay e-mails. 
-It will collect MessageTrackingLogs from the last 5 days and try to resolve the IPs. 
+.SYNOPSIS
+Resolves client IP addresses from Exchange message tracking logs.
 
-If it cannot resolve the IP, it will be listed as 'Unresolved' 
+.DESCRIPTION
+Collects 'Receive' event logs from all Exchange servers within the last 5 days,
+resolves each unique OriginalClientIP to a hostname, and exports the data to a CSV.
+Unresolvable IPs are listed as 'Unresolved'.
 
 .OUTPUT
 A .csv-file will be placed on your desktop named SenderResolution.csv

@@ -6,7 +6,7 @@ It will collect MessageTrackingLogs from the last 5 days and try to resolve the 
 If it cannot resolve the IP, it will be listed as 'Unresolved' 
 
 .OUTPUT
-A .csv-file will be placed on your desktop named ClientIP_Resolution.csv
+A .csv-file will be placed on your desktop named SenderResolution.csv
 
 #>
 $Results = @()
@@ -32,4 +32,5 @@ catch {
 }
 
 # Export to CSV
-$Results | Export-Csv -Path $home\Desktop\ClientIP_Resolution.csv -NoTypeInformation -Encoding Unicode
+$Results | Export-Csv -Path $home\Desktop\SenderResolution.csv -NoTypeInformation -Encoding Unicode
+Write-Host "Export can be found here $home\Desktop\SenderResolution.csv" -ForegroundColor Green

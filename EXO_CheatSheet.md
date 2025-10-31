@@ -9,7 +9,7 @@ https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-e
 
 Quarantine  
 https://security.microsoft.com/quarantine  
-SenderAddress: quarantine@messaging.microsoft.com  
+Quarantine@messaging.microsoft.com - Is the e-mailaddress that sends notifications from EOP  
 
 Exchange Online URLs and IPs  
 https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online  

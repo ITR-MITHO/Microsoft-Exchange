@@ -52,7 +52,7 @@ Add-RecipientPermission MAILBOX -Trustee USERNAME -AccessRights Sendas -Confirm:
 Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automapping $true  
 
 **10 days messagetrace**  
-Get-MessageTraceV2 -ResultSize Unlimited -StartDate (Get-Date).AddDays(-10) -EndDate (Get-Date)    
+Get-MessageTraceV2 -ResultSize 5000 -StartDate (Get-Date).AddDays(-10) -EndDate (Get-Date)    
 
 # Outlook New Registry Keys
 **Hide Outlook New Button**  

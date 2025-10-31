@@ -9,6 +9,7 @@ https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-e
 
 Quarantine  
 https://security.microsoft.com/quarantine  
+Sender address from EOP: quarantine@messaging.microsoft.com  
 
 Exchange Online URLs and IPs  
 https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online  

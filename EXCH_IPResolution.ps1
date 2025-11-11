@@ -12,9 +12,10 @@ Unresolvable IPs are listed as 'Unresolved'.
 A .csv-file will be placed on your desktop named SenderResolution.csv
 
 #>
+Add-PSSnapin *EXC*
 $Results = @()
 $Data = Get-ExchangeServer | Get-MessageTrackingLog -ResultSize Unlimited -Start (Get-Date).AddDays(-5) -EventId Receive | 
-Select-Object Sender, @{Name='Recipients';Expression={$_.Recipients}}, OriginalClientIP, MessageSubject, Timestamp
+Select-Object Sender, OriginalClientIP, MessageSubject, Timestamp
 
 foreach ($Entry in $Data) {
 $ResolvedName = $null
@@ -27,7 +28,6 @@ catch {
     $Results += [PSCustomObject]@{
         TimeStamp        = $Entry.TimeStamp
         Sender           = $Entry.Sender
-        Recipients       = ($Entry.Recipients -join ", ")
         OriginalClientIP = $Entry.OriginalClientIP
         Hostname         = $ResolvedName
         Subject          = $Entry.MessageSubject

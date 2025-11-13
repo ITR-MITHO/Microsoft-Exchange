@@ -5,13 +5,14 @@ Creates RetentionPolicies and Tags that either Delete or Archive ALL items in a 
 #>
 # Retention Tag Age Definitions
 $RetentionPeriods = @{
+  "30 Days"  = 30
   "90 Days"  = 90
-	"180 Days" = 180
+  "180 Days" = 180
   "1 Year"   = 365
   "2 Years"  = 730
   "3 Years"  = 1095
-	"4 Years"  = 1460
-	"5 Years"  = 1825
+  "4 Years"  = 1460
+  "5 Years"  = 1825
 }
 foreach ($label in $RetentionPeriods.Keys) {
     $days = $RetentionPeriods[$label]

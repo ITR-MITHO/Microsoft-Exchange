@@ -3,15 +3,12 @@
 Exchange Online Administrative Center  
 https://admin.exchange.microsoft.com  
 
-Exchange Online Protection Settings   
-https://security.microsoft.com/threatpolicy    
- 
-Exchange Online Protection - Explorer  
-https://security.microsoft.com/threatexplorer  
+Exchange Online Protection  
+https://security.microsoft.com/threatpolicy - Policies and Rules    
+https://security.microsoft.com/threatexplorer - Explorer  
+https://security.microsoft.com/quarantine - Quarantine    
 
-Exchange Online Protection - Quarantine   
-https://security.microsoft.com/quarantine    
-Quarantine@messaging.microsoft.com sends the quarantine reports  
+E-mail that sends quarantine notifications: Quarantine@messaging.microsoft.com  
 
 Exchange Online URLs and IPs  
 https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online  

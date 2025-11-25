@@ -4,13 +4,17 @@ Exchange Online Administrative Center
 https://admin.exchange.microsoft.com  
 
 **Exchange Online Protection**  
-Policies and Rules: https://security.microsoft.com/threatpolicy  
+Policies and Rules  
+https://security.microsoft.com/threatpolicy  
 
-Explorer: https://security.microsoft.com/threatexplorer  
+Explorer  
+https://security.microsoft.com/threatexplorer  
 
-Legacy Retention Policies: https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies  
+Legacy Retention Policies  
+https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies  
 
-Quarantine: https://security.microsoft.com/quarantine  
+Quarantine  
+https://security.microsoft.com/quarantine  
 E-mail that sends quarantine notifications: Quarantine@messaging.microsoft.com  
 
 **Exchange Online URLs and IPs**  

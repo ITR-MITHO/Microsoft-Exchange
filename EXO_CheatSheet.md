@@ -5,8 +5,11 @@ https://admin.exchange.microsoft.com
 
 **Exchange Online Protection**  
 Policies and Rules: https://security.microsoft.com/threatpolicy  
+
 Explorer: https://security.microsoft.com/threatexplorer  
+
 Legacy Retention Policies: https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies  
+
 Quarantine: https://security.microsoft.com/quarantine  
 E-mail that sends quarantine notifications: Quarantine@messaging.microsoft.com  
 

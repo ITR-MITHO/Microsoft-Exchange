@@ -39,6 +39,7 @@ https://m365maps.com/
 **Nice to know commands**  
 Set-User MAILBOX -PermanentlyClearPreviousMailboxInfo -confirm:$false  
 Set-Mailbox MAILBOX -ApplyMandatoryProperties  
+Set-InboundConnector "Relay" -EFSkipIPS 127.0.0.1,127.0.0.2
 
 **Show moverequest status in percentage**  
 Get-Moverequest | Get-MoverequestStatistics  

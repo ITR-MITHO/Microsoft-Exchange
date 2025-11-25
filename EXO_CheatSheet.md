@@ -9,9 +9,9 @@ https://security.microsoft.com/threatpolicy
 Exchange Online Protection - Explorer  
 https://security.microsoft.com/threatexplorer  
 
-Exchange Online Protection - Quarantine 
-https://security.microsoft.com/quarantine  
-Quarantine@messaging.microsoft.com - Is the e-mailaddress that sends notifications from EOP  
+Exchange Online Protection - Quarantine   
+https://security.microsoft.com/quarantine    
+E-mail used to send quarantine reports: Quarantine@messaging.microsoft.com  
 
 Exchange Online URLs and IPs  
 https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online  

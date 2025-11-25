@@ -1,20 +1,18 @@
 # Helpful links
 
-Exchange Online Administrative Center  
+**Exchange Online Administrative Center**  
 https://admin.exchange.microsoft.com  
 
-**Exchange Online Protection**  
-
-Policies and Rules  
+**Policies and Rules** 
 https://security.microsoft.com/threatpolicy  
 
-Explorer  
+**Explorer**  
 https://security.microsoft.com/threatexplorer  
 
-Legacy Retention Policies  
+**Legacy Retention Policies**  
 https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies  
 
-Quarantine  
+**Quarantine**  
 https://security.microsoft.com/quarantine  
 E-mail that sends quarantine notifications: Quarantine@messaging.microsoft.com  
 

@@ -7,6 +7,9 @@ Exchange Online Protection Settings & Recommendations
 https://security.microsoft.com/threatpolicy  
 https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365  
 
+* Exchange Online Protection - Explorer *
+https://security.microsoft.com/threatexplorer  
+
 Quarantine  
 https://security.microsoft.com/quarantine  
 Quarantine@messaging.microsoft.com - Is the e-mailaddress that sends notifications from EOP  

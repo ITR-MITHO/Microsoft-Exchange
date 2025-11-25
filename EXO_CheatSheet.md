@@ -3,7 +3,7 @@
 **Exchange Online Administrative Center**  
 https://admin.exchange.microsoft.com  
 
-**Policies and Rules** 
+**Policies and Rules**   
 https://security.microsoft.com/threatpolicy  
 
 **Explorer**  

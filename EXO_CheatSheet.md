@@ -11,7 +11,7 @@ https://security.microsoft.com/threatexplorer
 
 Exchange Online Protection - Quarantine   
 https://security.microsoft.com/quarantine    
-E-mail used to send quarantine reports: Quarantine@messaging.microsoft.com  
+Quarantine@messaging.microsoft.com sends the quarantine reports  
 
 Exchange Online URLs and IPs  
 https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online  

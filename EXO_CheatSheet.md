@@ -4,9 +4,9 @@ Exchange Online Administrative Center
 https://admin.exchange.microsoft.com  
 
 Exchange Online Protection  
-https://security.microsoft.com/threatpolicy - Policies and Rules    
-https://security.microsoft.com/threatexplorer - Explorer  
-https://security.microsoft.com/quarantine - Quarantine    
+Policies and Rules: https://security.microsoft.com/threatpolicy  
+Explorer: https://security.microsoft.com/threatexplorer  
+Quarantine: https://security.microsoft.com/quarantine     
 
 E-mail that sends quarantine notifications: Quarantine@messaging.microsoft.com  
 

@@ -3,8 +3,8 @@
 Exchange Online Administrative Center  
 https://admin.exchange.microsoft.com  
 
-Exchange Online Protection Settings 
-https://security.microsoft.com/threatpolicy  
+Exchange Online Protection Settings   
+https://security.microsoft.com/threatpolicy    
  
 Exchange Online Protection - Explorer  
 https://security.microsoft.com/threatexplorer  

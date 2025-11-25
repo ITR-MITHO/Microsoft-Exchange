@@ -3,26 +3,23 @@
 Exchange Online Administrative Center  
 https://admin.exchange.microsoft.com  
 
-Exchange Online Protection  
+**Exchange Online Protection**  
 Policies and Rules: https://security.microsoft.com/threatpolicy  
 Explorer: https://security.microsoft.com/threatexplorer  
-Quarantine: https://security.microsoft.com/quarantine     
-
+Legacy Retention Policies: https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies  
+Quarantine: https://security.microsoft.com/quarantine  
 E-mail that sends quarantine notifications: Quarantine@messaging.microsoft.com  
 
-Exchange Online URLs and IPs  
+**Exchange Online URLs and IPs**  
 https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online  
 
-Inbound DANE  
+**Inbound DANE**  
 https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane-with-dnssec-for-exchange-online-mail-flow/3939694  
 
-Legacy Retention Policies  
-https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies  
-
-Exchange Online Limits  
+**Exchange Online Limits**  
 https://learn.microsoft.com/en-us/office365/servicedescriptions/exchange-online-service-description/exchange-online-limits  
 
-M365 Licenses  
+**M365 Licenses**  
 https://m365maps.com/
 
 # Mailflow

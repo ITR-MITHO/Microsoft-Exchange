@@ -16,6 +16,8 @@ https://purview.microsoft.com/datalifecyclemanagement/exchange/retentionpolicies
 https://security.microsoft.com/quarantine  
 E-mail that sends quarantine notifications: Quarantine@messaging.microsoft.com  
 
+**User reported messages:** https://security.microsoft.com/securitysettings/userSubmission  
+
 **Exchange Online URLs and IPs**  
 https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online  
 

@@ -1,6 +1,6 @@
 $DatabaseCount = 60
 $DatabaseSizeMB = 256000     # 250GB
-$ToleranceMB = 15000         # +/- 5GB
+$ToleranceMB = 15000         # +/- 15GB
 
 $TargetMax = $DatabaseSizeMB + $ToleranceMB
 

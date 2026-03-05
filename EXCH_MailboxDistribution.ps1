@@ -1,3 +1,11 @@
+<#
+
+Uses the attributes Username, Email and SizeInMB from the EXCH_MailboxExport.ps1 script. 
+Distributes mailboxes to new databases based on the amount and desired size of each database, ensuring they are within the range of the desired database size.
+
+
+#>
+
 $DatabaseCount = 60
 $DatabaseSizeMB = 256000     # 250GB
 $ToleranceMB = 15000         # +/- 15GB

@@ -7,22 +7,20 @@ Distributes mailboxes to new databases based on the amount and desired size of e
 #>
 
 $DatabaseCount = 60
-$DatabaseSizeMB = 256000     # 250GB
-$ToleranceMB = 15000         # +/- 15GB
+$DatabaseSizeMB = 256000    # 250GB
+$ToleranceMB = 10000        # +10GB allowed
 
 $TargetMax = $DatabaseSizeMB + $ToleranceMB
+$Mailboxes = Import-Csv "$Home\desktop\Test1.csv"
 
-$mailboxes = Import-Csv "$Home\Desktop\Test1.csv"
-
-# Sort largest first (important for good balancing)
-$mailboxes = $mailboxes | Sort-Object SizeInMB -Descending
-
+# Sort mailboxes largest first (important for balancing)
+$Mailboxes = $Mailboxes | Sort-Object SizeInMB -Descending
 # Create database tracking
-$databases = @()
+$Databases = @()
 
 for ($i = 1; $i -le $DatabaseCount; $i++) {
     $databases += [PSCustomObject]@{
-        Name = "DB$i"
+        Name = "DB$($i.ToString('000'))"
         SizeMB = 0
     }
 }
@@ -33,15 +31,20 @@ foreach ($mb in $mailboxes) {
 
     $size = [int]$mb.SizeInMB
 
-    # Find DB that stays under target max
+    # Try to find DB that stays under TargetMax
     $candidate = $databases |
         Where-Object { ($_.SizeMB + $size) -le $TargetMax } |
         Sort-Object SizeMB |
         Select-Object -First 1
 
-    # If none available choose smallest DB
+    # If none fit under limit, choose DB with smallest overflow
     if (-not $candidate) {
-        $candidate = $databases | Sort-Object SizeMB | Select-Object -First 1
+
+        $candidate = $databases |
+            Sort-Object { ($_.SizeMB + $size) - $TargetMax } |
+            Select-Object -First 1
+
+        Write-Warning "Mailbox $($mb.Email) ($size MB) exceeds target limit for all DBs. Assigned to $($candidate.Name)."
     }
 
     # Update DB size
@@ -56,5 +59,8 @@ foreach ($mb in $mailboxes) {
     }
 }
 
-# Export mapping file
+# Export mailbox → database mapping
 $result | Export-Csv "$Home\Desktop\MailboxDatabaseMapping.csv" -NoTypeInformation
+
+# Optional: show database size summary
+$databases | Sort-Object Name | Format-Table Name,SizeMB

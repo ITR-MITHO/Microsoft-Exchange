@@ -40,8 +40,8 @@ $Data = @{
     Name = $Mailbox.DisplayName
     Email = $Mailbox.PrimarySmtpAddress
     Type = $Mailbox.RecipientTypeDetails
-    MailboxSize = $SizeInMB
-    ArchiveSize = $ArchiveInMB
+    MailboxSizeMB = $SizeInMB
+    ArchiveSizeMB = $ArchiveInMB
     Retention = $Mailbox.RetentionPolicy
     Forward = $Mailbox.ForwardingAddress
     DirSync = $DirSync
@@ -51,7 +51,7 @@ $Data = @{
 $Results += New-Object PSObject -Property $Data
 }
 # Selecting the fields in a specific order instead of random.
-$Results | Select-Object Username, Name, Email, Type, MailboxSize, ArchiveSize, Retention, Forward, DirSync, MOA, Proxy | 
+$Results | Select-Object Username, Name, Email, Type, MailboxSizeMB, ArchiveSizeMB, Retention, Forward, DirSync, MOA, Proxy | 
 Export-csv $CSVPATH -NoTypeInformation -Encoding Unicode
 CLS
 Write-Host "Find your .csv-file here: $CSVPATH" -ForegroundColor Green

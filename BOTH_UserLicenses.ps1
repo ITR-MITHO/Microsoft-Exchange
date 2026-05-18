@@ -1,6 +1,6 @@
 <#
 Run fron on-prem Exchange. 
-The script will prompt for O365 credentials to connect to MSOnline to gather license information about all on-prem mailboxes
+The script will prompt for O365 credentials to connect to Microsoft Graph to gather license information about all on-prem mailboxes
 If MSOnline module is missing, it will be installed
 
 #>
@@ -10,13 +10,13 @@ Get-Mailbox -ResultSize unlimited | Select SamAccountName, DisplayName, UserPrin
 
 Try
 {
-Connect-MsolService -ErrorAction Stop
+Connect-MgGraph -Scopes User.Read.All, Organization.Read.All -ErrorAction Stop
 }
 Catch
 {
 
-Write-Host "Installing the missing PowerShell Module: MSOnline. Please re-run the script afterwards" -ForegroundColor Yellow
-Install-Module MSOnline -Confirm:$false
+Write-Host "Installing the missing PowerShell Module: Microsoft Graph. Please re-run the script afterwards" -ForegroundColor Yellow
+Install-Module Microsoft.Graph -Scope CurrentUser -Confirm:$false
 Break
 }
 
@@ -32,12 +32,12 @@ Foreach ($Mailbox in $Mailboxes) {
     $ADAtt = Get-ADUser -Identity $MailboxUserName -Properties Enabled, LastLogonDate
 
 
-    $License = (Get-MsolUser -UserPrincipalName $MailboxMail -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Licenses -ErrorAction SilentlyContinue)
+    $License = (Get-MgUserLicenseDetail -UserId $MailboxMail -ErrorAction SilentlyContinue | Select-Object SkuPartNumber -ErrorAction SilentlyContinue)
     If (-Not $License) {
         $License = "No license"
     } Else {
 
-        $License = $License.AccountSkuId -join ", "
+        $License = $License.SkuPartNumber -join ", "
     }
 
     If ($License -like "*SPE_E3*") {

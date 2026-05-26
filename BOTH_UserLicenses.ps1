@@ -15,9 +15,11 @@ Connect-MgGraph -Scopes User.Read.All, Organization.Read.All -ErrorAction Stop
 Catch
 {
 
-Write-Host "Installing the missing PowerShell Module: Microsoft Graph. Please re-run the script afterwards" -ForegroundColor Yellow
+Write-Host "Installing the missing PowerShell Module: Microsoft Graph. Please re-run the script afterwards
+This can take 5-10 minutes..." -ForegroundColor Yellow
 Install-Module Microsoft.Graph -Scope CurrentUser -Confirm:$false
 Break
+Write-Host "Microsoft Graph installed, re-run the script" --ForegroundColor Green
 }
 
 $Mailboxes = Import-Csv $home\desktop\LicenseCheck.csv

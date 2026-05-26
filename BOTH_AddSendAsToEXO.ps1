@@ -16,7 +16,7 @@ Add-PSSnapin *EXC*
 $SendAsObjects = @()
 Write-Host "Gathering mailboxes..."
 $Mailboxes = Get-Mailbox -ResultSize Unlimited
-Write-Host "Gathering mailboxes...Done"
+
 
 Foreach ($Mailbox in $Mailboxes) {
     Write-Host "Processing: " $Mailbox.DistinguishedName    

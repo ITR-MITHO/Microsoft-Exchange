@@ -19,7 +19,7 @@ Write-Host "Installing the missing PowerShell Module: Microsoft Graph. Please re
 This can take 5-10 minutes..." -ForegroundColor Yellow
 Install-Module Microsoft.Graph -Scope CurrentUser -Confirm:$false
 Break
-Write-Host "Microsoft Graph installed, re-run the script" --ForegroundColor Green
+Write-Host "Microsoft Graph installed, re-run the script" -ForegroundColor Green
 }
 
 $Mailboxes = Import-Csv $home\desktop\LicenseCheck.csv

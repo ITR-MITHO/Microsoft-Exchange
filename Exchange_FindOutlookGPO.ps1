@@ -11,7 +11,6 @@
 Import-Module ActiveDirectory -ErrorAction SilentlyContinue
 
 Write-Host "Locating an active Domain Controller..." -ForegroundColor Cyan
-# High-speed discovery of a single operational DC
 $DC = (Get-ADDomainController -Discover).HostName
 
 Write-Host "Searching for Group Policies on $DC..." -ForegroundColor Yellow
@@ -19,22 +18,16 @@ Write-Host "Searching for Group Policies on $DC..." -ForegroundColor Yellow
 # Define the search term cleanly outside the block
 $SearchTerm = "Outlook"
 
-# Execute remotely, passing the search term using the $using: scope modifier
 $MatchedGPOs = Invoke-Command -ComputerName $DC -ArgumentList $SearchTerm {
     param($Keyword)
     
     Import-Module GroupPolicy -ErrorAction SilentlyContinue
-    
-    # Bulk fetch all GPOs at once
     $AllGPOs = Get-GPO -All
     $Results = [System.Collections.Generic.List[string]]::new()
 
     foreach ($GPO in $AllGPOs) {
         try {
-            # Optimization: Use XML string streaming directly to avoid heavy disk/memory overhead
-            # We match against the raw string output of the report immediately
             $GpoXml = Get-GPOReport -Guid $GPO.Id -ReportType XML -ErrorAction Stop
-            
             if ($GpoXml -like "*$Keyword*") {
                 $Results.Add($GPO.DisplayName)
             }
@@ -42,12 +35,9 @@ $MatchedGPOs = Invoke-Command -ComputerName $DC -ArgumentList $SearchTerm {
             Write-Warning "Failed to generate report for GPO: $($GPO.DisplayName)"
         }
     }
-    
-    # Return the clean array out of the remote session boundary
     return $Results
-}
+    }
 
-# 3. UI Display Output Handling
 if ($MatchedGPOs) {
     Write-Host "`n=== Matching GPOs Found ===" -ForegroundColor Green
     foreach ($GpoName in $MatchedGPOs) {

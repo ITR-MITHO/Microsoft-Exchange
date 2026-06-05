@@ -30,7 +30,7 @@ $Results = foreach ($Group in $Grouped) {
         $ResolvedName = "Unresolved"
     }
 
-    $Entry = $Group.Group | Select-Object -First 1
+    $Entry = $Group.Group | Select-Object -Last 1
     [PSCustomObject]@{
         TimeStamp        = $Entry.Timestamp
         OriginalClientIP = $IP

@@ -8,8 +8,6 @@
 .NOTES
     Must be executed from an elevated Exchange Management Shell session.
 #>
-
-# 1. Enforcement & Context Checks
 $CurrentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 if (-not $CurrentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Warning "This script requires administrative privileges. Please re-run from an elevated shell."
@@ -21,8 +19,6 @@ if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
 }
 
 $TargetServer = (Get-ExchangeServer -Identity $env:COMPUTERNAME -ErrorAction Stop).Name
-
-# 2. Functional Menu Controller (Replaces recursion with a structural loop)
 while ($true) {
     Write-Host "`n=== Exchange Maintenance Orchestrator ===" -ForegroundColor Cyan
     Write-Host "Target Server: $TargetServer" -ForegroundColor DarkCyan

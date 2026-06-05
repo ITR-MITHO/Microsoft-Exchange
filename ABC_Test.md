@@ -47,7 +47,6 @@ A consolidated reference guide for Exchange Online migrations, mail flow configu
 
 | Description | Command |
 | :--- | :--- |
-| **Show move request status in percentage** | `Get-MoveRequest | Get-MoveRequestStatistics` |
 | **Approve migration with bad items immediately** | `Set-MoveRequest <MAILBOX> -SkippedItemApprovalTime $(Get-Date).ToUniversalTime()` |
 | **Complete move request immediately** | `Set-MoveRequest <MAILBOX> -CompleteAfter 1` |
 

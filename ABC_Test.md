@@ -16,7 +16,7 @@ A consolidated reference guide for Exchange Online migrations, mail flow configu
 | **Exchange URLs & IPs** | [Microsoft Learn: URLs & IPs](https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#exchange-online) |
 | **Inbound DANE** | [Tech Community: Inbound SMTP DANE](https://techcommunity.microsoft.com/blog/exchange/implementing-inbound-smtp-dane-with-dnssec-for-exchange-online-mail-flow/3939694) |
 | **M365 Licenses** | [m365maps.com](https://m365maps.com/) |
-| **Decomission the last Exchange Server** | [Decomission the last Exchange Server](https://learn.microsoft.com/da-dk/exchange/hybrid-deployment/decommission-last-exchange-server) |
+| **Decomission the last Exchange Server** | [Decomission the last Exchange Server](https://learn.microsoft.com/en-us/exchange/hybrid-deployment/decommission-last-exchange-server) |
 
 > **Note:** Quarantine notifications are sent from `Quarantine@messaging.microsoft.com`.
 

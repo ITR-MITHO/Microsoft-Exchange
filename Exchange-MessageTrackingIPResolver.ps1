@@ -1,46 +1,93 @@
 <#
-
 .SYNOPSIS
-Resolves client IP addresses from Exchange message tracking logs.
-
+    Resolves client IP addresses from Exchange message tracking logs (90-Day Scale Optimized).
 .DESCRIPTION
-Collects 'Receive' event logs from all Exchange servers within the last 90 days,
-resolves each unique OriginalClientIP to a hostname, and exports the data to a CSV.
-Unresolvable IPs are listed as 'Unresolved'.
-
+    Collects 'Receive' event logs from all transport nodes within the last 90 days,
+    deduplicates client IPs on-the-fly, resolves hostnames, and exports the data.
+    Standardizes timestamps to prevent Excel formatting corruption.
 .OUTPUTS
-A .csv-file will be placed on your desktop named SenderResolution.csv
-
+    $home\Desktop\MessageTraceIPs.csv
 #>
-Add-PSSnapin *EXC*
-$Data = Get-ExchangeServer |
-Get-MessageTrackingLog -ResultSize Unlimited -Start (Get-Date).AddDays(-90) -EventId Receive |
-Select-Object Sender, OriginalClientIP, MessageSubject, Timestamp, ConnectorID
 
-$Grouped = $Data | Group-Object OriginalClientIP
-$Results = foreach ($Group in $Grouped) {
+# 1. Privileged Context Validation
+if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
+    Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
+}
 
-    $IP = $Group.Name
-    $Count = $Group.Count
+$StartDate = (Get-Date).AddDays(-90)
+$ExportPath = Join-Path $home "Desktop\MessageTraceIPs.csv"
 
-    # DNS resolution once per IP
+Write-Host "Gathering transport servers..." -ForegroundColor Cyan
+$Servers = Get-ExchangeServer | Where-Object { $_.IsHubTransportServer -or $_.IsMailboxServer }
+
+# High-speed data aggregation structures
+$UniqueIPs = @{}
+$ResultsList = [System.Collections.Generic.List[PSCustomObject]]::new()
+
+Write-Host "Parsing Message Tracking Logs (90-Day Window)..." -ForegroundColor Yellow
+
+foreach ($Server in $Servers) {
+    Write-Host "Querying node: $($Server.Name)..." -ForegroundColor DarkCyan
     try {
-        $ResolvedName = [System.Net.Dns]::GetHostEntry($IP).HostName
-    } catch {
-        $ResolvedName = "Unresolved"
-    }
+        # Streaming logs server-by-server rather than choking a giant multi-server pipeline
+        $Logs = Get-MessageTrackingLog -Server $Server.Name -ResultSize Unlimited -Start $StartDate -EventId Receive -ErrorAction Stop
+        
+        foreach ($Log in $Logs) {
+            # Trim potential trailing whitespace/tabs from the tracking logs right at ingestion
+            $IP = if ($Log.OriginalClientIP) { $Log.OriginalClientIP.ToString().Trim() } else { $null }
+            if ([string]::IsNullOrEmpty($IP)) { continue }
 
-    $Entry = $Group.Group | Select-Object -Last 1
-    [PSCustomObject]@{
-        TimeStamp        = $Entry.Timestamp
-        OriginalClientIP = $IP
-        IPCount          = $Count
-        Hostname         = $ResolvedName
-        Sender           = $Entry.Sender
-        Connector        = $Entry.ConnectorID
-        Subject          = $Entry.MessageSubject
+            # On-the-fly counting inside hash table (Massively out-performs Group-Object)
+            $UniqueIPs[$IP]++
+
+            # Mimic 'Select -Last 1' logic by overwriting the entry slot 
+            # This keeps exactly the freshest log metadata row for that IP in memory
+            $UniqueIPs["$IP-Metadata"] = [PSCustomObject]@{
+                # FIX: Force a clean, universal string date format that Excel cannot break or misinterpret
+                TimeStamp        = $Log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")
+                OriginalClientIP = $IP
+                Sender           = $Log.Sender
+                Connector        = $Log.ConnectorID
+                Subject          = $Log.MessageSubject
+            }
+        }
+    } catch {
+        Write-Warning "Skipped processing for server $($Server.Name). Reason: $_"
     }
 }
-# Export
-$Results | Export-Csv -Path "$home\Desktop\SenderResolution.csv" -NoTypeInformation -Encoding Unicode
-Write-Host "Export can be found here: $home\Desktop\SenderResolution.csv" -ForegroundColor Green
+
+# 2. High-Speed DNS Resolution and Field Injection
+$UniqueIPCount = ($UniqueIPs.Keys | Where-Object { $_ -notmatch '-Metadata$' }).Count
+Write-Host "`nProcessing DNS resolution for $UniqueIPCount unique client IPs..." -ForegroundColor Cyan
+
+$DnsCache = @{}
+foreach ($Key in $UniqueIPs.Keys) {
+    if ($Key -match '-Metadata$') { continue } # Skip metadata keys during target loop
+
+    $IP = $Key
+    $Metadata = $UniqueIPs["$IP-Metadata"]
+
+    if (-not $DnsCache.ContainsKey($IP)) {
+        try {
+            $DnsCache[$IP] = [System.Net.Dns]::GetHostEntry($IP).HostName
+        } catch {
+            $DnsCache[$IP] = "Unresolved"
+        }
+    }
+
+    # Inject calculations and resolved names directly into the object reference slot
+    $Metadata | Add-Member -MemberType NoteProperty -Name "IPCount" -Value $UniqueIPs[$IP] -Force
+    $Metadata | Add-Member -MemberType NoteProperty -Name "Hostname" -Value $DnsCache[$IP] -Force
+
+    $ResultsList.Add($Metadata)
+}
+
+# 3. Structural CSV Export
+if ($ResultsList.Count -gt 0) {
+    $ResultsList | Select-Object TimeStamp, OriginalClientIP, IPCount, Hostname, Sender, Connector, Subject | 
+        Export-Csv -Path $ExportPath -NoTypeInformation -Encoding Unicode
+    
+    Write-Host "`nAnalysis complete! Results exported cleanly to: $ExportPath" -ForegroundColor Green
+} else {
+    Write-Host "No message tracking rows containing valid client IPs discovered." -ForegroundColor Yellow
+}

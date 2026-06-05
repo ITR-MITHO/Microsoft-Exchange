@@ -23,17 +23,55 @@ A consolidated reference guide for Exchange Online migrations, mail flow configu
 
 ## ✉️ Mail Flow & DNS Records
 
-Standard baseline configurations for routing and authentication.
+| Record Type | Configuration |
+| :--- | :--- |
+| **SPF (Standard)** | `v=spf1 spf.protection.outlook.com -all` |
+| **SPF (Redirect)** | `v=spf1 redirect=domain.com` |
+| **DMARC** | `v=DMARC1; p=reject; pct=100; adkim=s; aspf=s` |
+| **MX (Standard)** | `domain-com.mail.protection.outlook.com` |
+| **MX-DANE** | `domain-com.l-v1.mx.microsoft` |
 
-```text
-# SPF Records
-Standard:   v=spf1 spf.protection.outlook.com -all
-Redirection: v=spf1 redirect=domain.com
+---
 
-# DMARC Record
-v=DMARC1; p=reject; pct=100; adkim=s; aspf=s
+## 💻 Essential PowerShell Commands
 
-# MX Records
-Standard: domain-com.mail.protection.outlook.com
-MX-DANE:  domain-com.l-v1.mx.microsoft
+### General Administration
 
+| Description | Command |
+| :--- | :--- |
+| **Permanently clear previous mailbox info** | `Set-User <MAILBOX> -PermanentlyClearPreviousMailboxInfo -Confirm:$false` |
+| **Apply mandatory properties** | `Set-Mailbox <MAILBOX> -ApplyMandatoryProperties` |
+| **Configure inbound connector to skip IPs** | `Set-InboundConnector "Relay" -EFSkipIPS 127.0.0.1,127.0.0.2` |
+
+### Migration & Move Requests
+
+| Description | Command |
+| :--- | :--- |
+| **Show move request status in percentage** | `Get-MoveRequest | Get-MoveRequestStatistics` |
+| **Approve migration with bad items immediately** | `Set-MoveRequest <MAILBOX> -SkippedItemApprovalTime $(Get-Date).ToUniversalTime()` |
+| **Complete move request immediately** | `Set-MoveRequest <MAILBOX> -CompleteAfter 1` |
+
+### Permissions
+
+| Description | Command |
+| :--- | :--- |
+| **Set calendar permissions (LimitedDetails)** | `Set-MailboxFolderPermission <ALIAS>:\Calendar -User Default -AccessRights LimitedDetails` |
+| **Grant Send As permission** | `Add-RecipientPermission <MAILBOX> -Trustee <USERNAME> -AccessRights SendAs -Confirm:$false` |
+| **Grant Full Access with Automapping** | `Add-MailboxPermission <MAILBOX> -User <USERNAME> -AccessRights FullAccess -AutoMapping $true` |
+
+### Diagnostics
+
+| Description | Command |
+| :--- | :--- |
+| **10-day message trace (max 5000 results)** | `Get-MessageTraceV2 -ResultSize 5000 -StartDate (Get-Date).AddDays(-10) -EndDate (Get-Date)` |
+
+---
+
+## ⚙️ Client Configuration (Registry)
+
+Keys used to prevent the automatic migration to the "New Outlook" client.
+
+| Action | Registry Path | Key (DWORD) | Value |
+| :--- | :--- | :--- | :--- |
+| **Hide Outlook New Button** | `HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General` | `HideNewOutlookToggle` | `1` |
+| **Stop Outlook from auto-migrating** | `HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General` | `DoNewOutlookAutoMigration` | `0` |

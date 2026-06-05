@@ -9,7 +9,6 @@
     $Home\Desktop\RemoteLog.csv     - Status report of provisioning actions.
 #>
 
-# 1. Enforcement & Prerequisites Check
 $CurrentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 if (-not $CurrentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Error "Elevated shell required. Please run this script as an Administrator."
@@ -26,7 +25,6 @@ if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
 }
 
-# 2. Connect to Exchange Online and Collect Target Profiles
 try {
     Connect-ExchangeOnline -ShowProgress $true -ErrorAction Stop
 } catch {
@@ -34,7 +32,7 @@ try {
     break
 }
 
-$Domain = Read-Host "Enter Target Routing Tenant Domain (e.g., contoso.mail.onmicrosoft.com)"
+$Domain = Read-Host "Enter remote routing domain (e.g., contoso.mail.onmicrosoft.com)"
 if ([string]::IsNullOrWhiteSpace($Domain)) {
     Write-Error "A valid target routing domain is required."
     Disconnect-ExchangeOnline -Confirm:$false
@@ -45,13 +43,11 @@ Write-Host "Fetching user mailboxes from Exchange Online..." -ForegroundColor Cy
 $EXOMailboxes = Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox | 
     Select-Object Alias, PrimarySmtpAddress, EmailAddresses
 
-# Graceful Cloud Session Termination
+# Graceful Session Termination
 Disconnect-ExchangeOnline -Confirm:$false
 Write-Host "Cloud extraction finished. Processing local Directory..." -ForegroundColor Green
 
-# 3. Cache On-Premises Directory Info for Speed
 Write-Host "Indexing on-premises recipients to memory..." -ForegroundColor Cyan
-# Build a fast index hash table of all local recipients to bypass inner-loop Get-Recipient executions
 $LocalRecipients = @{}
 Get-Recipient -ResultSize Unlimited | ForEach-Object {
     if ($_.Alias) { $LocalRecipients[$_.Alias.ToLower()] = $_.PrimarySmtpAddress }
@@ -60,7 +56,6 @@ Get-Recipient -ResultSize Unlimited | ForEach-Object {
 $MissingObjects = [System.Collections.Generic.List[PSCustomObject]]::new()
 $TransactionLog = [System.Collections.Generic.List[PSCustomObject]]::new()
 
-# 4. Perform Fast Memory Evaluation & Remediation
 foreach ($Exo in $EXOMailboxes) {
     $Alias = $Exo.Alias
     $PrimarySmtp = $Exo.PrimarySmtpAddress.ToString()
@@ -68,8 +63,6 @@ foreach ($Exo in $EXOMailboxes) {
     
     # Flatten the proxy addresses cleanly into a semi-colon separated string
     $ProxyAddressesString = ($Exo.EmailAddresses | ForEach-Object { $_.ProxyAddressString }) -join ";"
-
-    # Check if the alias exists in our memory map instead of calling Active Directory repeatedly
     if (-not $LocalRecipients.ContainsKey($Alias.ToLower())) {
         
         # Track that it is missing locally
@@ -79,12 +72,8 @@ foreach ($Exo in $EXOMailboxes) {
             RemoteRouting      = $RemoteRoutingAddress
             EmailAddresses     = $ProxyAddressesString
         })
-
-        # Remediate locally on-premises
         try {
             Write-Host "Provisioning Remote Mailbox for: $PrimarySmtp" -ForegroundColor Handled
-            
-            # Executing enablement command locally
             Enable-RemoteMailbox -Identity $PrimarySmtp -RemoteRoutingAddress $RemoteRoutingAddress -ErrorAction Stop
             
             $TransactionLog.Add([PSCustomObject]@{
@@ -101,7 +90,6 @@ foreach ($Exo in $EXOMailboxes) {
     }
 }
 
-# 5. Output Reporting Documents
 $MissingPath = Join-Path $home "Desktop\RemoteMissing.csv"
 $LogPath     = Join-Path $home "Desktop\RemoteLog.csv"
 
@@ -109,7 +97,7 @@ if ($MissingObjects.Count -gt 0) {
     $MissingObjects | Export-Csv -Path $MissingPath -NoTypeInformation -Encoding Unicode -Delimiter ";"
     Write-Host "List of items missing locally exported to: $MissingPath" -ForegroundColor Green
 } else {
-    Write-Host "Perfect sync! No objects were missing on-premises." -ForegroundColor Green
+    Write-Host "Perfect sync! No RemoteRoutingAddresses are missing on-premises." -ForegroundColor Green
 }
 
 if ($TransactionLog.Count -gt 0) {

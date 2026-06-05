@@ -11,34 +11,19 @@ param (
     [string]$Identity = "*", 
     [string]$OutputFile = "$home\desktop\folderpermissions.csv"
 )
-
-# 1. Privileged Context Validation
-$CurrentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-if (-not $CurrentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Warning "Elevated administrative privileges required to read folder topology maps. Exiting."
-    break
-}
-
 if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
 }
-
-# Fetch mailboxes efficiently without sorting overhead up front
 Write-Host "Gathering user mailboxes matching context criteria..." -ForegroundColor Cyan
 $Mailboxes = Get-Mailbox -RecipientTypeDetails 'UserMailbox' -Filter "Name -like '$Identity'" -ResultSize Unlimited
 
 $MailboxCount = $Mailboxes.Count
 $Count = 1
-
-# High-speed generic list collection drops multi-layered loop array penalty to zero
 $ResultList = [System.Collections.Generic.List[PSCustomObject]]::new()
 
-# 2. Main Processing Engine
 foreach ($Mailbox in $Mailboxes) {
     $Alias = $Mailbox.Alias
     $DisplayName = '{0} ({1})' -f $Mailbox.DisplayName, $Mailbox.Name
-
-    # UI Progress Control Mappings
     $Activity = 'Working... [{0}/{1}]' -f $Count, $MailboxCount
     $Status   = 'Analyzing MAPI folder paths for: {0}' -f $DisplayName
     Write-Progress -Status $Status -Activity $Activity -PercentComplete (($Count / $MailboxCount) * 100)

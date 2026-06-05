@@ -13,21 +13,18 @@ if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
 }
 
-# 1. Target Namespace & Context Extraction
 $DomainName = Read-Host "Enter URL prefix (e.g., mail.domain.com)"
+$Autodiscover = Read-Host "Enter Autodiscover URL (e.g., autodiscover.domain.com)"
 if ([string]::IsNullOrWhiteSpace($DomainName)) {
     Write-Error "A valid namespace domain name is required."
     break
 }
 
 $URL = "https://$DomainName"
-
-# Dynamically target the local server using Exchange topology instead of env strings
 $TargetServer = (Get-ExchangeServer -Identity $env:COMPUTERNAME -ErrorAction Stop).Name
 
 Write-Host "Updating virtual directories on Server: $TargetServer using namespace: $URL" -ForegroundColor Cyan
 
-# Helper hash table to iterate through basic structural directory changes
 $VDirs = @{
     "Set-OwaVirtualDirectory"         = "owa (Default Web Site)"
     "Set-MapiVirtualDirectory"        = "mapi (Default Web Site)"
@@ -36,7 +33,6 @@ $VDirs = @{
     "Set-ActiveSyncVirtualDirectory"  = "Microsoft-Server-ActiveSync (Default Web Site)"
 }
 
-# 2. Process Standard Virtual Directories
 foreach ($Cmdlet in $VDirs.Keys) {
     $VDirName = $VDirs[$Cmdlet]
     $Identity = "$TargetServer\$VDirName"
@@ -49,7 +45,6 @@ foreach ($Cmdlet in $VDirs.Keys) {
     }
 }
 
-# 3. Handle Special Path Rules (EWS & Outlook Anywhere)
 try {
     Write-Host "Configuring Web Services (EWS)..." -ForegroundColor DarkCyan
     Set-WebServicesVirtualDirectory -Identity "$TargetServer\ews (Default Web Site)" -InternalUrl "$URL/EWS/Exchange.asmx" -ExternalUrl "$URL/EWS/Exchange.asmx" -ErrorAction Stop
@@ -65,14 +60,10 @@ try {
     Write-Warning "Failed to configure Outlook Anywhere: $_"
 }
 
-# 4. Modern Automated Autodiscover Remediation
 try {
-    $AutodiscoverUrl = "https://autodiscover.$($DomainName -replace '^mail\.')/autodiscover/autodiscover.xml"
-    Write-Host "Configuring Client Access Service Autodiscover URI to $AutodiscoverUrl..." -ForegroundColor DarkCyan
+    Write-Host "Configuring Client Access Service Autodiscover URI to $Autodiscover..." -ForegroundColor DarkCyan
     
-    # Utilizing modern Exchange cmdlet instead of deprecated variations
-    Set-ClientAccessService -Identity $TargetServer -AutoDiscoverServiceInternalUri $AutodiscoverUrl -ErrorAction Stop
-    Write-Host "Autodiscover successfully updated." -ForegroundColor Green
+    Set-ClientAccessService -Identity $TargetServer -AutoDiscoverServiceInternalUri "https://$Autodiscover/Autodiscover/Autodiscover.xml" -ErrorAction Stop
 } catch {
     Write-Error "Failed to update Client Access Service Autodiscover configuration: $_"
 }

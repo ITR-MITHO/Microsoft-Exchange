@@ -7,13 +7,6 @@
     Must be executed from an elevated Exchange Management Shell session.
 #>
 
-# 1. Enforcement & Prerequisite Check
-$CurrentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-if (-not $CurrentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Error "Administrative privileges required. Run this script in an elevated shell."
-    return
-}
-
 if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *Exchange* -ErrorAction SilentlyContinue
 }
@@ -41,8 +34,6 @@ if ($null -ne $CPercent) {
         Write-Host "C: drive space: OK ($CPercent%)" -ForegroundColor Green
     }
 }
-
-# High-speed memory mapping of unique DB/Log drives
 $DrivesToCheck = [System.Collections.Generic.HashSet[string]]::new()
 Get-MailboxDatabase -Server $TargetServer -Status -ErrorAction SilentlyContinue | ForEach-Object {
     if ($_.EdbFilePath.PathName -match '^([A-Za-z]:)') { [void]$DrivesToCheck.Add($Matches[1]) }
@@ -114,27 +105,6 @@ if ($Events.Count -eq 0) {
 } else {
     Write-Host "$($Events.Count) Backpressure events found:" -ForegroundColor Red
     $Events | Select-Object TimeCreated, Id, Message | Format-Table -AutoSize
-}
-
-# --- MAPI connectivity ---
-Write-Host "`n=== MAPI Connectivity ===" -ForegroundColor Cyan
-$MapiResults = Test-MAPIConnectivity -Server $TargetServer -ErrorAction SilentlyContinue
-$FailedMapi  = $MapiResults | Where-Object { $_.Result -like "*Failed*" }
-if ($FailedMapi) {
-    Write-Host "MAPI connectivity test failed:" -ForegroundColor Red
-    $FailedMapi | Format-Table -AutoSize
-} else {
-    Write-Host "MAPI connectivity: OK" -ForegroundColor Green
-}
-
-# --- Outlook connectivity ---
-Write-Host "`n=== Outlook Connectivity ===" -ForegroundColor Cyan
-$OutlookResult = Test-OutlookConnectivity -ProbeIdentity "OutlookMapiHttp.Protocol\OutlookMapiHttpSelfTestProbe" -ErrorAction SilentlyContinue
-if ($OutlookResult -and $OutlookResult.Result -eq "Failed") {
-    Write-Host "Outlook MAPI/HTTP probe failed:" -ForegroundColor Red
-    $OutlookResult | Format-Table -AutoSize
-} else {
-    Write-Host "Outlook connectivity: OK" -ForegroundColor Green
 }
 
 # --- DAG replication ---

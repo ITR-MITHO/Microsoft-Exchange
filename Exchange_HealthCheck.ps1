@@ -109,16 +109,20 @@ if ($Events.Count -eq 0) {
 
 # --- DAG replication ---
 Write-Host "`n=== DAG Replication Health ===" -ForegroundColor Cyan
-if ((Get-ExchangeServer -Identity $TargetServer).MdbCopyRole -eq "Mailbox") {
-    $DagResults = Test-ReplicationHealth -Identity $TargetServer -ErrorAction SilentlyContinue | Where-Object { $_.Result -like "*Failed*" }
-    if ($DagResults) {
+
+# Filter the DAG query to ensure the local server is actually a member
+$dag = Get-DatabaseAvailabilityGroup -ErrorAction SilentlyContinue | Where-Object { $_.Servers -match $env:COMPUTERNAME }
+
+if ($dag) {
+    $dagResults = Test-ReplicationHealth -Identity $env:COMPUTERNAME | Where-Object { $_.Result -like "*Failed*" }
+    
+    if ($dagResults) {
         Write-Host "DAG replication health issues found:" -ForegroundColor Red
-        $DagResults | Select-Object Server, Check, Result | Format-Table -AutoSize
+        $dagResults | Select-Object Server, Check, Result | Format-Table -AutoSize
     } else {
         Write-Host "DAG replication: OK" -ForegroundColor Green
     }
 } else {
-    Write-Host "Server does not host Mailbox role / DAG membership. Skipping replication checks." -ForegroundColor Yellow
+    Write-Host "No DAG found containing this server. Skipping DAG replication check." -ForegroundColor Yellow
 }
-
 Write-Host "`nHealth check completed for $TargetServer at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Cyan

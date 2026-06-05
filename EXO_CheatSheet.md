@@ -38,38 +38,39 @@ https://m365maps.com/
 **MX-DANE:** domain-com.l-v1.mx.microsoft
 
 # PowerShell Commands
-# Permanently clear previous mailbox info
-Set-User <MAILBOX> -PermanentlyClearPreviousMailboxInfo -Confirm:$false
+**Permanently clear previous mailbox info**  
+Set-User <MAILBOX> -PermanentlyClearPreviousMailboxInfo -Confirm:$false  
 
-# Apply mandatory properties
-Set-Mailbox <MAILBOX> -ApplyMandatoryProperties
+**Apply mandatory properties**  
+Set-Mailbox <MAILBOX> -ApplyMandatoryProperties  
 
-# Configure inbound connector to skip IPs
-Set-InboundConnector "Relay" -EFSkipIPS 127.0.0.1,127.0.0.2
+**Configure inbound connector to skip IPs**  
+Set-InboundConnector "Relay" -EFSkipIPS 127.0.0.1,127.0.0.2  
 
 **Show moverequest status in percentage**  
 Get-Moverequest | Get-MoverequestStatistics  
 
-**Approve migration with baditems immediatly**  
+**Approve migration with bad items immediately**  
 Set-MoveRequest MAILBOX -SkippedItemApprovalTime $(Get-Date).ToUniversalTime()  
 
-**Complete moverequest immediatly**  
+**Complete move request immediately**  
 Set-Moverequest MAILBOX -Completeafter 1  
 
-**Commands to set permissions**  
-Set-MailboxFolderPermission ALIAS:\Calendar -User Default -AccessRights LimitedDetails  
-Add-RecipientPermission MAILBOX -Trustee USERNAME -AccessRights Sendas -Confirm:$false  
+**Limited Details**  
+Set-MailboxFolderPermission <ALIAS>:\Calendar -User Default -AccessRights LimitedDetails  
+**Grant Send As permission**  
+Add-RecipientPermission <MAILBOX> -Trustee <USERNAME> -AccessRights SendAs -Confirm:$false  
+**Grant Full Access with Automapping**  
 Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automapping $true  
 
-**10 days messagetrace**  
+**Retrieve message trace for the last 10 days (max 5000 results)**  
 Get-MessageTraceV2 -ResultSize 5000 -StartDate (Get-Date).AddDays(-10) -EndDate (Get-Date)    
 
-# Registry keys to prevent Outlook NEW
+# Client Configuration (Registry)
 **Hide Outlook New Button**  
 Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General  
 DWORD: HideNewOutlookToggle  
 Value: 1
-
 
 **Stop Outlook from becoming Outlook NEW**  
 Path: HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General  

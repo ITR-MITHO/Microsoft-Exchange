@@ -18,7 +18,7 @@ A consolidated reference guide for Exchange Online migrations, mail flow configu
 | **M365 Licenses** | [m365maps.com](https://m365maps.com/) |
 | **Decomission the last Exchange Server** | [Decomission the last Exchange Server](https://learn.microsoft.com/en-us/exchange/hybrid-deployment/decommission-last-exchange-server) |
 
-> **Note:** Quarantine notifications are sent from `Quarantine@messaging.microsoft.com`.
+> **Note:** Quarantine notifications are sent from `Quarantine@messaging.microsoft.com`. Also notifications are not sent by the default policies.
 
 ---
 

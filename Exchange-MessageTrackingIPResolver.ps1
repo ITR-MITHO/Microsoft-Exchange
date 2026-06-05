@@ -9,7 +9,6 @@
     $home\Desktop\MessageTraceIPs.csv
 #>
 
-# 1. Privileged Context Validation
 if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
 }
@@ -20,7 +19,7 @@ $ExportPath = Join-Path $home "Desktop\MessageTraceIPs.csv"
 Write-Host "Gathering transport servers..." -ForegroundColor Cyan
 $Servers = Get-ExchangeServer | Where-Object { $_.IsHubTransportServer -or $_.IsMailboxServer }
 
-# High-speed data aggregation structures
+
 $UniqueIPs = @{}
 $ResultsList = [System.Collections.Generic.List[PSCustomObject]]::new()
 
@@ -37,11 +36,7 @@ foreach ($Server in $Servers) {
             $IP = if ($Log.OriginalClientIP) { $Log.OriginalClientIP.ToString().Trim() } else { $null }
             if ([string]::IsNullOrEmpty($IP)) { continue }
 
-            # On-the-fly counting inside hash table (Massively out-performs Group-Object)
             $UniqueIPs[$IP]++
-
-            # Mimic 'Select -Last 1' logic by overwriting the entry slot 
-            # This keeps exactly the freshest log metadata row for that IP in memory
             $UniqueIPs["$IP-Metadata"] = [PSCustomObject]@{
                 # FIX: Force a clean, universal string date format that Excel cannot break or misinterpret
                 TimeStamp        = $Log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")
@@ -56,17 +51,14 @@ foreach ($Server in $Servers) {
     }
 }
 
-# 2. High-Speed DNS Resolution and Field Injection
 $UniqueIPCount = ($UniqueIPs.Keys | Where-Object { $_ -notmatch '-Metadata$' }).Count
 Write-Host "`nProcessing DNS resolution for $UniqueIPCount unique client IPs..." -ForegroundColor Cyan
 
 $DnsCache = @{}
 foreach ($Key in $UniqueIPs.Keys) {
-    if ($Key -match '-Metadata$') { continue } # Skip metadata keys during target loop
-
+    if ($Key -match '-Metadata$') { continue }
     $IP = $Key
     $Metadata = $UniqueIPs["$IP-Metadata"]
-
     if (-not $DnsCache.ContainsKey($IP)) {
         try {
             $DnsCache[$IP] = [System.Net.Dns]::GetHostEntry($IP).HostName
@@ -75,14 +67,12 @@ foreach ($Key in $UniqueIPs.Keys) {
         }
     }
 
-    # Inject calculations and resolved names directly into the object reference slot
     $Metadata | Add-Member -MemberType NoteProperty -Name "IPCount" -Value $UniqueIPs[$IP] -Force
     $Metadata | Add-Member -MemberType NoteProperty -Name "Hostname" -Value $DnsCache[$IP] -Force
 
     $ResultsList.Add($Metadata)
 }
 
-# 3. Structural CSV Export
 if ($ResultsList.Count -gt 0) {
     $ResultsList | Select-Object TimeStamp, OriginalClientIP, IPCount, Hostname, Sender, Connector, Subject | 
         Export-Csv -Path $ExportPath -NoTypeInformation -Encoding Unicode

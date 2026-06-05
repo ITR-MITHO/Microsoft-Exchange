@@ -69,9 +69,10 @@ A consolidated reference guide for Exchange Online migrations, mail flow configu
 
 ## ⚙️ Client Configuration (Registry)
 
-Keys used to prevent the automatic migration to the "New Outlook" client.
-
 | Action | Registry Path | Key (DWORD) | Value |
 | :--- | :--- | :--- | :--- |
 | **Hide Outlook New Button** | `HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General` | `HideNewOutlookToggle` | `1` |
-| **Stop Outlook from auto-migrating** | `HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General` | `DoNewOutlookAutoMigration` | `0` |
+| **Prevent Outlook NEW auto install** | `HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\Options\General` | `DoNewOutlookAutoMigration` | `0` |
+| **Enable Modern Authentication** | `HKEY_CURRENT_USER\Software\Microsoft\Exchange` | `EnableADAL` | `1` |
+| **Always use Exchange Online Autodiscover** | `HKEY_CURRENT_USER\Software\Microsoft\Exchange` | `AlwaysUseMSOAuthForAutoDiscover` | `1` |
+| **Allow Outlook to useExchange Online Autodiscover** | HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\AutoDiscover` | `ExcludeExplicitO365Endpoint` | `0` |

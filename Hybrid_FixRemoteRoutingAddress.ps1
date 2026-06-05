@@ -73,7 +73,7 @@ foreach ($Exo in $EXOMailboxes) {
             EmailAddresses     = $ProxyAddressesString
         })
         try {
-            Write-Host "Provisioning Remote Mailbox for: $PrimarySmtp" -ForegroundColor Handled
+            Write-Host "Provisioning Remote Mailbox for: $PrimarySmtp" -ForegroundColor Green
             Enable-RemoteMailbox -Identity $PrimarySmtp -RemoteRoutingAddress $RemoteRoutingAddress -ErrorAction Stop
             
             $TransactionLog.Add([PSCustomObject]@{

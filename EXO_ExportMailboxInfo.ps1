@@ -10,17 +10,6 @@
 
 $CsvPath = Join-Path $home "Desktop\MailboxExport.csv"
 
-# 1. Privileged Context Validation
-$CurrentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-if (-not $CurrentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Warning "Elevated administrative privileges required. Exiting."
-    break
-}
-
-if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
-    Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
-}
-
 Write-Host "Gathering target mailboxes..." -ForegroundColor Cyan
 # Optimization: Filter out Discovery Mailboxes server-side to minimize network payload sizes
 $Mailboxes = Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -ne 'DiscoveryMailbox'"
@@ -28,7 +17,6 @@ $MailboxCount = $Mailboxes.Count
 $Count = 1
 
 $Results = [System.Collections.Generic.List[PSCustomObject]]::new()
-
 Write-Host "Analyzing storage configurations. Please wait..." -ForegroundColor Yellow
 
 # 2. Storage Processing Engine Loop

@@ -12,7 +12,6 @@ if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
 }
 
-# 1. High-Speed Mailbox Inventory (Using -ResultSize 1 optimization for counts)
 Write-Host "`n=== Mailbox Inventory Counts ===" -ForegroundColor Cyan
 $OnPremCount = (Get-Mailbox -ResultSize Unlimited -RecipientTypeDetails UserMailbox -ErrorAction SilentlyContinue).Count
 $RemoteCount = (Get-RemoteMailbox -ResultSize Unlimited -ErrorAction SilentlyContinue).Count
@@ -22,7 +21,6 @@ $RemoteCount = (Get-RemoteMailbox -ResultSize Unlimited -ErrorAction SilentlyCon
     "Remote Mailboxes"    = if ($RemoteCount) { $RemoteCount } else { 0 }
 } | Format-Table -AutoSize
 
-# 2. Connector TLS Binding Audit
 Write-Host "`n=== Receive Connectors Using Explicit TLS Certificates ===" -ForegroundColor Cyan
 Get-ReceiveConnector -ResultSize Unlimited | 
     Where-Object { -not [string]::IsNullOrEmpty($_.TlsCertificateName) } | 
@@ -35,21 +33,15 @@ Get-SendConnector -ResultSize Unlimited |
     Select-Object Identity, Enabled, FQDN, TlsCertificateName | 
     Format-Table -AutoSize
 
-# 3. Identify Direct Active Directory Internally Bound Certificates
 Write-Host "`n=== Default Internal SMTP Certificates (Active Directory) ===" -ForegroundColor Cyan
-
-# Gather all transport servers to handle centralized multi-server operations
 $ExchangeServers = Get-ExchangeServer | Where-Object { $_.IsHubTransportServer -or $_.IsMailboxServer }
 
 foreach ($Server in $ExchangeServers) {
     Write-Host "Server: $($Server.Name)" -ForegroundColor DarkCyan
     
     try {
-        # Querying the configuration partition for the explicit server object
         $AdObject = Get-ADObject -Identity $Server.DistinguishedName -Properties msExchServerInternalTLSCert -ErrorAction Stop
-        
         if ($AdObject.msExchServerInternalTLSCert) {
-            # Fast parsing directly out of byte array, skipping intermediate string manipulation
             $Cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($AdObject.msExchServerInternalTLSCert)
             
             [PSCustomObject]@{

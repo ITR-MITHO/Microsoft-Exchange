@@ -1,80 +1,94 @@
 <#
-- RUN FROM ON-PREM EXCHANGE
-You will be prompted for Exchange Online credentials and to install the Exchange Online PowerShell module if missing
-The script will find all sendas permissions on-prem and then add those permissions to mailboxes in Exchange Online
-
-If mailboxes shows in Failed.txt it most likely is due to an alias being mailbox@domain.local or an non-accepted domain.
-
-.OUTPUT
-Failed.txt - Tells you which mailbox a user wasn't added to with SendAs
-SendAs.csv - A full list off all SendAs Permissions from on-prem
-
+.SYNOPSIS
+    Migrates on-premises SendAs permissions to Exchange Online.
+.DESCRIPTION
+    Finds explicit, non-self SendAs permissions on local mailboxes, maps trustees
+    to their Primary SMTP addresses, and applies those permissions to the corresponding 
+    mailboxes in Exchange Online.
+.OUTPUTS
+    $Home\Desktop\SendAs.csv - Full audit of on-premises SendAs permissions.
+    $Home\Desktop\Failed.txt - Cloud synchronization failures.
 #>
 
-Add-PSSnapin *EXC*
-# Send-As Permissions
-$SendAsObjects = @()
-Write-Host "Gathering mailboxes..."
+if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
+    Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
+}
+
+$CsvPath = Join-Path $home "Desktop\SendAs.csv"
+$LogPath = Join-Path $home "Desktop\Failed.txt"
+
+Write-Host "Gathering on-premises mailboxes and building lookup table..." -ForegroundColor Cyan
 $Mailboxes = Get-Mailbox -ResultSize Unlimited
 
+# Create a fast hashtable mapping SamAccountName/User domain suffix to PrimarySmtpAddress
+$MailboxLookup = @{}
+foreach ($M in $Mailboxes) {
+    if (-not $MailboxLookup.ContainsKey($M.SamAccountName)) {
+        $MailboxLookup[$M.SamAccountName] = $M.PrimarySmtpAddress
+    }
+}
 
-Foreach ($Mailbox in $Mailboxes) {
-    Write-Host "Processing: " $Mailbox.DistinguishedName    
-    $SendAs = Get-ADPermission $Mailbox.DistinguishedName | Where-Object {$_.ExtendedRights -like "*send*" -and $_.isinherited -like "*false*" -and $_.User -notlike "*Self*" -and $_.user -notlike "S-1-5-21*"} | Select-Object User, IdentityReference, AccessRights
-    
-    Foreach ($User in $SendAs) {
-        $UserDomain = $User.User -split '\\' | Select-Object -Last 1
-        $UserMailbox = Get-Mailbox $UserDomain -ErrorAction SilentlyContinue
-        
+$SendAsObjects = [System.Collections.Generic.List[PSCustomObject]]::new()
+Write-Host "Processing permissions..." -ForegroundColor Cyan
+foreach ($Mailbox in $Mailboxes) {
 
-        if ($UserMailbox) {
-            $UserEmail = $UserMailbox.PrimarySmtpAddress
+    $SendAsPermissions = Get-ADPermission $Mailbox.DistinguishedName -ErrorAction SilentlyContinue | Where-Object {
+        $_.ExtendedRights -like "*send*" -and 
+        $_.IsInherited -eq $false -and 
+        $_.User -notlike "*Self*" -and 
+        $_.User -notlike "S-1-5-21*"
+    }
+
+    foreach ($Perm in $SendAsPermissions) {
+        # Extract SamAccountName from 'DOMAIN\SamAccountName' or raw NT identity
+        $UserDomain = $Perm.User -split '\\' | Select-Object -Last 1
+
+        if ($MailboxLookup.ContainsKey($UserDomain)) {
+            $UserEmail = $MailboxLookup[$UserDomain]
         } else {
-            $UserEmail = $User.User
+            $UserEmail = $Perm.User # Fallback to original value if not an on-prem mailbox
         }
 
-        $SendAsObject = [PSCustomObject] @{
+        $SendAsObjects.Add([PSCustomObject]@{
             MailboxSamAccountName = $Mailbox.SamAccountName
-            MailboxDisplayName = $Mailbox.DisplayName
-            MailboxPrimarySMTP = $Mailbox.PrimarySmtpAddress
-            MailboxType = $Mailbox.RecipientTypeDetails
-            UserWithSendAs = $UserEmail
-        }
-
-        $SendAsObjects += $SendAsObject
+            MailboxDisplayName    = $Mailbox.DisplayName
+            MailboxPrimarySMTP    = $Mailbox.PrimarySmtpAddress
+            MailboxType           = $Mailbox.RecipientTypeDetails
+            UserWithSendAs        = $UserEmail
+        })
     }
 }
-$SendAsObjects | Select MailboxSamAccountName, MailboxDisplayName, MailboxPrimarySMTP, MailboxType, UserWithSendAs | Export-Csv $Home\Desktop\SendAs.csv -NoTypeInformation -Encoding Unicode
 
-# Connect to Exchange Online
-Try
-{
-Connect-ExchangeOnline -ErrorAction Stop
-}
-Catch
-{
-Write-Host "Failed to connect to Exchange Online. If your user requires Multi-factor authentication from this destination, it will not work." -ForegroundColor Red    
-Write-Host "Try to run 'Connect-ExchangeOnline' manually, to see if it prompts for MFA
-If it still fails, the module is missing. Use: Install-Module -Name ExchangeOnlineManagement" -ForeGroundColor Yellow
-Break
-}
-Write-host "Connected to Exchange Online!" -ForeGroundColor Green
-Write-Host "Assigning send-as permissions"
+$SendAsObjects | Export-Csv $CsvPath -NoTypeInformation -Encoding Unicode
+Write-Host "On-prem audit saved to $CsvPath" -ForegroundColor Green
 
-$Log = "$home\desktop\Failed.txt"
-Write-Output "User,Mailbox" | Out-File $Log
-$CSV = Import-csv $home\desktop\Sendas.csv
-Foreach ($C in $CSV)
-{
+if (-not (Get-Command Connect-ExchangeOnline -ErrorAction SilentlyContinue)) {
+    Write-Warning "ExchangeOnlineManagement module missing. Attempting automated installation..."
+    Install-Module -Name ExchangeOnlineManagement -Force -AllowClobber -Scope CurrentUser
+}
 
-$Mailbox = $C.MailboxPrimarySMTP
-$User = $C.UserWithSendAs
-Try
-{
-Add-RecipientPermission -Identity $Mailbox -Trustee $User -AccessRights Sendas -Confirm:$false -ErrorAction Stop -WarningAction SilentlyContinue
+try {
+    Write-Host "Connecting to Exchange Online..." -ForegroundColor Cyan
+    Connect-ExchangeOnline -ErrorAction Stop
+} catch {
+    Write-Error "Failed to connect to Exchange Online. Try to avoid running the script in Powershell ISE"
+    break
 }
-Catch
-{
-    Write-Output "$User,$Mailbox" | Out-File $Log -Append
-}
+
+Write-Host "Assigning SendAs permissions in Exchange Online..." -ForegroundColor Cyan
+"User,Mailbox" | Out-File $LogPath -Encoding utf8
+
+foreach ($Row in $SendAsObjects) {
+    $Mailbox = $Row.MailboxPrimarySMTP
+    $User    = $Row.UserWithSendAs
+
+    try {
+        Add-RecipientPermission -Identity $Mailbox -Trustee $User -AccessRights SendAs -Confirm:$false -ErrorAction Stop -WarningAction SilentlyContinue
+        Write-Host "Successfully assigned SendAs: $User -> $Mailbox" -ForegroundColor Green
+    } catch {
+        Write-Host "Failed to assign SendAs: $User -> $Mailbox" -ForegroundColor Red
+        "$User,$Mailbox" | Out-File $LogPath -Append -Encoding utf8
     }
+}
+
+Write-Host "Execution complete. Failures logged here: $LogPath" -ForegroundColor Yellow

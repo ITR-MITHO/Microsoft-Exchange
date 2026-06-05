@@ -25,16 +25,11 @@ foreach ($Mailbox in $Mailboxes) {
     $Identity = $Mailbox.Identity
     
     try {
-        # High-Speed optimization: Use folder statistics to identify large item counts first 
-        # This is 10x faster than running an e-discovery index search across the whole database
         $LargeItems = Get-MailboxFolderStatistics -Identity $Identity -StatisticType Items -ErrorAction Stop | 
             Where-Object { $_.FolderAndSubfolderSize -gt $SizeLimitBytes }
 
         if ($LargeItems) {
             Write-Host "Large items identified. Generating logging report for: $Identity" -ForegroundColor Yellow
-            
-            # Executing modern logging or targeted eDiscovery action safely inside a try-catch block
-            # Note: Ensure your admin account holds the 'Mailbox Search' RBAC role.
             Search-Mailbox -Identity $Identity -SearchQuery "size>$SizeLimitBytes" -LogOnly -LogLevel Full -TargetMailbox $ReportMailbox -TargetFolder $ReportMailboxFolder -Confirm:$false -ErrorAction Stop
         } else {
             Write-Host "No large items found in: $Identity" -ForegroundColor Green

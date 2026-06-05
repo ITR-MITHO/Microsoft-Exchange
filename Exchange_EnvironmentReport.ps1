@@ -5,7 +5,7 @@
 .DESCRIPTION
     Generates a structured HTML report of the Exchange configuration.
 
-.OUTPUT
+.OUTPUTS
     One HTML-file placed on the desktop of the user that ran the script.
 #>
 

@@ -3,7 +3,10 @@
     Optimized Exchange Environment Script.
 
 .DESCRIPTION
-    Generates a structured HTML report of the Exchange configuration. 
+    Generates a structured HTML report of the Exchange configuration.
+
+.OUTPUT
+    One HTML-file placed on the desktop of the user that ran the script.
 #>
 
 $ErrorActionPreference = 'SilentlyContinue'

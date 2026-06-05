@@ -22,13 +22,13 @@ $RemoteCount = (Get-RemoteMailbox -ResultSize Unlimited -ErrorAction SilentlyCon
 } | Format-Table -AutoSize
 
 Write-Host "`n=== Receive Connectors Using Explicit TLS Certificates ===" -ForegroundColor Cyan
-Get-ReceiveConnector -ResultSize Unlimited | 
+Get-ReceiveConnector | 
     Where-Object { -not [string]::IsNullOrEmpty($_.TlsCertificateName) } | 
     Select-Object Identity, Enabled, FQDN, TlsCertificateName | 
     Format-Table -AutoSize
 
 Write-Host "`n=== Send Connectors Using Explicit TLS Certificates ===" -ForegroundColor Cyan
-Get-SendConnector -ResultSize Unlimited | 
+Get-SendConnector | 
     Where-Object { -not [string]::IsNullOrEmpty($_.TlsCertificateName) } | 
     Select-Object Identity, Enabled, FQDN, TlsCertificateName | 
     Format-Table -AutoSize

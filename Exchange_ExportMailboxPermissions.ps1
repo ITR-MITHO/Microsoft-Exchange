@@ -13,18 +13,15 @@ if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
 }
 
-# Single mailbox pull to halve network query costs
 Write-Host "Gathering target on-premises mailboxes..." -ForegroundColor Cyan
 $Mailboxes = Get-Mailbox -ResultSize Unlimited
 
-# Initialize fast collections
 $FullAccessObjects = [System.Collections.Generic.List[PSCustomObject]]::new()
 $SendAsObjects     = [System.Collections.Generic.List[PSCustomObject]]::new()
 
 Write-Host "Auditing access and delegation states..." -ForegroundColor Cyan
 foreach ($Mailbox in $Mailboxes) {
     
-    # 1. Evaluate FullAccess Permissions
     $FullAccessPermissions = Get-MailboxPermission -Identity $Mailbox.Identity -ErrorAction SilentlyContinue | Where-Object {
         $_.IsInherited -eq $false -and 
         $_.User -notlike "*Self*" -and 
@@ -41,7 +38,6 @@ foreach ($Mailbox in $Mailboxes) {
         })
     }
 
-    # 2. Evaluate Send-As Permissions (Processed side-by-side in the same loop pass)
     $SendAsPermissions = Get-ADPermission -Identity $Mailbox.Identity -ErrorAction SilentlyContinue | Where-Object {
         $_.ExtendedRights -like "*send*" -and 
         $_.IsInherited -eq $false -and 
@@ -60,7 +56,6 @@ foreach ($Mailbox in $Mailboxes) {
     }
 }
 
-# 3. Dynamic Export Paths Configuration
 $FullPath   = Join-Path $home "Desktop\FullAccess.csv"
 $SendAsPath = Join-Path $home "Desktop\SendAs.csv"
 

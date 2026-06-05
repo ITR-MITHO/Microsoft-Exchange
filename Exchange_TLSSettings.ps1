@@ -1,276 +1,123 @@
 <#
-First the script will prompt if you want to check current TLS settings or change TLS Settings
-
-The script will prompt you for each of the TLS protocols; 1.0, 1.1 and 1.2
-E = Enable
-D = Disable
-
+.SYNOPSIS
+    Analyzes and configures TLS protocols and .NET strong crypto via Schannel registry keys.
 #>
 
-Function TLS { 
-$Function = Read-Host "
-Please enter one of the below numbers to proceed:
+function Invoke-TlsManager {
+    $protocols = @("TLS 1.0", "TLS 1.1", "TLS 1.2", "TLS 1.3")
 
-    1 - CHECK TLS CONFIGURATION
-    2 - CHANGE TLS CONFIGURATION
-    0 - EXIT
-    "
-
-If ($Function -EQ "1")
-    {
-
-# TLS 1.2
-# Define registry keys and expected values
-$registryKeys = @(
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Name="Enabled"; Expected=1},
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Name="DisabledByDefault"; Expected=0},
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Name="Enabled"; Expected=1},
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Name="DisabledByDefault"; Expected=0},
-    @{Path="HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319"; Name="SystemDefaultTlsVersions"; Expected=1},
-    @{Path="HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319"; Name="SchUseStrongCrypto"; Expected=1}
-)
-
-Write-Host "Checking TLS 1.2 Registry Keys..." -ForegroundColor Cyan
-
-foreach ($entry in $registryKeys) {
-    $path = $entry.Path
-    $name = $entry.Name
-    $expectedValue = $entry.Expected
-
-    if (Test-Path $path) {
-        $actualValue = (Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue).$name
-
-        if ($null -eq $actualValue) {
-            Write-Host "$path\$name - Missing" -ForegroundColor Yellow
-        }
-        elseif ($actualValue -ne $expectedValue) {
-            Write-Host "$path\$name - Incorrect Value (Expected: $expectedValue, Found: $actualValue)" -ForegroundColor Yellow
-        }
-        else {
-            Write-Host "$path\$name - OK" -ForegroundColor Green
+    # Internal helper to test registry values
+    function Test-RegistryValue {
+        param([string]$Path, [string]$Name, [int]$Expected)
+        if (Test-Path $Path) {
+            $val = (Get-ItemProperty -Path $Path -Name $Name -ErrorAction SilentlyContinue).$Name
+            if ($null -eq $val) { 
+                Write-Host "  [-] $Path\$Name - Missing" -ForegroundColor DarkYellow 
+            } elseif ($val -ne $Expected) { 
+                Write-Host "  [!] $Path\$Name - Incorrect (Expected: $Expected, Found: $val)" -ForegroundColor Yellow 
+            } else { 
+                Write-Host "  [+] $Path\$Name - OK" -ForegroundColor Green 
+            }
+        } else {
+            Write-Host "  [-] $Path - Registry path missing" -ForegroundColor Red
         }
     }
-    else {
-        Write-Host "$path - Registry path missing" -ForegroundColor Red
-    }
-}
 
-# TLS 1.1
-
-# Define registry keys and expected values
-$registryKeys = @(
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Name="Enabled"; Expected=1},
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Name="DisabledByDefault"; Expected=0},
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Name="Enabled"; Expected=1},
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Name="DisabledByDefault"; Expected=0}
-)
-
-Write-Host "Checking TLS 1.1 Registry Keys..." -ForegroundColor Cyan
-
-foreach ($entry in $registryKeys) {
-    $path = $entry.Path
-    $name = $entry.Name
-    $expectedValue = $entry.Expected
-
-    if (Test-Path $path) {
-        $actualValue = (Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue).$name
-
-        if ($null -eq $actualValue) {
-            Write-Host "$path\$name - Missing" -ForegroundColor Yellow
-        }
-        elseif ($actualValue -ne $expectedValue) {
-            Write-Host "$path\$name - Incorrect Value (Expected: $expectedValue, Found: $actualValue)" -ForegroundColor Yellow
-        }
-        else {
-            Write-Host "$path\$name - OK" -ForegroundColor Green
-        }
-    }
-    else {
-        Write-Host "$path - Registry path missing" -ForegroundColor Red
-    }
-}
-
-# TLS 1.0
-
-# Define registry keys and expected values
-$registryKeys = @(
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Name="Enabled"; Expected=1},
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Name="DisabledByDefault"; Expected=0},
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Name="Enabled"; Expected=1},
-    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Name="DisabledByDefault"; Expected=0}
-)
-
-Write-Host "Checking TLS 1.0 Registry Keys..." -ForegroundColor Cyan
-
-foreach ($entry in $registryKeys) {
-    $path = $entry.Path
-    $name = $entry.Name
-    $expectedValue = $entry.Expected
-
-    if (Test-Path $path) {
-        $actualValue = (Get-ItemProperty -Path $path -Name $name -ErrorAction SilentlyContinue).$name
-
-        if ($null -eq $actualValue) {
-            Write-Host "$path\$name - Missing" -ForegroundColor Yellow
-        }
-        elseif ($actualValue -ne $expectedValue) {
-            Write-Host "$path\$name - Incorrect Value (Expected: $expectedValue, Found: $actualValue)" -ForegroundColor Yellow
-        }
-        else {
-            Write-Host "$path\$name - OK" -ForegroundColor Green
-        }
-    }
-    else {
-        Write-Host "$path - Registry path missing" -ForegroundColor Red
-    }
-}
+    # Internal helper to set/create registry values
+    function Set-RegistryValue {
+        param([string]$Path, [string]$Name, [int]$Value)
+        if (-not (Test-Path $Path)) { New-Item -Path $Path -Force | Out-Null }
+        New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType 'DWord' -Force | Out-Null
     }
 
-If ($Function -EQ "2")
-    {
+    # Main Execution Loop
+    do {
+        Write-Host "`n=================================" -ForegroundColor Cyan
+        Write-Host "       TLS Management Tool       " -ForegroundColor Cyan
+        Write-Host "=================================" -ForegroundColor Cyan
+        Write-Host "1 - Check TLS Configuration"
+        Write-Host "2 - Change TLS Configuration"
+        Write-Host "0 - Exit"
+        $choice = Read-Host "`nEnter selection"
 
-# TLS 1.2 Settings
-$TLS12 = Read-Host "Enable or Disable TLS 1.2? (E/D)"
-If ($TLS12 -eq "E")
-{
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server')) {
-    New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server' -Name 'Enabled' -value '1' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server' -Name 'DisabledByDefault' -value 0 -PropertyType 'DWord' -Force | Out-Null
+        switch ($choice) {
+            "1" {
+                # Check protocols
+                foreach ($proto in $protocols) {
+                    Write-Host "`nChecking $proto..." -ForegroundColor Cyan
+                    Test-RegistryValue -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$proto\Server" -Name "Enabled" -Expected 1
+                    Test-RegistryValue -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$proto\Server" -Name "DisabledByDefault" -Expected 0
+                    Test-RegistryValue -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$proto\Client" -Name "Enabled" -Expected 1
+                    Test-RegistryValue -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$proto\Client" -Name "DisabledByDefault" -Expected 0
+                }
+                
+                # Check .NET keys
+                Write-Host "`nChecking .NET Framework Strong Crypto Keys..." -ForegroundColor Cyan
+                $netPaths = @(
+                    "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319",
+                    "HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319",
+                    "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727",
+                    "HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727"
+                )
+                foreach ($path in $netPaths) {
+                    Test-RegistryValue -Path $path -Name "SystemDefaultTlsVersions" -Expected 1
+                    Test-RegistryValue -Path $path -Name "SchUseStrongCrypto" -Expected 1
+                }
+            }
+            "2" {
+                # Configure protocols
+                foreach ($proto in $protocols) {
+                    Write-Host "`n[ Target: $proto ]" -ForegroundColor Magenta
+                    $action = Read-Host "Action (E=Enable / D=Disable / S=Skip)"
+                    
+                    if ($action -match '^[EDed]$') {
+                        $enabled = if ($action -match '^[Ee]$') { 1 } else { 0 }
+                        $disabledByDefault = if ($action -match '^[Ee]$') { 0 } else { 1 }
 
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client' -Name 'Enabled' -value '1' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client' -Name 'DisabledByDefault' -value 0 -PropertyType 'DWord' -Force | Out-Null
+                        Set-RegistryValue -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$proto\Server" -Name "Enabled" -Value $enabled
+                        Set-RegistryValue -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$proto\Server" -Name "DisabledByDefault" -Value $disabledByDefault
+                        Set-RegistryValue -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$proto\Client" -Name "Enabled" -Value $enabled
+                        Set-RegistryValue -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$proto\Client" -Name "DisabledByDefault" -Value $disabledByDefault
+                        
+                        Write-Host ">> $proto configured to $action" -ForegroundColor Green
+                    } elseif ($action -match '^[Ss]$') {
+                        Write-Host ">> Skipped $proto" -ForegroundColor DarkGray
+                    }
+                }
 
+                # Configure .NET keys
+                Write-Host "`n[ Target: .NET Framework Strong Crypto ]" -ForegroundColor Magenta
+                $netAction = Read-Host "Action (E=Enable / D=Disable / S=Skip)"
+                
+                if ($netAction -match '^[EDed]$') {
+                    $val = if ($netAction -match '^[Ee]$') { 1 } else { 0 }
+                    $netPaths = @(
+                        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319",
+                        "HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319",
+                        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727",
+                        "HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727"
+                    )
+                    foreach ($path in $netPaths) {
+                        Set-RegistryValue -Path $path -Name "SystemDefaultTlsVersions" -Value $val
+                        Set-RegistryValue -Path $path -Name "SchUseStrongCrypto" -Value $val
+                    }
+                    Write-Host ">> .NET Framework keys configured to $netAction" -ForegroundColor Green
+                } elseif ($netAction -match '^[Ss]$') {
+                    Write-Host ">> Skipped .NET Framework Strong Crypto" -ForegroundColor DarkGray
+                }
 
-
-If (-Not (Test-Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319')) {
-    New-Item 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Name 'SystemDefaultTlsVersions' -value '1' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Name 'SchUseStrongCrypto' -value '1' -PropertyType 'DWord' -Force | Out-Null
-
-
-If (-Not (Test-Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727')) {
-    New-Item 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727' -Name 'SystemDefaultTlsVersions' -value '1' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727' -Name 'SchUseStrongCrypto' -value '1' -PropertyType 'DWord' -Force | Out-Null
-Write-Host "Enabled TLS 1.2 for OS and .NET" -ForegroundColor Green
-}
-
-If ($TLS12 -eq "D")
-{
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server')) {
-    New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server' -Name 'Enabled' -value '0' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server' -Name 'DisabledByDefault' -value 1 -PropertyType 'DWord' -Force | Out-Null
-
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client' -Name 'Enabled' -value '0' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client' -Name 'DisabledByDefault' -value 1 -PropertyType 'DWord' -Force | Out-Null
-
-
-If (-Not (Test-Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319')) {
-    New-Item 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Name 'SystemDefaultTlsVersions' -value '0' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Name 'SchUseStrongCrypto' -value '0' -PropertyType 'DWord' -Force | Out-Null
-
-If (-Not (Test-Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727')) {
-    New-Item 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727' -Name 'SystemDefaultTlsVersions' -value '0' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727' -Name 'SchUseStrongCrypto' -value '0' -PropertyType 'DWord' -Force | Out-Null
-
-Write-Host "Disabled TLS 1.2 for OS and .NET" -ForegroundColor Yellow
-}
-
-# TLS 1.1 Settings
-$TLS11 = Read-Host "Enable or Disable TLS 1.1? (E/D)"
-If ($TLS11 -EQ "D")
-{
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server' -Name 'Enabled' -value '0' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server' -Name 'DisabledByDefault' -value 1 -PropertyType 'DWord' -Force | Out-Null
-
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client' -Name 'Enabled' -value '0' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client' -Name 'DisabledByDefault' -value 1 -PropertyType 'DWord' -Force | Out-Null
-
-Write-Host "TLS 1.1 has been disabled" -ForegroundColor Yellow
-}
-
-If ($TLS11 -EQ "E")
-{
-
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server' -Name 'Enabled' -value '1' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server' -Name 'DisabledByDefault' -value 0 -PropertyType 'DWord' -Force | Out-Null
-
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client' -Name 'Enabled' -value '1' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client' -Name 'DisabledByDefault' -value 0 -PropertyType 'DWord' -Force | Out-Null
-Write-Host "TLS 1.1 has been enabled" -ForegroundColor Green
+                Write-Host "`n[!] IMPORTANT: A reboot is required to apply Schannel changes." -ForegroundColor Red
+            }
+            "0" { 
+                Write-Host "Exiting..."
+                break 
+            }
+            default { 
+                Write-Host "Invalid selection." -ForegroundColor Red 
+            }
+        }
+    } while ($true)
 }
 
-
- # TLS 1.0 Settings
-$TLS10 = Read-Host "Enable or Disable TLS 1.0? (E/D)"
-If ($TLS10 -EQ "D")
-{
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server' -Name 'Enabled' -value '0' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server' -Name 'DisabledByDefault' -value 1 -PropertyType 'DWord' -Force | Out-Null
-
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client' -Name 'Enabled' -value '0' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client' -Name 'DisabledByDefault' -value 1 -PropertyType 'DWord' -Force | Out-Null
-Write-Host 'TLS 1.0 has been disabled.' -ForegroundColor Yellow
-}
-
-If ($TLS10 -EQ "E")
-{
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server' -Name 'Enabled' -value '1' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server' -Name 'DisabledByDefault' -value 0 -PropertyType 'DWord' -Force | Out-Null
-
-If (-Not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client')) {
-New-Item 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client' -Force | Out-Null
-}
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client' -Name 'Enabled' -value '1' -PropertyType 'DWord' -Force | Out-Null
-New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client' -Name 'DisabledByDefault' -value 0 -PropertyType 'DWord' -Force | Out-Null
-Write-Host 'TLS 1.0 has been enabled.' -ForegroundColor Green
-}
-
-Write-Host "
-IMPORTANT: You need to reboot before the changes are applied" -ForeGroundColor Red
-}
-
-If ($Function -EQ "0")
-{  
-    Exit
-}
-    } 
-
-TLS
+# Execute the function
+Invoke-TlsManager

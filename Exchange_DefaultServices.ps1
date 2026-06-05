@@ -1,52 +1,36 @@
 <#
-
-The script is designed to set all Exchange services to the default startup value, in case a patch disables them all.
-
+.SYNOPSIS
+    Sets Exchange and related services to default startup values after a patch installation.
 #>
+[CmdletBinding()]
+param ()
 
-Write-Host "Configuring Exchange services to default startup values." -ForegroundColor Green
+Write-Host "Configuring Exchange services to default startup values..." -ForegroundColor Green
 
-$ExServices = Get-Service | ?{$_.DisplayName -like "*Microsoft Exchange*"}
+# Optimized: Provider-level filtering is significantly faster than pipeline filtering.
+$ExServices = Get-Service -DisplayName "*Microsoft Exchange*"
 
-foreach ($ExService in $ExServices)
-{
-    if ($ExService.Name -eq "MSExchangeDiagnostics")    
-    {
-        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\MSExchangeDiagnostics" -Name "Start" -Value 2
+foreach ($ExService in $ExServices) {
+    if ($ExService.Name -eq "MSExchangeDiagnostics") {
+        Set-Service -Name $ExService.Name -StartupType Automatic
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\MSExchangeDiagnostics" -Name "DelayedAutostart" -Value 1
-    }
-    else
-    {
+    } else {
         Set-Service -Name $ExService.Name -StartupType Automatic
     }
 }
+# Optimized: Grouped into an array for maintainability. 
+$RelatedServices = @(
+    "FMS", "pla", "HealthService", "IISAdmin", 
+    "SearchExchangeTracing", "W3Svc", "WinMgmt", "RemoteRegistry"
+)
 
-#Configuring startup related servies
-
-# Microsoft Filtering Management Service
-Set-Service -Name FMS -StartupType Automatic
-
-# Performance Logs & Alerts
-Set-Service -Name pla -StartupType Automatic
-
-# Microsoft Monitoring Agent
-Set-Service -Name HealthService -StartupType Automatic
-
-# IIS Admin Service
-Set-Service -Name IISAdmin -StartupType Automatic
-
-# Tracing Service for Search in Exchange
-Set-Service -Name SearchExchangeTracing -StartupType Automatic
-
-# World Wide Web Publishing Service
-Set-Service -Name W3Svc -StartupType Automatic
-
-# Windows Management Instrumentation
-Set-Service -Name WinMgmt -StartupType Automatic
-
-# Remote Registry (should be "Automatic - Trigger start" when viewed afterwards
-Set-Service -Name RemoteRegistry -StartupType Automatic
+# Added resilience: Checks if the service exists before setting it. 
+foreach ($Service in $RelatedServices) {
+    if (Get-Service -Name $Service -ErrorAction SilentlyContinue) {
+        Set-Service -Name $Service -StartupType Automatic
+    }
+}
 
 Write-Host "Exchange services configured to default startup values." -ForegroundColor Green
-Write-Host "POP and IMAP services might need to have the startup type changed. Check the ExchangeSetuplog folder for the pre-patch setup for the following services: MSExchangePop3, MSExchangePOP3BE, MSExchangeImap4 and MSExchangeIMAP4BE and change the startup type manually if needed." -ForegroundColor Yellow
-Write-Host "Find the info here: C:\ExchangeSetupLogs\ServiceStartupMode.xml" -ForegroundColor Yellow
+Write-Host "NOTE: POP and IMAP services might need their startup type adjusted." -ForegroundColor Yellow
+Write-Host "Check C:\ExchangeSetupLogs\ServiceStartupMode.xml for pre-patch states (MSExchangePop3, MSExchangePOP3BE, MSExchangeImap4, MSExchangeIMAP4BE)." -ForegroundColor Yellow

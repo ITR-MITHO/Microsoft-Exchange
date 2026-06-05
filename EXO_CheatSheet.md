@@ -38,9 +38,13 @@ https://m365maps.com/
 **MX-DANE:** domain-com.l-v1.mx.microsoft
 
 # PowerShell Commands
-**Nice to know commands**  
-Set-User MAILBOX -PermanentlyClearPreviousMailboxInfo -confirm:$false  
-Set-Mailbox MAILBOX -ApplyMandatoryProperties  
+# Permanently clear previous mailbox info
+Set-User <MAILBOX> -PermanentlyClearPreviousMailboxInfo -Confirm:$false
+
+# Apply mandatory properties
+Set-Mailbox <MAILBOX> -ApplyMandatoryProperties
+
+# Configure inbound connector to skip IPs
 Set-InboundConnector "Relay" -EFSkipIPS 127.0.0.1,127.0.0.2
 
 **Show moverequest status in percentage**  

@@ -24,24 +24,30 @@ $URL = "https://$DomainName"
 $TargetServer = (Get-ExchangeServer -Identity $env:COMPUTERNAME -ErrorAction Stop).Name
 
 Write-Host "Updating virtual directories on Server: $TargetServer using namespace: $URL" -ForegroundColor Cyan
-
 $VDirs = @{
-    "Set-OwaVirtualDirectory"         = "owa (Default Web Site)"
-    "Set-MapiVirtualDirectory"        = "mapi (Default Web Site)"
-    "Set-OabVirtualDirectory"         = "oab (Default Web Site)"
-    "Set-EcpVirtualDirectory"         = "ecp (Default Web Site)"
-    "Set-ActiveSyncVirtualDirectory"  = "Microsoft-Server-ActiveSync (Default Web Site)"
+    "Set-OwaVirtualDirectory"         = @{Name="owa (Default Web Site)"; Path="owa"}
+    "Set-MapiVirtualDirectory"        = @{Name="mapi (Default Web Site)"; Path="mapi"}
+    "Set-OabVirtualDirectory"         = @{Name="oab (Default Web Site)"; Path="oab"}
+    "Set-EcpVirtualDirectory"         = @{Name="ecp (Default Web Site)"; Path="ecp"}
+    "Set-ActiveSyncVirtualDirectory"  = @{Name="Microsoft-Server-ActiveSync (Default Web Site)"; Path="Microsoft-Server-ActiveSync"}
 }
 
+
 foreach ($Cmdlet in $VDirs.Keys) {
-    $VDirName = $VDirs[$Cmdlet]
-    $Identity = "$TargetServer\$VDirName"
+    $VDir = $VDirs[$Cmdlet]
+    $Identity = "$TargetServer\$($VDir.Name)"
+    $UrlPath  = $VDir.Path
     
     try {
         Write-Host "Configuring $Cmdlet for identity: $Identity..." -ForegroundColor DarkCyan
-        Invoke-Expression "$Cmdlet -Identity '$Identity' -InternalUrl '$URL/$($VDirName -split ' ')[0]' -ExternalUrl '$URL/$($VDirName -split ' ')[0]' -ErrorAction Stop"
+        $Params = @{
+            Identity    = $Identity
+            InternalUrl = "$URL/$UrlPath"
+            ExternalUrl = "$URL/$UrlPath"
+        }
+        & $Cmdlet @Params -ErrorAction Stop
     } catch {
-        Write-Warning "Failed to configure virtual directory via $Cmdlet for $Identity. Reason: $_"
+        Write-Warning "Failed to configure $Identity. Reason: $_"
     }
 }
 
@@ -67,5 +73,4 @@ try {
 } catch {
     Write-Error "Failed to update Client Access Service Autodiscover configuration: $_"
 }
-
 Write-Host "`nVirtual directory URL adjustment processing complete." -ForegroundColor Green

@@ -1,80 +1,90 @@
 <#
-
+.SYNOPSIS
+    Generates an inventory report of all ActiveSync device partnerships.
 .DESCRIPTION
-The script is designed to gather information about all ActiveSync devices in an on-prem Exchange & Exchange Online environment. 
-It can be run without editing, but needs to be running in an elevated PowerShell
-
-.NOTES
-If you have any issues, contact me directly for guidance at mitho@itrelation.dk
-
+    Gathers mobile device specifications and synchronization statistics from 
+    all mailboxes with active synchronization partnerships.
 .OUTPUTS
-1 file named "EASDevices.csv" will be created and placed on your desktop.
-
+    $home\desktop\EASDevices.csv
 #>
 
-$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
-{
-write-host "Script is not running as Administrator" -ForegroundColor Yellow
-Break
+if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
+    Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
 }
 
-Add-PSSnapin *EXC*
-$Date = Get-Date
-$report = @()
+$CurrentDate = Get-Date
+$ExportPath  = Join-Path $home "Desktop\EASDevices.csv"
+# Define an explicit cutoff if you want to filter out old devices (e.g., 0 to show all devices)
+$AgeFilterDays = 0 
 
-$Stats = @("DeviceID",
-            "DeviceAccessState",
-            "DeviceModel"
-            "DeviceType",
-            "DeviceFriendlyName",
-            "DeviceOS",
-            "LastSyncAttemptTime",
-            "LastSuccessSync"
-          )
+Write-Host "Gathering ActiveSync mailbox profiles..." -ForegroundColor Cyan
 
+# Optimization: Bulk capture mailboxes with active partnerships server-side to skip slow clientside Where-Object parsing
+$EasMailboxes = Get-CASMailbox -ResultSize Unlimited -Filter "HasActiveSyncDevicePartnership -eq `$true" | 
+    Select-Object Identity, DisplayName
 
-$Export = "$home\desktop\EASDevices.csv"
-Write-Host "Starting to analyze.. This could take a while depending on the size of your organisation. Grab a coffee :)" -ForegroundColor Yellow
-$MailboxesWithEASDevices = @(Get-CASMailbox -Resultsize Unlimited | Where {$_.HasActiveSyncDevicePartnership})
+if ($EasMailboxes.Count -eq 0) {
+    Write-Host "No active ActiveSync device partnerships discovered in the environment." -ForegroundColor Yellow
+    break
+}
 
-Foreach ($Mailbox in $MailboxesWithEASDevices)
-{
+Write-Host "Building primary SMTP directory address index..." -ForegroundColor Cyan
+# Pre-cache PrimarySmtpAddress to skip running Get-Mailbox user-by-user inside the loop
+$MailboxLookup = @{}
+Get-Mailbox -ResultSize Unlimited | ForEach-Object {
+    $MailboxLookup[$_.Identity.ToString()] = $_.PrimarySmtpAddress.ToString()
+}
+
+$ReportCollection = [System.Collections.Generic.List[PSCustomObject]]::new()
+$TotalCount = $EasMailboxes.Count
+$CurrentIndex = 1
+
+Write-Host "Analyzing active device partnerships. Please wait..." -ForegroundColor Yellow
+foreach ($Mailbox in $EasMailboxes) {
+    $MailboxId = $Mailbox.Identity.ToString()
     
-    $EASDeviceStats = @(Get-ActiveSyncDeviceStatistics -Mailbox $Mailbox.Identity -WarningAction SilentlyContinue)
-    $MailboxInfo = Get-Mailbox $Mailbox.Identity | Select DisplayName,PrimarySMTPAddress
-    
-    Foreach ($EASDevice in $EASDeviceStats)
-    { 
-        $lastsyncattempt = ($EASDevice.LastSyncAttemptTime)
+    $Activity = 'Processing... [{0}/{1}]' -f $CurrentIndex, $TotalCount
+    $Status   = 'Extracting active mobile partnerships for: {0}' -f $Mailbox.DisplayName
+    Write-Progress -Status $Status -Activity $Activity -PercentComplete (($CurrentIndex / $TotalCount) * 100)
 
-        if ($lastsyncattempt -eq $null)
-        {
-            $syncAge = "Never"
+    $DeviceStats = @(Get-ActiveSyncDeviceStatistics -Mailbox $MailboxId -ErrorAction SilentlyContinue)
+    $PrimarySmtp = if ($MailboxLookup.ContainsKey($MailboxId)) { $MailboxLookup[$MailboxId] } else { "Unknown" }
+
+    foreach ($Device in $DeviceStats) {
+        $LastAttempt = $Device.LastSyncAttemptTime
+        
+        if ($null -eq $LastAttempt) {
+            $SyncDays = "Never"
+        } else {
+            $SyncDays = ($CurrentDate - $LastAttempt).Days
         }
-        else
-        {
-            $syncAge = ($Date - $lastsyncattempt).Days
-        }
 
-        if ($syncAge -ge $Age -or $syncAge -eq "Never")
-
-        {
-
-            $reportObj = New-Object PSObject
-            $reportObj | Add-Member NoteProperty -Name "Display Name" -Value $MailboxInfo.DisplayName
-            $reportObj | Add-Member NoteProperty -Name "Email Address" -Value $MailboxInfo.PrimarySMTPAddress
-            $reportObj | Add-Member NoteProperty -Name "Sync Age (Days)" -Value $syncAge
-                
-            Foreach ($stat in $stats)
-            {
-                $reportObj | Add-Member NoteProperty -Name $stat -Value $EASDevice.$stat
-            }
-
-            $report += $reportObj
+        # Apply standardized age filtering evaluation rules safely
+        if ($SyncDays -eq "Never" -or $SyncDays -ge $AgeFilterDays) {
+            
+            # Fast literal object mapping replaces slow Add-Member construction loops
+            $ReportCollection.Add([PSCustomObject]@{
+                "Display Name"        = $Mailbox.DisplayName
+                "Email Address"       = $PrimarySmtp
+                "Sync Age (Days)"     = $SyncDays
+                "DeviceID"            = $Device.DeviceID
+                "DeviceAccessState"   = $Device.DeviceAccessState
+                "DeviceModel"         = $Device.DeviceModel
+                "DeviceType"          = $Device.DeviceType
+                "DeviceFriendlyName"  = $Device.DeviceFriendlyName
+                "DeviceOS"            = $Device.DeviceOS
+                "LastSyncAttemptTime" = $Device.LastSyncAttemptTime
+                "LastSuccessSync"     = $Device.LastSuccessSync
+            })
         }
     }
+    $CurrentIndex++
 }
-cls
-Write-Host "Report completed. Find your file here: $Export" -ForegroundColor Gree
-$report | Export-Csv $Export -NoTypeInformation  -Encoding UTF8
+
+Write-Progress -Activity "Processing..." -Completed
+if ($ReportCollection.Count -gt 0) {
+    $ReportCollection | Export-Csv -Path $ExportPath -NoTypeInformation -Encoding UTF8
+    Write-Host "`nAnalysis complete! Mobile device matrix compiled to: $ExportPath" -ForegroundColor Green
+} else {
+    Write-Host "`nNo mobile devices matched your specified filter criteria." -ForegroundColor Yellow
+}

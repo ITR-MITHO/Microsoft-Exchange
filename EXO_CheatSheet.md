@@ -37,7 +37,7 @@ https://m365maps.com/
 **MX:** domain-com.mail.protection.outlook.com  
 **MX-DANE:** domain-com.l-v1.mx.microsoft
 
-# PowerShell Commands
+# Essential PowerShell Commands
 **Permanently clear previous mailbox info**  
 Set-User <MAILBOX> -PermanentlyClearPreviousMailboxInfo -Confirm:$false  
 
@@ -58,8 +58,10 @@ Set-Moverequest MAILBOX -Completeafter 1
 
 **Limited Details**  
 Set-MailboxFolderPermission <ALIAS>:\Calendar -User Default -AccessRights LimitedDetails  
+
 **Grant Send As permission**  
 Add-RecipientPermission <MAILBOX> -Trustee <USERNAME> -AccessRights SendAs -Confirm:$false  
+
 **Grant Full Access with Automapping**  
 Add-MailboxPermission MAILBOX -User USERNAME -AccessRights FullAccess -Automapping $true  
 

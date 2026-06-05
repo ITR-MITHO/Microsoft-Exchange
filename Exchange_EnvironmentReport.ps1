@@ -1,411 +1,167 @@
 <#
+.SYNOPSIS
+    Optimized Exchange Environment Script.
 
 .DESCRIPTION
-This script will give you an overview of how the Exchange is setup, and what configurations have been made. 
-
-.OUTPUTS
-ExchangeReport.txt contains all information
-DomainChecker.txt contains all information about public DNS entries for each accepted domain
-
-                                            
-                                            Domain Controller Information
-                                            Exchange Server Information
-                                            Mailbox Database configuration
-                                            Database Backup Timestamps
-                                            Number and type of mailboxes
-                                            Transport Rules
-                                            AcceptedDomains
-                                            Retention Policy
-                                            Send Connectors
-                                            Receive Connectors
-                                            Exchange Certificates
-                                            Organization Configuration
-                                            Virtual Directory - Urls & Auth
-                                            MX, SPF, Random SPF, DMARC, Selector1 and Selector 2 lookups
-                                            
-                                            
-                                            
+    Generates a structured HTML report of the Exchange configuration. 
 #>
 
-$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-If (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
-{
-write-host "Script is not running as Administrator" -ForegroundColor Yellow
-Break
-}
-
-
+$ErrorActionPreference = 'SilentlyContinue'
 Import-Module ActiveDirectory
 Add-PSSnapin *EXC*
-Start-Transcript -path $home\Desktop\ExchangeReport.txt -append | out-null
 
-Write-Host "
+$ReportPath = "$env:USERPROFILE\Desktop\ExchangeReport.html"
 
-###########################################################################
-Domain Controller information
-###########################################################################
+$CSS = "<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; background-color: #f4f4f4; color: #333; margin: 20px; }
+    h1 { color: #005A9E; border-bottom: 2px solid #005A9E; padding-bottom: 5px; }
+    h2 { color: #107C41; margin-top: 30px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background-color: #005A9E; color: white; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+</style>"
 
-" -ForegroundColor Yellow
+$HTMLBody = "<h1>Exchange Environment Documentation</h1><p>Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm')</p>"
 
-$DomainControllers = Get-ADDomainController -filter * | Select Hostname
-$Data = @()
-
-foreach ($DomainController in $Domaincontrollers) {
-
-$MyObject = New-Object PSObject -Property @{
-Domain = (Get-ADDomain).DNSRoot
-Servername = $DomainController.Hostname
-ForestLevel = (Get-ADForest).ForestMode
-DomainLevel = (Get-ADDomain).DomainMode
-OS = (Get-CimInstance -ComputerName $DomainController.Hostname -ClassName Win32_OperatingSystem).Caption
-}
-$Data += $MyObject
-}
-$Data | FL Domain, Servername, OS, ForestLevel, DomainLevel
-
-$RecycleBin = get-adoptionalfeature "recycle bin feature";
-$Forestmode = (get-adforest).forestmode;
-if (($RecycleBin.EnabledScopes).count -eq 0) 
-{	
-Write-Host "AD Recycle Bin: DISABLED"
-}
-else
-{
-Write-Host "AD Recycle Bin: ENABLED"
-}
-
-Write-Host "
-
-###########################################################################
-Exchange Server Information
-###########################################################################
-
-" -ForegroundColor Yellow
-
-$Serverlist = Get-ExchangeServer | Select Name
-$Data = @()
-
-foreach ($Server in $Serverlist) {
-$Items = New-Object PSObject -Property @{
-WANIP = (Invoke-WebRequest -uri "http://ifconfig.me/ip" -UseBasicParsing).Content
-Servername = $Server.Name
-OS = (Get-CimInstance -ComputerName $Server.Name -ClassName Win32_OperatingSystem).Caption
-RAM = (Invoke-command $Server.Name {(systeminfo | Select-String 'Total Physical Memory:').ToString().Split(':')[1].Trim()})
-Exchver = (Invoke-command $Server.Name {Get-Command Exsetup.exe | ForEach {$_.FileVersionInfo}}).FileVersion
-InitialPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).InitialSize
-MaxPage = (Invoke-command $Server.Name {Get-CimInstance Win32_PageFileSetting}).MaximumSize
-}
-$Data += $Items
-}
-$Data | FL WANIP, Servername, OS, RAM, Exchver, InitialPage, MaxPage
-
-Write-Host "
-
-###########################################################################
-Mailbox Databases
-###########################################################################
-
-" -ForegroundColor Yellow
-
-Get-MailboxDatabase -Status | fl Name, DatabaseSize, Server, EDBFilePath, LogFolderPath, MasterServerOrAvailabilityGroup, DeletedItemRetention, MailboxRetention, CircularLoggingEnabled, AvailableNewMailboxSpace
-
-
-Write-Host "
-
-###########################################################################
-Database backup timestamps
-###########################################################################
-
-" -ForegroundColor Yellow
-
-Get-MailboxDatabase -Status | Fl Name, LastFullBackup, LastIncrementalBackup, LastDifferentialBackup
-
-
-Write-Host "
-
-###########################################################################
-Number of mailboxes
-###########################################################################
-
-" -ForegroundColor Yellow
-
-Write-Host "UserMailboxes"
-(Get-Mailbox -RecipientTypeDetails UserMailbox -Resultsize Unlimited).count
-
-Write-Host "SharedMailboxes"
-(Get-Mailbox -RecipientTypeDetails SharedMailbox -Resultsize Unlimited).count
-
-Write-Host "RoomMailboxes"
-(Get-Mailbox -RecipientTypeDetails RoomMailbox -Resultsize Unlimited).count
-
-Write-Host "PublicFolders"
-(Get-PublicFolder "\" -Recurse -ErrorAction SilentlyContinue).count
-
-Write-Host "DynamicDistributionGroups (DDG does not work in hybrid mode)"
-(Get-DynamicDistributionGroup -Resultsize Unlimited).Count
-
-
-Write-Host "
-
-###########################################################################
-Group Policies that might effect Outlook behaviour
-###########################################################################
-
-" -ForegroundColor Yellow
-
-$DC = (Get-ADDomainController | Select Name -First 1).Name
-Invoke-Command -ComputerName $DC {
-
-$AllGPO = Get-GPO -All -Domain $env:SERDNSDOMAIN
-[string[]] $MatchedGPOList = @()
-
-ForEach ($GPO in $AllGPO) { 
-    $Report = Get-GPOReport -Guid $GPO.Id -ReportType XML 
-    if ($Report -match 'Outlook') { 
-        Write-Host "$($GPO.DisplayName)" -ForeGroundColor "Green"
-        $MatchedGPOList += "$($GPO.DisplayName)";
-} 
-  }
+# ---------------------------------------------------------
+# Domain Controller Information
+# ---------------------------------------------------------
+Write-Host "Gathering Domain Controller Info..." -ForegroundColor Cyan
+$DCData = Get-ADDomainController -Filter * | ForEach-Object {
+    [PSCustomObject]@{
+        Domain      = (Get-ADDomain).DNSRoot
+        Servername  = $_.Hostname
+        ForestLevel = (Get-ADForest).ForestMode
+        DomainLevel = (Get-ADDomain).DomainMode
+        OS          = (Get-CimInstance -ComputerName $_.Hostname -ClassName Win32_OperatingSystem).Caption
     }
-
-Write-Host "
-
-###########################################################################
-TransportRules
-###########################################################################
-
-" -ForegroundColor Yellow
-
-Get-TransportRule -WarningAction SilentlyContinue | fl Name, State
-
-
-
-Write-Host "
-
-###########################################################################
-AcceptedDomains
-###########################################################################
-
-" -ForegroundColor Yellow
-
-Get-AcceptedDomain | fl Name, DomainType, DomainName
-
-Write-Host "
-
-###########################################################################
-RetentionPolicy
-###########################################################################
-
-" -ForegroundColor Yellow
-$Retention = Get-Retentionpolicy | Select Name, RetentionPolicyTagLinks
-
-Foreach ($R in $Retention)
-{
-
-$RetentionName = $R.Name
-$RetentionTag = $R.RetentionPolicyTagLinks
-$RetentionCount = (Get-Mailbox -ResultSize unlimited | Where {$_.RetentionPolicy -eq "$RetentionName"}).count
-
-Write-Host " 
-
-$RetentionName is assiged to $RetentionCount mailboxes.
-PolicyTag: $RetentionTag
-
-" 
-
 }
+$RecycleBin = Get-ADOptionalFeature "Recycle Bin Feature"
+$HTMLBody += "<h2>Domain Controller Information (AD Recycle Bin: $(if($RecycleBin.EnabledScopes.Count -gt 0){'Enabled'}else{'Disabled'}))</h2>"
+$HTMLBody += $DCData | ConvertTo-Html -Fragment
 
-Write-Host "
+# ---------------------------------------------------------
+# Exchange Server Information
+# ---------------------------------------------------------
+Write-Host "Gathering Exchange Server Info..." -ForegroundColor Cyan
+$WANIP = (Invoke-RestMethod -Uri "http://ifconfig.me/ip" -UseBasicParsing).Trim()
+$ServerData = Get-ExchangeServer | ForEach-Object {
+    $compName = $_.Name
+    $IPv4 = ([System.Net.Dns]::GetHostAddresses($compName) | Where-Object AddressFamily -eq 'InterNetwork').IPAddressToString -join ', '
 
-###########################################################################
-Send Connectors
-###########################################################################
-
-" -ForegroundColor Yellow
-
-Get-SendConnector | fl name, Smarthosts, AddressSpaces, Enabled, ProtocolLoggingLevel
-
-
-Write-Host "
-
-###########################################################################
-Receive Connectors
-###########################################################################
-
-" -ForegroundColor Yellow
-
-
-Get-ReceiveConnector | fl Name, Enabled, RemoteIPRanges, ProtocolLoggingLevel, PermissionGroups
-
-
-
-Write-Host "
-
-###########################################################################
-Exchange Certificates
-###########################################################################
-
-" -ForegroundColor Yellow
-
-
-Get-ExchangeCertificate | fl Services, Thumbprint, IsSelfSigned, Subject, Notafter, NotBefore
-
-
-Write-Host "
-
-###########################################################################
-OrganizationConfig
-###########################################################################
-
-" -ForegroundColor Yellow
-
-$Kerb = Get-ClientAccessServer $env:COMPUTERNAME -IncludeAlternateServiceAccountCredentialStatus -WarningAction SilentlyContinue | Select AlternateServiceAccountConfiguration
-If ($Kerb.AlternateServiceAccountConfiguration -like "Latest: <n*")
-{
-Write-Host "KerberosEnabled: False
-
-"
-}
-Else
-{
-Write-Host "KerberosEnabled: True
-
-"
-}
-
-$Hybrid = Get-HybridConfiguration
-If ($Hybrid)
-{
-Write-Host "HybridEnabled: True"
-}
-Else
-{
-Write-Host "HybridEnabled: False"
-}
-
-Get-OrganizationConfig | fl OAuth2ClientProfileEnabled, MitigationsEnabled, MapiHttpEnabled
-
-Write-Host "
-###########################################################################
-Virtual Directories
-###########################################################################
-" -ForegroundColor Yellow
-
-Write-Host "Autodiscover"
-Get-ClientAccessServer -WarningAction SilentlyContinue -Identity "$env:COMPUTERNAME" | fl AutodiscoverServiceInternalURI
-Get-ExchangeServer $env:computername | Get-AutodiscoverVirtualDirectory | fl InternalAuthenticationMethods, ExternalAuthenticationMethods
-
-Write-Host "OWA (Outlook Web Application)"
-Get-OwaVirtualDirectory -Identity "$env:COMPUTERNAME\OWA (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "ECP (Exchange Control Panel)"
-Get-ECPVirtualDirectory -Identity "$env:COMPUTERNAME\ECP (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "EWS (Exchange Web Services)"
-Get-WebServicesVirtualDirectory -Identity "$env:COMPUTERNAME\EWS (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "MAPI"
-Get-MapiVirtualDirectory -Identity "$env:COMPUTERNAME\MAPI (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "OAB (Offline Address Book)"
-Get-OABVirtualDirectory -Identity "$env:COMPUTERNAME\OAB (Default Web Site)" | fl InternalURL, ExternalURL, InternalAuthenticationMethods, ExternalAuthenticationMethods 
-
-Write-Host "EAS (Exchange Active Sync)"
-Get-ActiveSyncVirtualDirectory -Identity "$env:COMPUTERNAME\Microsoft-Server-ActiveSync (Default web site)" | fl InternalURL, ExternalURL
-
-Write-Host "Outlook Anywhere"
-Get-OutlookAnywhere -Identity "$env:COMPUTERNAME\rpc (Default web site)" | Fl InternalHostname, ExternalHostname
-Get-ExchangeServer $env:computername | Get-OutlookAnywhere | fl InternalClientAuthenticationMethod, ExternalClientAuthenticationMethod, IISAuthenticationMethods
-
-Stop-Transcript | out-null
-
-
-$ErrorActionPreference = 'SilentlyContinue'
-$Domains = Get-AcceptedDomain | Where-Object {$_.DomainName -notlike "*.local" -and $_.DomainName -notlike "*.onmicrosoft.com"}  | Select DomainName
-$Result = foreach ($Domain in $Domains) {
-$DomainName = ($Domain.DomainName).Address
-
-# MX Records
-$MX = nslookup -q=mx $DomainName 8.8.8.8 2>$null
-$MXGrabber = $MX | Select-String "mail exchanger"
-
-# SPF Records
-$SPF = nslookup -q=txt $DomainName 8.8.8.8 2>$null
-$SPFGrabber = $SPF | Select-String "spf"
-
-# DMARC Records
-$DMARC = nslookup -q=txt _dmarc.$DomainName 8.8.8.8 2>$null
-$DMARCGrabber = $DMARC | Select-String "v=DMARC1"
-
-# Random SPF Record
-$RandomSPF = nslookup -q=txt randomspfrecord.$DomainName 8.8.8.8 2>$null
-$RandomSPFGrabber = $RandomSPF | Select-String "v=spf1"
-
-# Selector1 CNAME Record
-$Selector1 = nslookup -q=cname "selector1._domainkey.$DomainName" 8.8.8.8 2>$null
-$Selector1Grabber = $Selector1 | Select-String "canonical name"
-
-# Selector2 CNAME Record
-$Selector2 = nslookup -q=cname "selector2._domainkey.$DomainName" 8.8.8.8 2>$null
-$Selector2Grabber = $Selector2 | Select-String "canonical name"
-
-# Display Results
-Echo "--- DNS Information for $DomainName ---" >> $home\Desktop\DomainChecker.txt
-
-# MX Record
-If ($MXGrabber) {
-    $MXRecord = $MXGrabber.Line -replace ".*mail exchanger = ", ""
-    Echo "MX-Record:
-$MXRecord
-    " >> $home\Desktop\DomainChecker.txt
-} Else {
-    Echo "MX-record:
-No valid MX-record found for $DomainName
-    " >> $home\Desktop\DomainChecker.txt
-}
-
-# SPF Record
-If ($SPFGrabber) {
-    $SPFRecord = $SPFGrabber.Line -replace ".*text = ", "" -replace '"', ""  # Clean up result
-    Echo "SPF-record:
-$SPFRecord
-    " >> $home\Desktop\DomainChecker.txt
-    
-} Else {
-    Echo "SPF-record:
-No valid SPF-record found for $DomainName
-    " >> $home\Desktop\DomainChecker.txt
-}
-
-# Random SPF Record
-If ($RandomSPFGrabber) {
-    $RandomSPF = $RandomSPFGrabber.Line -replace ".*text = ", "" -replace '"', ""  # Clean up result
-    Echo "Random SPF:
-$RandomSPF
-    " >> $home\Desktop\DomainChecker.txt
-    
-} Else {
-    Echo "Random SPF:
-No Random SPF found for $DomainName
-    " >> $home\Desktop\DomainChecker.txt
-}
-
-
-# DMARC Record
-If ($DMARCGrabber) {
-    $DMARCRecord = $DMARCGrabber.Line -replace ".*text = ", "" -replace '"', ""  # Clean up result
- Echo "DMARC-record:
-$DMARCRecord
-    " >> $home\Desktop\DomainChecker.txt
-    
-} Else {
-    Echo "DMARC-record:
-No valid DMARC-record found for $DomainName
-    " >> $home\Desktop\DomainChecker.txt
-}
-
-
+    [PSCustomObject]@{
+        Servername  = $compName
+        IPv4        = $IPv4
+        WANIP       = $WANIP
+        OS          = (Get-CimInstance -ComputerName $compName -ClassName Win32_OperatingSystem).Caption
+        RAM_GB      = [math]::Round((Get-CimInstance -ComputerName $compName -ClassName Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 2)
+        ExchangeVer = (Get-Command Exsetup.exe | ForEach {$_.FileVersionInfo}).FileVersion
     }
+}
+$HTMLBody += "<h2>Exchange Server Information</h2>"
+$HTMLBody += $ServerData | ConvertTo-Html -Fragment
 
-Write-host "Script completed. 
-Find your output files on your desktop here: $home\Desktop\ExchangeReport.txt and $home\Desktop\DomainChecker.txt" -ForegroundColor Green
+# ---------------------------------------------------------
+# Organization Configuration
+# ---------------------------------------------------------
+Write-Host "Gathering Organization Configuration..." -ForegroundColor Cyan
+$Kerb = Get-ClientAccessServer $env:COMPUTERNAME -IncludeAlternateServiceAccountCredentialStatus -WarningAction SilentlyContinue
+$Hybrid = Get-HybridConfiguration -ErrorAction SilentlyContinue
+$OrgConfig = Get-OrganizationConfig
+
+$OrgData = [PSCustomObject]@{
+    KerberosEnabled            = if ($Kerb.AlternateServiceAccountConfiguration -like "*Latest: <n*") { $false } else { $true }
+    HybridEnabled              = if ($Hybrid) { $true } else { $false }
+    OAuth2ClientProfileEnabled = $OrgConfig.OAuth2ClientProfileEnabled
+    MitigationsEnabled         = $OrgConfig.MitigationsEnabled
+    MapiHttpEnabled            = $OrgConfig.MapiHttpEnabled
+}
+$HTMLBody += "<h2>Organization Configuration</h2>"
+$HTMLBody += $OrgData | ConvertTo-Html -Fragment
+
+# ---------------------------------------------------------
+# Mailbox Databases & Backups
+# ---------------------------------------------------------
+Write-Host "Gathering Mailbox Database Info..." -ForegroundColor Cyan
+$DBData = Get-MailboxDatabase -Status | Select-Object Name, DatabaseSize, Server, CircularLoggingEnabled, LastFullBackup, LastIncrementalBackup
+$HTMLBody += "<h2>Mailbox Databases & Backups</h2>"
+$HTMLBody += $DBData | ConvertTo-Html -Fragment
+
+# ---------------------------------------------------------
+# Mailbox Statistics
+# ---------------------------------------------------------
+Write-Host "Gathering Mailbox Statistics..." -ForegroundColor Cyan
+$AllMailboxes = Get-Mailbox -ResultSize Unlimited
+$MailboxCounts = [PSCustomObject]@{
+    UserMailboxes          = ($AllMailboxes | Where-Object RecipientTypeDetails -eq 'UserMailbox').Count
+    RemoteMailboxes        = (Get-RemoteMailbox).Count
+    SharedMailboxes        = ($AllMailboxes | Where-Object RecipientTypeDetails -eq 'SharedMailbox').Count
+    RoomMailboxes          = ($AllMailboxes | Where-Object RecipientTypeDetails -eq 'RoomMailbox').Count
+    PublicFolders          = (Get-PublicFolder "\" -Recurse).Count
+    DynamicDistGroups      = (Get-DynamicDistributionGroup -ResultSize Unlimited).Count
+}
+$HTMLBody += "<h2>Mailbox Statistics</h2>"
+$HTMLBody += $MailboxCounts | ConvertTo-Html -Fragment
+
+# ---------------------------------------------------------
+# Accepted Domains
+# ---------------------------------------------------------
+Write-Host "Gathering Accepted Domains..." -ForegroundColor Cyan
+$HTMLBody += "<h2>Accepted Domains</h2>"
+$HTMLBody += Get-AcceptedDomain | Select-Object Name, DomainType, DomainName | ConvertTo-Html -Fragment
+
+# ---------------------------------------------------------
+# Retention Policies
+# ---------------------------------------------------------
+Write-Host "Gathering Retention Policies..." -ForegroundColor Cyan
+$RetData = Get-RetentionPolicy | ForEach-Object {
+    $policyName = $_.Name
+    [PSCustomObject]@{
+        PolicyName     = $policyName
+        AssignedCount  = ($AllMailboxes | Where-Object RetentionPolicy -eq $policyName).Count
+        PolicyTagLinks = $_.RetentionPolicyTagLinks -join ', '
+    }
+}
+$HTMLBody += "<h2>Retention Policies</h2>"
+$HTMLBody += $RetData | ConvertTo-Html -Fragment
+
+# ---------------------------------------------------------
+# Transport, Connectors & Certificates
+# ---------------------------------------------------------
+Write-Host "Gathering Transport & Certificates..." -ForegroundColor Cyan
+
+$HTMLBody += "<h2>Transport Rules</h2>"
+$HTMLBody += Get-TransportRule | Select-Object Name, State | ConvertTo-Html -Fragment
+
+$HTMLBody += "<h2>Send Connectors</h2>"
+$HTMLBody += Get-SendConnector | Select-Object Name, 
+    @{n='AddressSpaces';e={$_.AddressSpaces -join ', '}}, 
+    Enabled, 
+    @{n='SmartHosts';e={$_.SmartHosts -join ', '}} | ConvertTo-Html -Fragment
+
+$HTMLBody += "<h2>Receive Connectors</h2>"
+$HTMLBody += Get-ReceiveConnector | Select-Object Name, 
+    Enabled, 
+    @{n='PermissionGroups';e={$_.PermissionGroups -join ', '}} | ConvertTo-Html -Fragment
+
+$HTMLBody += "<h2>Exchange Certificates</h2>"
+$HTMLBody += Get-ExchangeCertificate | Select-Object @{n='Services';e={$_.Services -join ', '}}, Thumbprint, IsSelfSigned, NotAfter | ConvertTo-Html -Fragment
+
+# ---------------------------------------------------------
+# Virtual Directories
+# ---------------------------------------------------------
+Write-Host "Gathering Virtual Directories..." -ForegroundColor Cyan
+$VDirData = @()
+$VDirData += Get-OwaVirtualDirectory | Select-Object @{n='Service';e={'OWA'}}, Server, InternalUrl, ExternalUrl
+$VDirData += Get-EcpVirtualDirectory | Select-Object @{n='Service';e={'ECP'}}, Server, InternalUrl, ExternalUrl
+$VDirData += Get-WebServicesVirtualDirectory | Select-Object @{n='Service';e={'EWS'}}, Server, InternalUrl, ExternalUrl
+$VDirData += Get-MapiVirtualDirectory | Select-Object @{n='Service';e={'MAPI'}}, Server, InternalUrl, ExternalUrl
+$VDirData += Get-OabVirtualDirectory | Select-Object @{n='Service';e={'OAB'}}, Server, InternalUrl, ExternalUrl
+$VDirData += Get-ActiveSyncVirtualDirectory | Select-Object @{n='Service';e={'EAS'}}, Server, InternalUrl, ExternalUrl
+$HTMLBody += "<h2>Virtual Directories</h2>"
+$HTMLBody += $VDirData | ConvertTo-Html -Fragment
+
+# Assemble and output the Exchange HTML report
+ConvertTo-Html -Head $CSS -Body $HTMLBody | Out-File $ReportPath
+Write-Host "Exchange Report exported to: $ReportPath" -ForegroundColor Green

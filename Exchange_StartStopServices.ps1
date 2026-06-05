@@ -9,7 +9,6 @@
     $Home\Desktop\ExchangeServices.csv - Captured baseline of active services.
 #>
 
-# 1. Access Control Enforcement
 $CurrentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 if (-not $CurrentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Warning "Elevated administrative privileges required to manage system service states."
@@ -23,7 +22,6 @@ if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
 $TargetServer = $env:COMPUTERNAME
 $CsvPath      = Join-Path $home "Desktop\ExchangeServices.csv"
 
-# 2. Dynamic Component Control Loop Engine
 while ($true) {
     Write-Host "`n=== Exchange Service State Manager ===" -ForegroundColor Cyan
     Write-Host "Target Host: $TargetServer" -ForegroundColor DarkCyan
@@ -35,10 +33,7 @@ while ($true) {
 
     switch ($Choice) {
         "1" {
-            # Capture active workloads *before* changing configuration layout definitions
             Write-Host "Evaluating current running service baseline..." -ForegroundColor Cyan
-            
-            # Captures all native MSExchange services + critical dependent Web infrastructure
             $ActiveServices = Get-Service | Where-Object { 
                 ($_.Name -match '^MSExchange' -or $_.Name -in @('IISADMIN', 'W3SVC')) -and 
                 $_.Status -eq 'Running' 
@@ -87,14 +82,12 @@ while ($true) {
             Write-Host "Re-initializing core ecosystem workloads from baseline profile..." -ForegroundColor Cyan
             $BaselineServices = Import-Csv -Path $CsvPath
 
-            # Step 1: Flip startup mappings back to automatic execution states
             foreach ($Svc in $BaselineServices) {
                 try {
                     Set-Service -Name $Svc.Name -StartupType Automatic -ErrorAction SilentlyContinue
                 } catch {}
             }
 
-            # Step 2: Orderly startup sequence handling
             # MSExchangeADTopology must spin up fully first, or secondary workloads fail immediately
             if ($BaselineServices.Name -contains "MSExchangeADTopology") {
                 Write-Host "Prioritizing Active Directory Topology Engine..." -ForegroundColor Yellow

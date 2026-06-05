@@ -65,8 +65,6 @@ A consolidated reference guide for Exchange Online migrations, mail flow configu
 | :--- | :--- |
 | **10-day message trace (max 5000 results)** | `Get-MessageTraceV2 -ResultSize 5000 -StartDate (Get-Date).AddDays(-10) -EndDate (Get-Date)` |
 
----
-
 ## ⚙️ Client Configuration (Registry)
 
 | Action | Registry Path | Key (DWORD) | Value |

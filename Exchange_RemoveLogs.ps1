@@ -11,14 +11,7 @@
 if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
 }
-if (Get-Module -ListAvailable -Name WebAdministration) {
-    Import-Module WebAdministration -ErrorAction SilentlyContinue
-    $CurrentPeriod = Get-WebConfigurationProperty -Filter /system.applicationHost/sites/siteDefaults/logFile -Name Period
-    if ($CurrentPeriod.Value -ne "Hourly") {
-        Set-WebConfigurationProperty -Filter /system.applicationHost/sites/siteDefaults/logFile -Name "period" -value "Hourly"
-        Write-Host "IIS Log Rollover configuration updated to: Hourly" -ForegroundColor Yellow
-    }
-}
+
 
 $ThresholdDate = (Get-Date).AddDays(-10)
 $LogDirectories = [System.Collections.Generic.List[string]]::new()

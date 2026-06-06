@@ -12,7 +12,7 @@ if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
 }
 
 $TargetServer = (Get-ExchangeServer -Identity $env:COMPUTERNAME -ErrorAction Stop).Name
-$MinPercent   = 20
+$MinPercent   = 20 # Available free space threshhold
 
 function Get-FreeSpacePercent {
     param ([string]$DriveLetter)
@@ -52,10 +52,35 @@ foreach ($Drive in $DrivesToCheck) {
     }
 }
 
+# --- System Resources (CPU & RAM) ---
+Write-Host "`n=== System Resources ===" -ForegroundColor Cyan
+
+# CPU Usage
+$Cpu = Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average
+$CpuPercent = [math]::Round($Cpu.Average, 2)
+
+if ($CpuPercent -gt 85) {
+    Write-Host "CPU Usage: $CpuPercent%" -ForegroundColor Red
+} else {
+    Write-Host "CPU Usage: OK ($CpuPercent%)" -ForegroundColor Green
+}
+
+# RAM Usage
+$Os = Get-CimInstance Win32_OperatingSystem
+$TotalRamGb = [math]::Round($Os.TotalVisibleMemorySize / 1MB, 2)
+$FreeRamGb  = [math]::Round($Os.FreePhysicalMemory / 1MB, 2)
+$UsedRamGb  = $TotalRamGb - $FreeRamGb
+$RamPercent = [math]::Round(($UsedRamGb / $TotalRamGb) * 100, 2)
+
+if ($RamPercent -gt 85) {
+    Write-Host "RAM Usage: $RamPercent% ($UsedRamGb GB used of $TotalRamGb GB)" -ForegroundColor Red
+} else {
+    Write-Host "RAM Usage: OK (below $RamPercent%) ($UsedRamGb GB used of $TotalRamGb GB)" -ForegroundColor Green
+}
+
 # --- Check message queue ---
 Write-Host "`n=== Message Queue ===" -ForegroundColor Cyan
 try {
-    # Isolate strictly to the local server node context
     $QueueCount = (Get-Queue -Server $TargetServer -ErrorAction Stop | Measure-Object -Property MessageCount -Sum).Sum
     if ($QueueCount -gt 100) {
         Write-Host "Warning: $QueueCount messages in local queues." -ForegroundColor Red
@@ -92,7 +117,6 @@ if ($Missing) {
 
 # --- Check for backpressure events ---
 Write-Host "`n=== Backpressure Events (last 24h) ===" -ForegroundColor Cyan
-# Forcing array literal coercion @(...) to protect item counting mechanics
 $Events = @(Get-WinEvent -FilterHashtable @{
     LogName      = 'Application'
     ProviderName = 'MSExchangeTransport'

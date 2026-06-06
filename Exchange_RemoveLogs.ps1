@@ -1,9 +1,8 @@
 <#
 .SYNOPSIS
-    Optimizes IIS log configuration and purges aged Exchange/IIS log files.
+    Purges aged Exchange/IIS log files.
 .DESCRIPTION
-    Updates IIS log rollover to Hourly for faster lock release and purges 
-    IIS and Exchange log files older than 10 days using fast engine filtering.
+    IIS and Exchange log files older than 10 days.
 .OUTPUTS
     Console progress bars and completion summary.
 #>

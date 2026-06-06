@@ -49,7 +49,7 @@ $HTMLBody += $DCData | ConvertTo-Html -Fragment
 # ---------------------------------------------------------
 Write-Host "Gathering Exchange Server Info..." -ForegroundColor Cyan
 $WANIP = (Invoke-RestMethod -Uri "http://ifconfig.me/ip" -UseBasicParsing).Trim()
-$ServerData = Get-ExchangeServer | ForEach-Object {
+$ServerData = Get-ExchangeServer | Sort-Object Name | ForEach-Object {
     $compName = $_.Name
     $IPv4 = ([System.Net.Dns]::GetHostAddresses($compName) | Where-Object AddressFamily -eq 'InterNetwork').IPAddressToString -join ', '
 
@@ -87,7 +87,7 @@ $HTMLBody += $OrgData | ConvertTo-Html -Fragment
 # Mailbox Databases & Backups
 # ---------------------------------------------------------
 Write-Host "Gathering Mailbox Database Info..." -ForegroundColor Cyan
-$DBData = Get-MailboxDatabase -Status | Select-Object Name, DatabaseSize, Server, CircularLoggingEnabled, LastFullBackup, LastIncrementalBackup
+$DBData = Get-MailboxDatabase -Status | Select-Object Name, DatabaseSize, Server, CircularLoggingEnabled, LastFullBackup, LastIncrementalBackup | Sort-object Name
 $HTMLBody += "<h2>Mailbox Databases & Backups</h2>"
 $HTMLBody += $DBData | ConvertTo-Html -Fragment
 
@@ -95,10 +95,10 @@ $HTMLBody += $DBData | ConvertTo-Html -Fragment
 # Mailbox Statistics
 # ---------------------------------------------------------
 Write-Host "Gathering Mailbox Statistics..." -ForegroundColor Cyan
-$AllMailboxes = Get-Mailbox -ResultSize Unlimited
+$AllMailboxes = Get-Mailbox -ResultSize Unlimited -WarningAction SilentlyContinue
 $MailboxCounts = [PSCustomObject]@{
     UserMailboxes          = ($AllMailboxes | Where-Object RecipientTypeDetails -eq 'UserMailbox').Count
-    RemoteMailboxes        = (Get-RemoteMailbox).Count
+    RemoteMailboxes        = (Get-RemoteMailbox -ResultSize Unlimited -WarningAction SilentlyContinue).Count
     SharedMailboxes        = ($AllMailboxes | Where-Object RecipientTypeDetails -eq 'SharedMailbox').Count
     RoomMailboxes          = ($AllMailboxes | Where-Object RecipientTypeDetails -eq 'RoomMailbox').Count
     PublicFolders          = (Get-PublicFolder "\" -Recurse).Count
@@ -141,7 +141,7 @@ $HTMLBody += "<h2>Send Connectors</h2>"
 $HTMLBody += Get-SendConnector | Select-Object Name, 
     @{n='AddressSpaces';e={$_.AddressSpaces -join ', '}}, 
     Enabled, 
-    @{n='SmartHosts';e={$_.SmartHosts -join ', '}} | ConvertTo-Html -Fragment
+    @{n='SmartHosts';e={$_.SmartHosts -join ', '}}, MaxMessageSize | ConvertTo-Html -Fragment
 
 $HTMLBody += "<h2>Receive Connectors</h2>"
 $HTMLBody += Get-ReceiveConnector | Select-Object Name, 
@@ -149,20 +149,34 @@ $HTMLBody += Get-ReceiveConnector | Select-Object Name,
     @{n='PermissionGroups';e={$_.PermissionGroups -join ', '}} | ConvertTo-Html -Fragment
 
 $HTMLBody += "<h2>Exchange Certificates</h2>"
-$HTMLBody += Get-ExchangeCertificate | Select-Object @{n='Services';e={$_.Services -join ', '}}, Thumbprint, IsSelfSigned, NotAfter | ConvertTo-Html -Fragment
+$HTMLBody += Get-ExchangeCertificate | Select-Object `
+    @{n='Services';e={$_.Services -join ', '}}, 
+    Subject, 
+    Thumbprint, 
+    IsSelfSigned, 
+    NotAfter,
+    @{n='Expired';e={if ((Get-Date) -gt $_.NotAfter) { "Yes" } else { "No" }}} | 
+    ConvertTo-Html -Fragment
 
 # ---------------------------------------------------------
 # Virtual Directories
 # ---------------------------------------------------------
-Write-Host "Gathering Virtual Directories..." -ForegroundColor Cyan
+Write-Host "Gathering Virtual Directories and Autodiscover..." -ForegroundColor Cyan
+
+# 1. Fetch Autodiscover SCP URI separately
+$AutoDiscoverURI = (Get-ClientAccessService -Identity $Env:computername).AutodiscoverServiceInternalUri
+
+# 2. Gather standard Virtual Directories
 $VDirData = @()
-$VDirData += Get-OwaVirtualDirectory | Select-Object @{n='Service';e={'OWA'}}, Server, InternalUrl, ExternalUrl
-$VDirData += Get-EcpVirtualDirectory | Select-Object @{n='Service';e={'ECP'}}, Server, InternalUrl, ExternalUrl
-$VDirData += Get-WebServicesVirtualDirectory | Select-Object @{n='Service';e={'EWS'}}, Server, InternalUrl, ExternalUrl
-$VDirData += Get-MapiVirtualDirectory | Select-Object @{n='Service';e={'MAPI'}}, Server, InternalUrl, ExternalUrl
-$VDirData += Get-OabVirtualDirectory | Select-Object @{n='Service';e={'OAB'}}, Server, InternalUrl, ExternalUrl
-$VDirData += Get-ActiveSyncVirtualDirectory | Select-Object @{n='Service';e={'EAS'}}, Server, InternalUrl, ExternalUrl
-$HTMLBody += "<h2>Virtual Directories</h2>"
+$VDirData += Get-OwaVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'OWA'}}, InternalUrl, ExternalUrl
+$VDirData += Get-EcpVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'ECP'}}, InternalUrl, ExternalUrl
+$VDirData += Get-WebServicesVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'EWS'}}, InternalUrl, ExternalUrl
+$VDirData += Get-MapiVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'MAPI'}}, InternalUrl, ExternalUrl
+$VDirData += Get-OabVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'OAB'}}, InternalUrl, ExternalUrl
+$VDirData += Get-ActiveSyncVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'EAS'}}, InternalUrl, ExternalUrl
+
+# 3. Build HTML output with Autodiscover in the header section
+$HTMLBody += "<h2>Virtual Directories (Autodiscover SCP: $AutoDiscoverURI)</h2>"
 $HTMLBody += $VDirData | ConvertTo-Html -Fragment
 
 # Assemble and output the Exchange HTML report

@@ -16,7 +16,6 @@ $Count = 1
 $Results = [System.Collections.Generic.List[PSCustomObject]]::new()
 Write-Host "Analyzing storage configurations. Please wait..." -ForegroundColor Yellow
 
-# 2. Storage Processing Engine Loop
 foreach ($Mailbox in $Mailboxes) {
     $Sam = $Mailbox.SamAccountName
     
@@ -24,15 +23,11 @@ foreach ($Mailbox in $Mailboxes) {
     $Activity = 'Processing... [{0}/{1}]' -f $Count, $MailboxCount
     $Status   = 'Extracting mailbox statistics for: {0}' -f $Mailbox.DisplayName
     Write-Progress -Status $Status -Activity $Activity -PercentComplete (($Count / $MailboxCount) * 100)
-
-    # Fetch primary stats (Consolidating calls to grab deleted item size natively)
     $PrimaryStats = Get-MailboxStatistics -Identity $Sam -ErrorAction SilentlyContinue
     
-    # Safe object verification using native Byte Methods (Skips brittle string splitting)
     $MailboxSizeMB = if ($PrimaryStats.TotalItemSize.Value) { $PrimaryStats.TotalItemSize.Value.ToMB() } else { 0 }
     $DeletedSizeMB = if ($PrimaryStats.TotalDeletedItemSize.Value) { $PrimaryStats.TotalDeletedItemSize.Value.ToMB() } else { 0 }
 
-    # Conditional evaluation for Archive states
     $ArchiveSizeMB = "No Archive"
     if ($Mailbox.ArchiveStatus -ne "None") {
         $ArchiveStats = Get-MailboxStatistics -Identity $Sam -Archive -ErrorAction SilentlyContinue
@@ -40,8 +35,6 @@ foreach ($Mailbox in $Mailboxes) {
             $ArchiveSizeMB = $ArchiveStats.TotalItemSize.Value.ToMB()
         }
     }
-
-    # Fast literal casting directly into the type-safe generic collection list
     $Results.Add([PSCustomObject]@{
         Username             = $Mailbox.Alias
         Name                 = $Mailbox.DisplayName
@@ -55,10 +48,7 @@ foreach ($Mailbox in $Mailboxes) {
     $Count++
 }
 
-# Clear visual progress engine status element
 Write-Progress -Activity "Processing..." -Completed
-
-# 3. Controlled File Output Phase
 if ($Results.Count -gt 0) {
     $Results | Select-Object Username, Name, Email, Type, MailboxSizeGB, ArchiveSizeGB, TotalDeletedItemSize | 
         Export-Csv -Path $CsvPath -NoTypeInformation -Encoding Unicode

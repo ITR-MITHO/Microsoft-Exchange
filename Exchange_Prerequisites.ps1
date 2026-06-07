@@ -91,7 +91,7 @@ foreach ($Path in $RegPaths) {
     }
 }
 
-Disable IE Enhanced mode
+# Disable IE Enhanced mode
 Write-Host "Disabling legacy IE ESC constraints safely..." -ForegroundColor Cyan
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}" -Name "IsInstalled" -Value 0 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}" -Name "IsInstalled" -Value 0 -Force

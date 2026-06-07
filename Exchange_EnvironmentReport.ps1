@@ -1,7 +1,4 @@
 <#
-.SYNOPSIS
-    Optimized Exchange Environment Script.
-
 .DESCRIPTION
     Generates a structured HTML report of the Exchange configuration.
 
@@ -162,11 +159,8 @@ $HTMLBody += Get-ExchangeCertificate | Select-Object `
 # Virtual Directories
 # ---------------------------------------------------------
 Write-Host "Gathering Virtual Directories and Autodiscover..." -ForegroundColor Cyan
-
-# 1. Fetch Autodiscover SCP URI separately
 $AutoDiscoverURI = (Get-ClientAccessService -Identity $Env:computername).AutodiscoverServiceInternalUri
 
-# 2. Gather standard Virtual Directories
 $VDirData = @()
 $VDirData += Get-OwaVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'OWA'}}, InternalUrl, ExternalUrl
 $VDirData += Get-EcpVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'ECP'}}, InternalUrl, ExternalUrl
@@ -175,10 +169,8 @@ $VDirData += Get-MapiVirtualDirectory -Server $Env:computername | Select-Object 
 $VDirData += Get-OabVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'OAB'}}, InternalUrl, ExternalUrl
 $VDirData += Get-ActiveSyncVirtualDirectory -Server $Env:computername | Select-Object @{n='Service';e={'EAS'}}, InternalUrl, ExternalUrl
 
-# 3. Build HTML output with Autodiscover in the header section
 $HTMLBody += "<h2>Virtual Directories (Autodiscover SCP: $AutoDiscoverURI)</h2>"
 $HTMLBody += $VDirData | ConvertTo-Html -Fragment
 
-# Assemble and output the Exchange HTML report
 ConvertTo-Html -Head $CSS -Body $HTMLBody | Out-File $ReportPath
 Write-Host "Exchange Report exported to: $ReportPath" -ForegroundColor Green

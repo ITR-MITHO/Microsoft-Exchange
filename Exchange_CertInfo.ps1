@@ -2,10 +2,9 @@
 .SYNOPSIS
     Audits current usage of TLS certificates in an Exchange on-premises environment.
 .DESCRIPTION
-    Run this script before replacing a certificate to identify all connectors 
-    and Active Directory server objects currently bound to specific certificates.
+    Run this script before replacing a certificate to identify all connectors and default SMTP certificates.
 .OUTPUTS
-    Outputs structural diagnostic tables directly to the console host.
+    Outputs tables directly to the console host.
 #>
 
 if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {

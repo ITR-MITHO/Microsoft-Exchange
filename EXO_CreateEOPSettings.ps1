@@ -19,11 +19,11 @@
     		- Mailtips
     		- Audit Log
     		- External Senders Notification
-		- Safe Attachments
+			- Safe Attachments
     		- Safe Links
     		- Anti-Phishing Policy
     		- Inbound Anti-Spam Policy
-		- Outbound Anti-Spam Policy
+			- Outbound Anti-Spam Policy
     		- Custom Quarantine Policies, that enables notifications on RequestOnly and FullAccess
 	    
 
@@ -109,31 +109,31 @@ ITM8 - Safe Links Policy Created' -ForeGroundColor Green
 
 # New Anti-Phishing Policy
 $AntiPhish = @{
-	Name 					= 'ITM8 - Anti-Phishing policy'
-    	AdminDisplayName 			= 'ITM8 - Anti-Phishing policy'
-     	EnableSpoofIntelligence			= $true
+		Name 								= 'ITM8 - Anti-Phishing policy'
+    	AdminDisplayName 					= 'ITM8 - Anti-Phishing policy'
+     	EnableSpoofIntelligence				= $true
         HonorDmarcPolicy                   	= $true
     	DmarcQuarantineAction              	= 'Quarantine'
-    	DmarcRejectAction                   	= 'Reject'
-	AuthenticationFailAction		= 'MoveToJmf'
+    	DmarcRejectAction                   = 'Reject'
+		AuthenticationFailAction			= 'MoveToJmf'
     	SpoofQuarantineTag                 	= 'ITM8 - RequestOnlyPolicy'
     	EnableFirstContactSafetyTips		= $true
-	EnableUnauthenticatedSender 		= $true
-	EnableViaTag 				= $true
+		EnableUnauthenticatedSender 		= $true
+		EnableViaTag 						= $true
     	PhishThresholdLevel             	= 3
-	EnableTargetedUserProtection		= $true
-	EnableOrganizationDomainsProtection	= $true
-	EnableMailboxIntelligence		= $true
-	EnableMailboxIntelligenceProtection	= $true
-	TargetedUserProtectionAction		= 'Quarantine'
- 	TargetedUserQuarantineTag		= 'ITM8 - RequestOnlyPolicy'
-	TargetedDomainProtectionAction		= 'Quarantine'
-	TargetedDomainQuarantineTag		= 'ITM8 - RequestOnlyPolicy'
-	MailboxIntelligenceProtectionAction	= 'MoveToJmf'
-	MailboxIntelligenceQuarantineTag	= 'ITM8 - RequestOnlyPolicy'
-	EnableSimilarUsersSafetyTips 		= $true
-	EnableSimilarDomainsSafetyTips 		= $true
-	EnableUnusualCharactersSafetyTips 	= $true
+		EnableTargetedUserProtection		= $true
+		EnableOrganizationDomainsProtection	= $true
+		EnableMailboxIntelligence			= $true
+		EnableMailboxIntelligenceProtection	= $true
+		TargetedUserProtectionAction		= 'Quarantine'
+ 		TargetedUserQuarantineTag			= 'ITM8 - RequestOnlyPolicy'
+		TargetedDomainProtectionAction		= 'Quarantine'
+		TargetedDomainQuarantineTag			= 'ITM8 - RequestOnlyPolicy'
+		MailboxIntelligenceProtectionAction	= 'MoveToJmf'
+		MailboxIntelligenceQuarantineTag	= 'ITM8 - RequestOnlyPolicy'
+		EnableSimilarUsersSafetyTips 		= $true
+		EnableSimilarDomainsSafetyTips 		= $true
+		EnableUnusualCharactersSafetyTips 	= $true
 }	
 New-AntiPhishPolicy @AntiPhish | Out-Null
 New-AntiPhishRule -Name 'ITM8 - Anti-Phishing policy' -AntiPhishPolicy 'ITM8 - Anti-Phishing policy' -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $false -Priority 0 | Out-Null
@@ -143,35 +143,35 @@ ITM8 - Anti-Phishing policy created.' -ForeGroundColor Green
 
 # New Inbound Anti-Spam Policy
 $AntiSpam = @{
-    	Name                                	 = 'ITM8 - Inbound Anti-Spam policy'
-	IncreaseScoreWithImageLinks		 = 'Off'
-	IncreaseScoreWithNumericIps		 = 'Off'
-	IncreaseScoreWithRedirectToOtherPort	 = 'Off'
-	IncreaseScoreWithBizOrInfoUrls		 = 'Off'
-	MarkAsSpamBulkMail			 = 'On'
-	MarkAsSpamEmptyMessages			 = 'Off'
-	MarkAsSpamEmbedTagsInHtml 		 = 'Off'
-	MarkAsSpamFormTags 			 = 'On'
-	MarkAsSpamFrames 			 = 'On'
-	MarkAsSpamJavaScript 			 = 'Off'
-	MarkAsSpamWebBugsInHtml 		 = 'Off'
-	MarkAsSpamObjectTags 			 = 'On'
-	MarkAsSpamSensitiveWordList 		 = 'Off'
-	MarkAsSpamSpfRecordHardFail 		 = 'Off'
-	MarkAsSpamFromAddressAuthFail 		 = 'Off'
-	MarkAsSpamNdrBackscatter 		 = 'Off'
-	BulkThreshold 				 = '6'
- 	SpamAction		                 = 'MoveToJmf'
-	SpamQuarantineTag 			 = 'ITM8 - FullAccessPolicy'
- 	HighConfidenceSpamAction		 = 'Quarantine'
-	HighConfidenceSpamQuarantineTag 	 = 'ITM8 - FullAccessPolicy'
-   	PhishSpamAction				 = 'Quarantine'
-	PhishQuarantineTag 			 = 'ITM8 - FullAccessPolicy'
-	HighConfidencePhishQuarantineTag 	 = 'ITM8 - AdminOnlyPolicy'
-	BulkSpamAction	                    	 = 'MoveToJmf'	
-	BulkQuarantineTag 			 = 'ITM8 - AdminOnlyPolicy'
-	QuarantineRetentionPeriod 		 = '30'
- 	EnableLanguageBlockList 		 = $false
+    	Name                               	= 'ITM8 - Inbound Anti-Spam policy'
+		IncreaseScoreWithImageLinks		 	= 'Off'
+		IncreaseScoreWithNumericIps		 	= 'Off'
+		IncreaseScoreWithRedirectToOtherPort	 = 'Off'
+		IncreaseScoreWithBizOrInfoUrls		= 'Off'
+		MarkAsSpamBulkMail			 		= 'On'
+		MarkAsSpamEmptyMessages			 	= 'Off'
+		MarkAsSpamEmbedTagsInHtml 		 	= 'Off'
+		MarkAsSpamFormTags 			 		= 'On'
+		MarkAsSpamFrames 			 		= 'On'
+		MarkAsSpamJavaScript 			 	= 'Off'
+		MarkAsSpamWebBugsInHtml 		 	= 'Off'
+		MarkAsSpamObjectTags 			 	= 'On'
+		MarkAsSpamSensitiveWordList 		= 'Off'
+		MarkAsSpamSpfRecordHardFail 		= 'Off'
+		MarkAsSpamFromAddressAuthFail 		= 'Off'
+		MarkAsSpamNdrBackscatter 		 	= 'Off'
+		BulkThreshold 				 		= '6'
+ 		SpamAction		                 	= 'MoveToJmf'
+		SpamQuarantineTag 			 		= 'ITM8 - FullAccessPolicy'
+ 		HighConfidenceSpamAction		 	= 'Quarantine'
+		HighConfidenceSpamQuarantineTag 	= 'ITM8 - FullAccessPolicy'
+   		PhishSpamAction				 		= 'Quarantine'
+		PhishQuarantineTag 			 		= 'ITM8 - FullAccessPolicy'
+		HighConfidencePhishQuarantineTag 	= 'ITM8 - AdminOnlyPolicy'
+		BulkSpamAction	                   	= 'MoveToJmf'	
+		BulkQuarantineTag 			 		= 'ITM8 - AdminOnlyPolicy'
+		QuarantineRetentionPeriod 		 	= '30'
+ 		EnableLanguageBlockList 		 	= $false
 }
 New-HostedContentFilterPolicy @AntiSpam | Out-Null
 New-HostedContentFilterRule -Name 'ITM8 - Inbound Anti-Spam policy' -HostedContentFilterPolicy 'ITM8 - Inbound Anti-Spam policy' -RecipientDomainIs (Get-AcceptedDomain).Name -Enabled $false | Out-Null

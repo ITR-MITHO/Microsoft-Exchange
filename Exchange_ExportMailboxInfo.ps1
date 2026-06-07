@@ -1,9 +1,6 @@
 <#
-.SYNOPSIS
-    Comprehensive organization mailbox configuration and size auditing.
 .DESCRIPTION
-    Aggregates mailbox sizing, archival limits, AD states, and connection properties 
-    into a structured inventory report.
+    Aggregates mailbox sizing, AD states, and connection properties into a structured report.
 .OUTPUTS
     $Home\Desktop\MailboxExport.csv
 #>

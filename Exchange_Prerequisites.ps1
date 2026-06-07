@@ -7,19 +7,13 @@
 .NOTES
     Must be executed from an elevated administrative shell console.
 #>
-
-# 1. Privileged Context Verification
 $CurrentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 if (-not $CurrentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Warning "Elevated administrative permissions required to apply OS modifications. Exiting."
     break
 }
-
-# 2. Extract System Hardware Environment
 $TotalMemoryMB = [math]::Round((Get-CimInstance -ClassName Win32_ComputerSystem).TotalPhysicalMemory / 1MB, 0)
 $ExchangeVersion = Read-Host "Enter target Exchange version architecture ('2016' or '2019')"
-
-# Fast Math Rule Matrix for Pagefile Allocations (Resolves math limit bugs)
 $PageFileSizeMB = switch ($ExchangeVersion) {
     "2016" {
         if ($TotalMemoryMB -le 65536) { $TotalMemoryMB + 10 } else { 32778 }
@@ -38,8 +32,6 @@ $PageFileSizeMB = switch ($ExchangeVersion) {
         $null
     }
 }
-
-# Apply Dynamic Pagefile Modification Natively via CIM
 if ($null -ne $PageFileSizeMB) {
     Write-Host "Configuring Pagefile to fixed size: $PageFileSizeMB MB..." -ForegroundColor Cyan
     $ComputerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
@@ -49,15 +41,12 @@ if ($null -ne $PageFileSizeMB) {
 
     $PageFileSetting = Get-CimInstance -ClassName Win32_PageFileSetting -Filter "Name LIKE 'C:%'"
     if (-not $PageFileSetting) {
-        # Construct instance if manual allocation path doesn't exist yet
         New-CimInstance -ClassName Win32_PageFileSetting -Property @{ Name = 'C:\pagefile.sys' } | Out-Null
     }
     Get-CimInstance -ClassName Win32_PageFileSetting -Filter "Name LIKE 'C:%'" | 
         Set-CimInstance -Property @{ InitialSize = $PageFileSizeMB; MaximumSize = $PageFileSizeMB }
 }
-
-# 3. Apply Kernel Transport and OS Adjustments
-Write-Host "Applying Network & Platform Performance Baselines..." -ForegroundColor Cyan
+Write-Host "Applying Network & OS Performance Baselines..." -ForegroundColor Cyan
 
 # TCPKeepAlive Configuration
 $TcpPath = "HKLM:\System\CurrentControlSet\Services\TcpIp\Parameters"
@@ -66,17 +55,17 @@ Set-ItemProperty -Path $TcpPath -Name "KeepAliveTime" -Value 1200000 -Type DWORD
 # High Performance Plan Deployment
 powercfg -setactive SCHEME_MIN
 
-# Fast Multi-NIC IPv6 Unlocking Pass
+# Enabling IPv6
 Get-NetAdapterBinding -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue | 
     Where-Object { $_.Enabled -eq $false } | 
     Enable-NetAdapterBinding -ComponentID ms_tcpip6
 
-# System Feature Integrations
+# Adding Telnet client
 if (-not (Get-WindowsFeature -Name Telnet-Client).Installed) {
     Install-WindowsFeature -Name Telnet-Client | Out-Null
 }
 
-# 4. Critical Security Baseline Adjustments (TLS 1.2 Enforcement)
+# Encoforcing TLS 1.2 for OS and .NET
 Write-Host "Applying cryptographic runtime rules (TLS 1.2)..." -ForegroundColor Cyan
 
 $RegPaths = @(
@@ -102,22 +91,21 @@ foreach ($Path in $RegPaths) {
     }
 }
 
-# 5. Application UI and Service Isolation Tasks
+Disable IE Enhanced mode
 Write-Host "Disabling legacy IE ESC constraints safely..." -ForegroundColor Cyan
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}" -Name "IsInstalled" -Value 0 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}" -Name "IsInstalled" -Value 0 -Force
 
-Write-Host "Expanding Diagnostic Log capacity structures to 4GB..." -ForegroundColor Cyan
+Write-Host "Setting event log files to 4GB..." -ForegroundColor Cyan
 # Native .NET Event Log engine adjustments replace legacy slow command executables
-Write-Host "Expanding Diagnostic Log capacity structures to 4GB..." -ForegroundColor Cyan
-# Native .NET Event Log engine adjustments maxed out to the absolute allowable ceiling
+
 Limit-EventLog -LogName "Application" -MaximumSize 4194240KB -OverflowAction OverwriteAsNeeded
 try {
     # Utilizing native utility handle for custom application providers
     wevtutil sl "MSExchange Management" /ms:4294967296 | Out-Null
 } catch {}
 
-Write-Host "Isolating high-risk print spooler services..." -ForegroundColor Cyan
+Write-Host "Disabling Print Spooler..." -ForegroundColor Cyan
 Stop-Service -Name Spooler -Force -ErrorAction SilentlyContinue
 Set-Service -Name Spooler -StartupType Disabled
 

@@ -1,9 +1,8 @@
 <#
 .SYNOPSIS
-    Orchestrates maintenance mode configurations for an Exchange Server DAG node.
+    Sets or checks Exchange maintenance mode.
 .DESCRIPTION
-    Runs locally on a target Exchange Mailbox server. Drains transport queues, 
-    moves active database mounts, suspends cluster nodes, and gracefully brings 
+    Runs on he local Exchange server. Drains transport queues, moves active databases, suspends cluster nodes, and gracefully brings 
     the node back into operational rotation.
 .NOTES
     Must be executed from an elevated Exchange Management Shell session.

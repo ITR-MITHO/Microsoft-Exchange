@@ -20,6 +20,11 @@ if ([string]::IsNullOrWhiteSpace($DomainName)) {
     break
 }
 
+if ([string]::IsNullOrWhiteSpace($Autodiscover)) {
+    Write-Error "A valid namespace domain name is required."
+    break
+}
+
 $URL = "https://$DomainName"
 $TargetServer = (Get-ExchangeServer -Identity $env:COMPUTERNAME -ErrorAction Stop).Name
 

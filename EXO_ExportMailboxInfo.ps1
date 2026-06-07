@@ -1,9 +1,6 @@
 <#
-.SYNOPSIS
-    Exports volumetric storage statistics across organization mailboxes.
 .DESCRIPTION
-    Compiles primary sizes, archive allocations, and deleted item (dumpster) 
-    metrics into a standardized inventory spreadsheet.
+    Compiles primary sizes, archive allocations, and deleted item (dumpster) metrics into a standardized inventory spreadsheet.
 .OUTPUTS
     $Home\Desktop\MailboxExport.csv
 #>

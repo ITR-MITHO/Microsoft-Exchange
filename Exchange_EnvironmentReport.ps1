@@ -40,28 +40,50 @@ $DCData = Get-ADDomainController -Filter * | ForEach-Object {
 $RecycleBin = Get-ADOptionalFeature "Recycle Bin Feature"
 $HTMLBody += "<h2>Domain Controller Information (AD Recycle Bin: $(if($RecycleBin.EnabledScopes.Count -gt 0){'Enabled'}else{'Disabled'}))</h2>"
 $HTMLBody += $DCData | ConvertTo-Html -Fragment
-
 # ---------------------------------------------------------
 # Exchange Server Information
 # ---------------------------------------------------------
 Write-Host "Gathering Exchange Server Info..." -ForegroundColor Cyan
-$WANIP = (Invoke-RestMethod -Uri "http://ifconfig.me/ip" -UseBasicParsing).Trim()
+
 $ServerData = Get-ExchangeServer | Sort-Object Name | ForEach-Object {
     $compName = $_.Name
-    $IPv4 = ([System.Net.Dns]::GetHostAddresses($compName) | Where-Object AddressFamily -eq 'InterNetwork').IPAddressToString -join ', '
+    
+    $IPv4 = ([System.Net.Dns]::GetHostAddresses($compName) | 
+        Where-Object { $_.AddressFamily -eq 'InterNetwork' -and $_.IPAddressToString -notlike '169.254.*' }).IPAddressToString -join ', '
+
+    $RemoteWAN = Invoke-Command -ComputerName $compName -ScriptBlock {
+        try {
+            (Invoke-RestMethod -Uri "http://ifconfig.me/ip" -UseBasicParsing -TimeoutSec 5).Trim()
+        } catch {
+            "No Internet"
+        }
+    }
+
+    $ExchangeVer = Invoke-Command -ComputerName $compName -ScriptBlock {
+        if ($env:ExchangeInstallPath) {
+            $ExSetupPath = Join-Path $env:ExchangeInstallPath "bin\Exsetup.exe"
+            if (Test-Path $ExSetupPath) {
+                (Get-Item $ExSetupPath).VersionInfo.FileVersion
+            } else {
+                "Exsetup.exe not found"
+            }
+        } else {
+            "Exchange Path Variable Missing"
+        }
+    }
 
     [PSCustomObject]@{
         Servername  = $compName
         IPv4        = $IPv4
-        WANIP       = $WANIP
+        WANIP       = $RemoteWAN
         OS          = (Get-CimInstance -ComputerName $compName -ClassName Win32_OperatingSystem).Caption
         RAM_GB      = [math]::Round((Get-CimInstance -ComputerName $compName -ClassName Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 2)
-        ExchangeVer = (Get-Command Exsetup.exe | ForEach {$_.FileVersionInfo}).FileVersion
+        ExchangeVer = $ExchangeVer
     }
 }
+
 $HTMLBody += "<h2>Exchange Server Information</h2>"
 $HTMLBody += $ServerData | ConvertTo-Html -Fragment
-
 # ---------------------------------------------------------
 # Organization Configuration
 # ---------------------------------------------------------

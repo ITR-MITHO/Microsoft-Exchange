@@ -131,6 +131,50 @@ if ($Events.Count -eq 0) {
     $Events | Select-Object TimeCreated, Id, Message | Format-Table -AutoSize
 }
 
+
+# --- Database Mount & Copy Status ---
+Write-Host "`n=== Database Status ===" -ForegroundColor Cyan
+
+try {
+    $Databases = Get-MailboxDatabase -Server $TargetServer -Status -ErrorAction Stop
+    $DbFailures = 0
+    foreach ($Db in $Databases) {
+        # Check if the database is part of a DAG by looking at its MasterServerOrAvailabilityGroup property
+        $IsDagDb = $Db.MasterServerOrAvailabilityGroup.Name -ne $TargetServer
+
+        if (-not $IsDagDb) {
+            # Standalone logic: Must be mounted
+            if (-not $Db.Mounted) {
+                Write-Host "CRITICAL: Standalone database [$($Db.Name)] is UNMOUNTED!" -ForegroundColor Red
+                $DbFailures++
+            } else {
+                Write-Host "Database [$($Db.Name)]: Mounted (Standalone)" -ForegroundColor Green
+            }
+        } else {
+            # DAG logic: Check if this node holds the active copy
+            $MdbCopyStatus = Get-MailboxDatabaseCopyStatus -Identity "$($Db.Name)\$TargetServer" -ErrorAction SilentlyContinue
+
+            if ($MdbCopyStatus.Status -eq "Mounted") {
+                Write-Host "Database [$($Db.Name)]: Mounted (Active Copy on this server)" -ForegroundColor Green
+            } elseif ($MdbCopyStatus.Status -eq "Healthy") {
+                Write-Host "Database [$($Db.Name)]: Healthy (Passive Copy)" -ForegroundColor Green
+            } else {
+                Write-Host "CRITICAL: Database [$($Db.Name)] copy status is [$($MdbCopyStatus.Status)] on this server!" -ForegroundColor Red
+                $DbFailures++
+            }
+        }
+    }
+
+    if ($DbFailures -eq 0) {
+        Write-Host "All databases are in their expected state." -ForegroundColor Green
+    }
+
+} catch {
+    Write-Warning "Unable to retrieve database status: $_"
+}
+
+
+
 # --- DAG replication ---
 Write-Host "`n=== DAG Replication Health ===" -ForegroundColor Cyan
 

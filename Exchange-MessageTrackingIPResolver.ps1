@@ -23,7 +23,7 @@ $Servers = Get-ExchangeServer | Where-Object { $_.IsHubTransportServer -or $_.Is
 $UniqueIPs = @{}
 $ResultsList = [System.Collections.Generic.List[PSCustomObject]]::new()
 
-Write-Host "Parsing Message Tracking Logs (90-Day Window)..." -ForegroundColor Yellow
+Write-Host "Parsing Message Tracking Logs..." -ForegroundColor Yellow
 
 foreach ($Server in $Servers) {
     Write-Host "Querying node: $($Server.Name)..." -ForegroundColor DarkCyan

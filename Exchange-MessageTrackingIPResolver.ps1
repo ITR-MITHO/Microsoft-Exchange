@@ -17,7 +17,7 @@ $StartDate = (Get-Date).AddDays(-90)
 $ExportPath = Join-Path $home "Desktop\MessageTraceIPs.csv"
 
 Write-Host "Gathering transport servers..." -ForegroundColor Cyan
-$Servers = Get-ExchangeServer | Where-Object { $_.IsHubTransportServer -or $_.IsMailboxServer }
+$Servers = Get-ExchangeServer
 
 
 $UniqueIPs = @{}
@@ -77,7 +77,7 @@ if ($ResultsList.Count -gt 0) {
     $ResultsList | Select-Object TimeStamp, OriginalClientIP, IPCount, Hostname, Sender, Connector, Subject | 
         Export-Csv -Path $ExportPath -NoTypeInformation -Encoding Unicode
     
-    Write-Host "`nAnalysis complete! Results exported cleanly to: $ExportPath" -ForegroundColor Green
+    Write-Host "`nAnalysis complete! Results exported to: $ExportPath" -ForegroundColor Green
 } else {
     Write-Host "No message tracking rows containing valid client IPs discovered." -ForegroundColor Yellow
 }

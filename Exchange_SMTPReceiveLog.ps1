@@ -34,15 +34,13 @@ if (-not $LogFiles) {
 $UniqueIPs = @{}
 $ResultsList = [System.Collections.Generic.List[PSCustomObject]]::new()
 
-Write-Host "Parsing $($LogFiles.Count) log files using optimized string matching..." -ForegroundColor Yellow
+Write-Host "Parsing $($LogFiles.Count) log files..." -ForegroundColor Yellow
 
-# Select-String is vastly faster for large text files.
-# We target 'MAIL FROM:' to capture the sender and the remote IP in a single pass.
+
+# 'MAIL FROM:' to capture the sender and the remote IP in a single pass.
 $Matches = $LogFiles | Select-String -Pattern "MAIL FROM:" -SimpleMatch
 
 foreach ($Match in $Matches) {
-    # Expected Exchange Protocol Log format:
-    # date-time,connector-id,session-id,sequence-number,local-endpoint,remote-endpoint,event,data,context
     $LineParts = $Match.Line -split ','
 
     if ($LineParts.Count -ge 8) {
@@ -59,14 +57,11 @@ foreach ($Match in $Matches) {
         $Sender = if ($RawSender -match "<(.*?)>") { $matches[1] } else { $RawSender -replace "MAIL FROM:","" }
 
         $UniqueIPs[$IP]++
-
-        # Storing metadata. Note: Subject is not natively visible in this stage of the protocol log.
         $UniqueIPs["$IP-Metadata"] = [PSCustomObject]@{
             TimeStamp        = [datetime]::Parse($LineParts[0]).ToString("yyyy-MM-dd HH:mm:ss")
             OriginalClientIP = $IP
             Sender           = $Sender
             Connector        = $LineParts[1]
-            Subject          = "N/A (Protocol Logs)"
         }
     }
 }

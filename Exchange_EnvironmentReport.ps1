@@ -159,11 +159,11 @@ $HTMLBody += Get-TransportRule | Select-Object Name, State | ConvertTo-Html -Fra
 $HTMLBody += "<h2>Send Connectors</h2>"
 $HTMLBody += Get-SendConnector | Select-Object Name, 
     @{n='AddressSpaces';e={$_.AddressSpaces -join ', '}}, 
-    Enabled, 
+    ProtocolLoggingLevel, Enabled, 
     @{n='SmartHosts';e={$_.SmartHosts -join ', '}}, MaxMessageSize | ConvertTo-Html -Fragment
 
 $HTMLBody += "<h2>Receive Connectors</h2>"
-$HTMLBody += Get-ReceiveConnector | Select-Object Name, 
+$HTMLBody += Get-ReceiveConnector | Select-Object Name, ProtocolLoggingLevel
     Enabled, 
     @{n='PermissionGroups';e={$_.PermissionGroups -join ', '}} | ConvertTo-Html -Fragment
 

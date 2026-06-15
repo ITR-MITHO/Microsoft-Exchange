@@ -163,7 +163,7 @@ $HTMLBody += Get-SendConnector | Select-Object Name,
     @{n='SmartHosts';e={$_.SmartHosts -join ', '}}, MaxMessageSize | ConvertTo-Html -Fragment
 
 $HTMLBody += "<h2>Receive Connectors</h2>"
-$HTMLBody += Get-ReceiveConnector | Select-Object Name, ProtocolLoggingLevel
+$HTMLBody += Get-ReceiveConnector | Select-Object Name, ProtocolLoggingLevel,
     Enabled, 
     @{n='PermissionGroups';e={$_.PermissionGroups -join ', '}} | ConvertTo-Html -Fragment
 

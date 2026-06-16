@@ -1,22 +1,28 @@
 <#
-.SYNOPSIS
-    Correlates on-premises Exchange mailboxes with Microsoft Graph license states and AD account status.
-.DESCRIPTION
-    Gathers local mailboxes, pulls account properties from AD in bulk, retrieves assignment 
-    details via Microsoft Graph, and exports the merged data to a CSV.
-.OUTPUTS
-    $Home\Desktop\Licenses.csv - Cleaned report with readable license names and account status.
+Run from on-prem Exchange. 
+The script will prompt for O365 credentials to connect to Microsoft Graph to gather license information about all on-prem mailboxes.
 #>
 
+# Ensure Exchange Management Shell cmdlets are available
 if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *EXC* -ErrorAction SilentlyContinue
 }
 
-# 1. Prerequisite Checks: Microsoft Graph Module Verification
-if (-not (Get-Command Connect-MgGraph -ErrorAction SilentlyContinue)) {
-    Write-Host "Installing missing PowerShell Module: Microsoft.Graph. Please wait..." -ForegroundColor Yellow
-    Install-Module Microsoft.Graph -Scope CurrentUser -AllowClobber -Force -Confirm:$false
-    Write-Host "Microsoft Graph installed. Continuing execution..." -ForegroundColor Green
+# Prerequisite Checks: Microsoft Graph Module Verification
+$RequiredModules = @{
+    'Microsoft.Graph.Authentication' = 'Connect-MgGraph'
+    'Microsoft.Graph.Users'          = 'Get-MgUserLicenseDetail'
+}
+
+foreach ($Module in $RequiredModules.Keys) {
+    $Cmdlet = $RequiredModules[$Module]
+    if (-not (Get-Command $Cmdlet -ErrorAction SilentlyContinue)) {
+        if (-not (Get-Module -ListAvailable $Module)) {
+            Write-Host "Installing missing PowerShell Module: $Module. Please wait..." -ForegroundColor Yellow
+            Install-Module $Module -Scope CurrentUser -AllowClobber -Force -Confirm:$false
+        }
+        Import-Module $Module -ErrorAction Stop
+    }
 }
 
 # Connect to Graph API
@@ -27,17 +33,15 @@ try {
     break
 }
 
-# 2. Optimized High-Speed Data Gathering
 Write-Host "Gathering on-premises mailboxes..." -ForegroundColor Cyan
 $Mailboxes = Get-Mailbox -ResultSize Unlimited | Select-Object SamAccountName, DisplayName, UserPrincipalName, PrimarySMTPAddress, RecipientTypeDetails
 
 Write-Host "Bulk-fetching Active Directory user account properties..." -ForegroundColor Cyan
-# Fetching all AD users at once into a fast lookup table to eliminate per-mailbox loops
+# Fetch all AD users into a fast lookup table to eliminate slow per-mailbox queries
 $ADUsers = Get-ADUser -Filter * -Properties Enabled, LastLogonDate | Group-Object SamAccountName -AsHashTable -AsString
 
 $Results = [System.Collections.Generic.List[PSCustomObject]]::new()
 
-# 3. Processing and Normalization Loop
 Write-Host "Evaluating license status via Microsoft Graph..." -ForegroundColor Cyan
 foreach ($Mailbox in $Mailboxes) {
     
@@ -46,38 +50,37 @@ foreach ($Mailbox in $Mailboxes) {
     $Enabled = if ($ADUser) { $ADUser.Enabled } else { $false }
     $LastLogonDate = if ($ADUser -and $ADUser.LastLogonDate) { $ADUser.LastLogonDate.ToString("dd-MM-yyyy") } else { "" }
 
-    # Fetch User License from Graph using Primary SMTP
-    $LicenseSkus = Get-MgUserLicenseDetail -UserId $Mailbox.PrimarySMTPAddress -ErrorAction SilentlyContinue | Select-Object -ExpandProperty SkuPartNumber
+    # Fetch User License from Graph using Primary SMTP (Matching your original logic)
+    $RawLicenses = Get-MgUserLicenseDetail -UserId $Mailbox.PrimarySMTPAddress -ErrorAction SilentlyContinue | Select-Object -ExpandProperty SkuPartNumber
 
-    if (-not $LicenseSkus) {
-        $FriendlyLicense = "No license"
+    if (-not $RawLicenses) {
+        $License = "No license"
     } else {
-        # Translate SKUs using a clean switch statement instead of nested If/Else statements
-        $TranslatedLicenses = foreach ($Sku in $LicenseSkus) {
-            switch -wildcard ($Sku) {
-                "*SPE_E3*"           { "Microsoft 365 E3" }
-                "*SPE_E5*"           { "Microsoft 365 E5" }
-                "*SPB*"              { "Microsoft Business Premium" }
-                "*EXCHANGESTANDARD*" { "Exchange Online Plan 1" }
-                "*EXCHANGEPREMIUM*"  { "Exchange Online Plan 2" }
-                Default              { $Sku } # Fallback to the raw SKU code if unmapped
-            }
+        # Join into a single string first, exactly like your working version
+        $LicenseString = $RawLicenses -join ", "
+
+        # Clean mapping using your exact string evaluation patterns
+        $License = switch ($true) {
+            ($LicenseString -like "*SPE_E3*")           { "Microsoft 365 E3" }
+            ($LicenseString -like "*SPE_E5*")           { "Microsoft 365 E5" }
+            ($LicenseString -like "*SPB*")              { "Microsoft Business Premium" }
+            ($LicenseString -like "*EXCHANGESTANDARD*") { "Exchange Online Plan 1" }
+            ($LicenseString -like "*EXCHANGEPREMIUM*")  { "Exchange Online Plan 2" }
+            Default                                     { $LicenseString } # Fallback to raw string if unmapped
         }
-        $FriendlyLicense = $TranslatedLicenses -join ", "
     }
 
     $Results.Add([PSCustomObject]@{
         DisplayName = $Mailbox.DisplayName
         Username    = $Mailbox.SamAccountName
-        Email       = $Mailbox.PrimarySMTPAddress.ToString()
-        Licens      = $FriendlyLicense
+        Email       = $Mailbox.PrimarySMTPAddress
+        Licens      = $License
         Type        = $Mailbox.RecipientTypeDetails
         Enabled     = $Enabled
         LastLogon   = $LastLogonDate
     })
 }
 
-# 4. Clean Export
 $OutputPath = Join-Path $home "Desktop\Licenses.csv"
 $Results | Export-Csv -Path $OutputPath -NoTypeInformation -Encoding Unicode -Delimiter ";"
 

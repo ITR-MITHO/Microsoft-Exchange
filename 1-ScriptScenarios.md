@@ -1,6 +1,6 @@
 # Exchange Migration Script Reference
 
-This document maps the required PowerShell scripts and automation tools to their respective Exchange migration scenarios. To ensure a comprehensive analytical approach, each migration type is broken down into three strict phases: **Discovery & Assessment**, **Execution**, and **Validation & Cleanup**.
+This document maps the PowerShell scripts and automation tools to their respective Exchange migration scenarios. To ensure a comprehensive approach, each migration type is broken down into three strict phases: **Discovery & Assessment**, **Execution**, and **Validation & Cleanup**.
 
 ---
 
@@ -9,12 +9,12 @@ This document maps the required PowerShell scripts and automation tools to their
 ### Phase 1: Discovery & Assessment
 **Objective:** Identify environment blockers, stale objects, directory synchronization issues, and invalid attributes prior to migration.
 
-#### Script: `Get-PreFlightHybridChecks.ps1`
-* **Repository Path:** `\ExchangeOnline\Migrations\`
-* **Description:** Scans for invalid characters in proxy addresses, duplicate UPNs, and ensures DirSync requirements are met.
+#### Script: `Exchange_EnvironmentReport.ps1`
+* **Repository Path:** `https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/Exchange_EnvironmentReport.ps1`
+* **Description:** Creates a HTML report containing all information about Exchange
 * **Execution:**
 ```powershell
-.\Get-PreFlightHybridChecks.ps1 -TargetOU "OU=Users,DC=domain,DC=com" -ExportPath "C:\Temp\PreFlight.csv"
+Exchange_EnvironmentReport.ps1
 ```
 
 ### Phase 2: Execution

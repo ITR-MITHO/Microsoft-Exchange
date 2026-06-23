@@ -17,17 +17,19 @@ This document maps the PowerShell scripts and automation tools to their respecti
 * **Repository Path:** `https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/Exchange_ExchangeMailboxInfo.ps1`
 * **Description:** Exportes information about all mailboxes on-premises
 
+#### Script: `ADUserExport.ps1`
+* **Repository Path:** `https://github.com/ITR-MITHO/Active-Directory/blob/main/ADUserExport.ps1`
+* **Description:** Exports information about all AD user objects, and includes their OU to check if they are synced or not
 
-### Phase 2: Execution
-**Objective:** Initiate, monitor, and complete remote move requests.
+#### Script: `Hybrid_LicenseAudit.ps1`
+* **Repository Path:** `https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/Hybrid_LicenseAudit.ps1`
+* **Description:** Maps all mailboxes and their Azure account to figure out which of them have licenses and which are missing licenses
 
-#### Script: `Invoke-BatchedRemoteMove.ps1`
-* **Repository Path:** `\ExchangeOnline\Migrations\`
-* **Description:** Reads a CSV of targets, constructs migration batches, and initiates the remote move request to EXO.
-* **Execution:**
-```powershell
-.\Invoke-BatchedRemoteMove.ps1 -UserList "C:\Temp\Batch1.csv" -TargetDeliveryDomain "tenant.mail.onmicrosoft.com" -SuspendWhenReadyToComplete
-```
+#### Script: `Hybrid_SendAsMigration.ps1`
+* **Repository Path:** `https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/Hybrid_SendAsMigration.ps1`
+* **Description:** Adds sendas permissions to Azure
+
+
 
 ### Phase 3: Validation & Cleanup
 **Objective:** Verify mailbox accessibility, mail flow routing, and update on-premises AD objects to RemoteMailbox.

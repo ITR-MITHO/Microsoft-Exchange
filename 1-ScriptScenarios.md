@@ -29,15 +29,6 @@ This document maps the PowerShell scripts and automation tools to their respecti
 * **Repository Path:** `https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/Hybrid_SendAsMigration.ps1`
 * **Description:** Adds sendas permissions to Azure
 
-
-
-### Phase 3: Validation & Cleanup
-**Objective:** Verify mailbox accessibility, mail flow routing, and update on-premises AD objects to RemoteMailbox.
-
-#### Script: `Verify-HybridMailFlow.ps1`
-* **Repository Path:** `\ExchangeOnline\Validation\`
-* **Description:** Injects synthetic test messages between on-premises and EXO mailboxes, validating header paths.
-
 ---
 
 ## 2. Exchange On-Premises to Exchange On-Premises

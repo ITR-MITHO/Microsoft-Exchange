@@ -12,10 +12,11 @@ This document maps the PowerShell scripts and automation tools to their respecti
 #### Script: `Exchange_EnvironmentReport.ps1`
 * **Repository Path:** `https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/Exchange_EnvironmentReport.ps1`
 * **Description:** Creates a HTML report containing all information about Exchange
-* **Execution:**
-```powershell
-Exchange_EnvironmentReport.ps1
-```
+
+#### Script: `Exchange_ExportMailboxInfo.ps1`
+* **Repository Path:** `https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/Exchange_ExchangeMailboxInfo.ps1`
+* **Description:** Exportes information about all mailboxes on-premises
+
 
 ### Phase 2: Execution
 **Objective:** Initiate, monitor, and complete remote move requests.

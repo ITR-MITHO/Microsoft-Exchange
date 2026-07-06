@@ -6,7 +6,7 @@ $($env:ExchangeInstallPath)Logging\*
 
 #>
 Import-Module WebAdministration
-$CutoffDate = (Get-Date).AddDays(-3)
+$CutoffDate = (Get-Date).AddDays(-10)
 
 # Change IIS log rollover to Hourly instead of daily
 $RollOver = (Get-WebConfigurationProperty -Filter /system.applicationHost/sites/siteDefaults/logFile -Name Period).Value

@@ -43,7 +43,7 @@ A consolidated reference guide for Exchange Online migrations, mail flow configu
 | **ClearPreviousMailboxInfo** | `Set-User <MAILBOX> -PermanentlyClearPreviousMailboxInfo -Confirm:$false` |
 | **Apply mandatory properties** | `Set-Mailbox <MAILBOX> -ApplyMandatoryProperties` |
 | **Enhanced Filtering** | `Set-InboundConnector "Relay" -EFSkipIPS 127.0.0.1,127.0.0.2` |
-| **MFA Loop** | `while ($true) { Start-ManagedFolderAssistant mailbox@domain.com; Start-Sleep -Minutes 30 }` |
+| **MFA Loop** | `while ($true) {Start-ManagedFolderAssistant mailbox@domain.com; Start-Sleep -Minutes 30}` |
 
 ### Migration & Move Requests
 

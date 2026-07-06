@@ -38,7 +38,7 @@ A consolidated reference guide for Exchange Online migrations, mail flow configu
 
 ### General Administration
 
-| Description | Command |
+| Purpose | Command |
 | :--- | :--- |
 | **Permanently clear previous mailbox info** | `Set-User <MAILBOX> -PermanentlyClearPreviousMailboxInfo -Confirm:$false` |
 | **Apply mandatory properties** | `Set-Mailbox <MAILBOX> -ApplyMandatoryProperties` |

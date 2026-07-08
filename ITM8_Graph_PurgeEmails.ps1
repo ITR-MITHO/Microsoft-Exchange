@@ -7,6 +7,8 @@ Catch
     Write-Warning "MSGraph PowerShell module might be missing or authentication failed. Try: Install-Module Microsoft.Graph"
     Break
 }
+# Prevent timeouts from MS.
+Set-MgContext -MaxRetry 10
 
 $CSV = Import-csv "$home\desktop\Test.csv"
 foreach ($C in $CSV)

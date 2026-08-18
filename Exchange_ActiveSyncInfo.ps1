@@ -75,6 +75,7 @@ foreach ($Mailbox in $EasMailboxes) {
                 "DeviceOS"            = $Device.DeviceOS
                 "LastSyncAttemptTime" = $Device.LastSyncAttemptTime
                 "LastSuccessSync"     = $Device.LastSuccessSync
+                "FirstSync"           = $Device.FirstSyncTime
             })
         }
     }

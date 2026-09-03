@@ -60,6 +60,15 @@ Get-NetAdapterBinding -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue |
     Where-Object { $_.Enabled -eq $false } | 
     Enable-NetAdapterBinding -ComponentID ms_tcpip6
 
+# Prevent NIC Sleep 
+$adapters = Get-NetAdapter -Physical | Get-NetAdapterPowerManagement | Where-Object -FilterScript {$_.AllowComputerToTurnOffDevice -ne "Unsupported"}
+foreach ($adapter in $adapters)
+{
+        $adapter.AllowComputerToTurnOffDevice = "Disabled"
+        $adapter | Set-NetAdapterPowerManagement -NoRestart
+}
+
+
 # Adding Telnet client
 if (-not (Get-WindowsFeature -Name Telnet-Client).Installed) {
     Install-WindowsFeature -Name Telnet-Client | Out-Null

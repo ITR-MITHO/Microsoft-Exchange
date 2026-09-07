@@ -118,12 +118,12 @@ Write-Host "Disabling Print Spooler..." -ForegroundColor Cyan
 Stop-Service -Name Spooler -Force -ErrorAction SilentlyContinue
 Set-Service -Name Spooler -StartupType Disabled
 
-# 6. Verification Dump Outputs
 Write-Host "`nEcosystem baseline alignment applied successfully!" -ForegroundColor Green
 Write-Host "
  -> Profile Target  : Exchange $ExchangeVersion
  -> Managed Pagefile: $( (Get-CimInstance Win32_PageFileSetting).MaximumSize ) MB
  -> TCP KeepAlive   : 20 Minutes (1,200,000 ms)
+ -> NIC Sleep       : Blocked
  -> Power Topology  : High Performance Priority
  -> Crypto Engines  : TLS 1.2 System-Wide Enforced (64-Bit / 32-Bit .NET)
  -> Volumetric Logs : Application & MSExchange Management set to 4GB

@@ -3,7 +3,7 @@
     Exchange Server Daily Health Check (Silent Edition)
 .DESCRIPTION
     Performs an optimized local health check on an individual Exchange Server. 
-    Only outputs data if an issue is detected, otherwise returns "ALL IS GOOD".
+    Only outputs data if an issue is detected
 .NOTES
     Must be executed from an elevated Exchange Management Shell session.
 #>
@@ -150,5 +150,5 @@ if ($dag) {
 
 # --- Final Output ---
 if (-not $IssuesFound) {
-    Write-Host "Everything is healthy." -ForegroundColor Green
+    Write-Host "All tests have passed, the server is: HEALTHY" -ForegroundColor Green
 }

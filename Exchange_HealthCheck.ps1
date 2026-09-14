@@ -29,7 +29,9 @@ $CPercent = Get-FreeSpacePercent -DriveLetter "C:"
 if ($null -ne $CPercent) {
     if ($CPercent -lt $MinPercent) {
         Write-Host "C: drive has only $CPercent% free space! Minimum required is $MinPercent%." -ForegroundColor Red
-        Write-Host "Consider running IIS log cleanup: https://github.com/ITR-MITHO/Microsoft-Exchange/blob/main/EXCH_IISLogCleanup.ps1" -ForegroundColor Yellow
+        Write-Host "
+        Please run this command: 
+        Irm https://raw.githubusercontent.com/ITR-MITHO/Microsoft-Exchange/refs/heads/main/Exchange_RemoveLogs.ps1 | iex" -ForegroundColor Yellow
     } else {
         Write-Host "C: drive space: OK ($CPercent%)" -ForegroundColor Green
     }

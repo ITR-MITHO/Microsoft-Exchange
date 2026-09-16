@@ -204,6 +204,4 @@ if ($dag) {
 } else {
     Write-Host "No DAG found containing this server. Skipping DAG replication check." -ForegroundColor Yellow
 }
-
-
 Write-Host "`nHealth check completed for $TargetServer at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Cyan

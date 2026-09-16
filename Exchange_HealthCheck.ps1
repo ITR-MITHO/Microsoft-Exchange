@@ -18,7 +18,7 @@ if (-not [string]::IsNullOrWhiteSpace($Test)) {
     try {
         $Domain = (Get-AcceptedDomain | Where-Object {$_.Default -eq $True}).Name
         Send-MailMessage -To $Test -From "MailTest@$Domain" -Subject "Testing mailflow from $Domain" -SmtpServer localhost -ErrorAction Stop
-        Write-Host "Mailflow test message successfully submitted to local SMTP listener for $Test." -ForegroundColor Green
+        Write-Host "Mailflow test message successfully submitted to localhost" -ForegroundColor Green
     } catch {
         Write-Host "Failed to send mailflow test message: $_" -ForegroundColor Red
     }

@@ -2,7 +2,7 @@
 .SYNOPSIS
     Exchange Server Daily Health Check
 .DESCRIPTION
-    Performs an optimized local health check on an individual Exchange Server.
+    Optimized local health check on an individual Exchange Server with an integrated mailflow test.
 .NOTES
     Must be executed from an elevated Exchange Management Shell session.
 #>
@@ -10,6 +10,22 @@
 if (-not (Get-Command Get-ExchangeServer -ErrorAction SilentlyContinue)) {
     Add-PSSnapin *Exchange* -ErrorAction SilentlyContinue
 }
+
+# --- Mailflow Test ---
+Write-Host "`n=== Mailflow Test ===" -ForegroundColor Cyan
+$Test = Read-Host "Enter your e-mail to test the mailflow or press 'ENTER' to skip"
+if (-not [string]::IsNullOrWhiteSpace($Test)) {
+    try {
+        $Domain = (Get-AcceptedDomain | Where-Object {$_.Default -eq $True}).Name
+        Send-MailMessage -To $Test -From "MailTest@$Domain" -Subject "Testing mailflow from $Domain" -SmtpServer localhost -ErrorAction Stop
+        Write-Host "Mailflow test message successfully submitted to local SMTP listener for $Test." -ForegroundColor Green
+    } catch {
+        Write-Host "Failed to send mailflow test message: $_" -ForegroundColor Red
+    }
+} else {
+    Write-Host "Mailflow test skipped." -ForegroundColor Yellow
+}
+
 
 $TargetServer = (Get-ExchangeServer -Identity $env:COMPUTERNAME -ErrorAction Stop).Name
 $MinPercent   = 20 # Available free space threshhold
@@ -133,7 +149,6 @@ if ($Events.Count -eq 0) {
     $Events | Select-Object TimeCreated, Id, Message | Format-Table -AutoSize
 }
 
-
 # --- Database Mount & Copy Status ---
 Write-Host "`n=== Database Status ===" -ForegroundColor Cyan
 
@@ -141,11 +156,9 @@ try {
     $Databases = Get-MailboxDatabase -Server $TargetServer -Status -ErrorAction Stop
     $DbFailures = 0
     foreach ($Db in $Databases) {
-        # Check if the database is part of a DAG by looking at its MasterServerOrAvailabilityGroup property
         $IsDagDb = $Db.MasterServerOrAvailabilityGroup.Name -ne $TargetServer
 
         if (-not $IsDagDb) {
-            # Standalone logic: Must be mounted
             if (-not $Db.Mounted) {
                 Write-Host "CRITICAL: Standalone database [$($Db.Name)] is UNMOUNTED!" -ForegroundColor Red
                 $DbFailures++
@@ -153,7 +166,6 @@ try {
                 Write-Host "Database [$($Db.Name)]: Mounted (Standalone)" -ForegroundColor Green
             }
         } else {
-            # DAG logic: Check if this node holds the active copy
             $MdbCopyStatus = Get-MailboxDatabaseCopyStatus -Identity "$($Db.Name)\$TargetServer" -ErrorAction SilentlyContinue
 
             if ($MdbCopyStatus.Status -eq "Mounted") {
@@ -175,12 +187,9 @@ try {
     Write-Warning "Unable to retrieve database status: $_"
 }
 
-
-
 # --- DAG replication ---
 Write-Host "`n=== DAG Replication Health ===" -ForegroundColor Cyan
 
-# Filter the DAG query to ensure the local server is actually a member
 $dag = Get-DatabaseAvailabilityGroup -ErrorAction SilentlyContinue | Where-Object { $_.Servers -match $env:COMPUTERNAME }
 
 if ($dag) {
@@ -195,4 +204,6 @@ if ($dag) {
 } else {
     Write-Host "No DAG found containing this server. Skipping DAG replication check." -ForegroundColor Yellow
 }
+
+
 Write-Host "`nHealth check completed for $TargetServer at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Cyan

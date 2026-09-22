@@ -225,4 +225,4 @@ if (-not (Get-HostedOutboundSpamFilterPolicy -Identity $OutboundSpamName -ErrorA
     Write-Host "Outbound Anti-Spam Policy already exists: $OutboundSpamName" -ForegroundColor Yellow
 }
 
-Write-Host "`nIMPORTANT: Anti-spam inbound/outbound and Phishing Policies are currently disabled and require manual enablement.`n" -ForegroundColor Yellow
+Write-Host "`nIMPORTANT: All newly created policies are currently disabled and require manual enablement.`n" -ForegroundColor Yellow

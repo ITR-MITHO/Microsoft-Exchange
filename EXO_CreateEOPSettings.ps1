@@ -1,3 +1,7 @@
+<#
+    Optimized Security Configuration for Exchange Online Mailboxes
+#>
+
 $ErrorActionPreference = "Stop"
 try {
     $null = Get-OrganizationConfig -ErrorAction Stop
@@ -5,9 +9,9 @@ try {
     Write-Warning "Not connected to Exchange Online. Please run Connect-ExchangeOnline."
     return
 }
-
-Write-Host "Fetching Accepted Domains..." -ForegroundColor Cyan
 $AcceptedDomains = (Get-AcceptedDomain).Name
+
+# Global Configurations
 Write-Host "Configuring Global Settings (MailTips, Audit Log, External Senders)..." -ForegroundColor Cyan
 try {
     $null = Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipientsTipsEnabled $true -MailTipsGroupMetricsEnabled $true -MailTipsLargeAudienceThreshold 25 -AuditDisabled $false
@@ -104,40 +108,60 @@ if (Get-Command Get-SafeLinksPolicy -ErrorAction SilentlyContinue) {
 }
 
 # Anti-Phishing Policy
-$AntiPhishName = 'ITM8 - Anti-Phishing policy'
-$AntiPhishParams = @{
-    Name = $AntiPhishName
-    AdminDisplayName = $AntiPhishName
-    EnableSpoofIntelligence = $true
-    HonorDmarcPolicy = $true
-    DmarcQuarantineAction = 'Quarantine'
-    DmarcRejectAction = 'Reject'
-    AuthenticationFailAction = 'MoveToJmf'
-    SpoofQuarantineTag = 'ITM8 - RequestOnlyPolicy'
-    EnableFirstContactSafetyTips = $true
-    EnableUnauthenticatedSender = $true
-    EnableViaTag = $true
-    PhishThresholdLevel = 3
-    EnableTargetedUserProtection = $true
-    EnableOrganizationDomainsProtection = $true
-    EnableMailboxIntelligence = $true
-    EnableMailboxIntelligenceProtection = $true
-    TargetedUserProtectionAction = 'Quarantine'
-    TargetedUserQuarantineTag = 'ITM8 - RequestOnlyPolicy'
-    TargetedDomainProtectionAction = 'Quarantine'
-    TargetedDomainQuarantineTag = 'ITM8 - RequestOnlyPolicy'
-    MailboxIntelligenceProtectionAction = 'MoveToJmf'
-    MailboxIntelligenceQuarantineTag = 'ITM8 - RequestOnlyPolicy'
-    EnableSimilarUsersSafetyTips = $true
-    EnableSimilarDomainsSafetyTips = $true
-    EnableUnusualCharactersSafetyTips = $true
-}
+if (Get-Command New-AntiPhishPolicy -ErrorAction SilentlyContinue) {
+    $AntiPhishName = 'ITM8 - Anti-Phishing policy'
 
-if (-not (Get-AntiPhishPolicy -Identity $AntiPhishName -ErrorAction SilentlyContinue)) {$null = New-AntiPhishPolicy @AntiPhishParams
-    $null = New-AntiPhishRule -Name $AntiPhishName -AntiPhishPolicy$AntiPhishName -RecipientDomainIs $AcceptedDomains -Enabled$false -Priority 0
-    Write-Host "Created Anti-Phishing Policy: $AntiPhishName" -ForegroundColor Green
-} else {
-    Write-Host "Anti-Phishing Policy already exists: $AntiPhishName" -ForegroundColor Yellow
+    # Base EOP parameters supported across ALL tenants
+    $BaseParams = @{
+        Name                               = $AntiPhishName
+        AdminDisplayName                   = $AntiPhishName
+        EnableSpoofIntelligence            = $true
+        HonorDmarcPolicy                   = $true
+        DmarcQuarantineAction              = 'Quarantine'
+        DmarcRejectAction                  = 'Reject'
+        AuthenticationFailAction           = 'MoveToJmf'
+        SpoofQuarantineTag                 = 'ITM8 - RequestOnlyPolicy'
+        EnableFirstContactSafetyTips       = $true
+        EnableUnauthenticatedSender        = $true
+        EnableViaTag                       = $true
+    }
+
+    # Defender for Office 365 (Plan 1/2) specific parameters
+    $DefenderParams = @{
+        PhishThresholdLevel                = 3
+        EnableTargetedUserProtection       = $true
+        EnableOrganizationDomainsProtection= $true
+        EnableMailboxIntelligence          = $true
+        EnableMailboxIntelligenceProtection= $true
+        TargetedUserProtectionAction       = 'Quarantine'
+        TargetedUserQuarantineTag          = 'ITM8 - RequestOnlyPolicy'
+        TargetedDomainProtectionAction     = 'Quarantine'
+        TargetedDomainQuarantineTag        = 'ITM8 - RequestOnlyPolicy'
+        MailboxIntelligenceProtectionAction= 'MoveToJmf'
+        MailboxIntelligenceQuarantineTag   = 'ITM8 - RequestOnlyPolicy'
+        EnableSimilarUsersSafetyTips        = $true
+        EnableSimilarDomainsSafetyTips       = $true
+        EnableUnusualCharactersSafetyTips   = $true
+    }
+
+    $CommandMetaData = Get-Command New-AntiPhishPolicy
+    $SupportsDefender = $CommandMetaData.Parameters.ContainsKey('MailboxIntelligenceQuarantineTag')
+
+    if ($SupportsDefender) {
+        foreach ($key in $DefenderParams.Keys) {
+            $BaseParams[$key] = $DefenderParams[$key]
+        }
+    } else {
+        Write-Warning "Tenant lacks Defender for O365 licensing. Applying basic EOP Anti-Phishing settings only."
+    }
+
+    if (-not (Get-AntiPhishPolicy -Identity $AntiPhishName -ErrorAction SilentlyContinue)) {
+        $null = New-AntiPhishPolicy @BaseParams
+        $null = New-AntiPhishRule -Name $AntiPhishName -AntiPhishPolicy $AntiPhishName -RecipientDomainIs $AcceptedDomains -Enabled $false -Priority 0
+        Write-Host "Created Anti-Phishing Policy: $AntiPhishName" -ForegroundColor Green
+    } else {
+        Write-Host "Anti-Phishing Policy already exists: $AntiPhishName" -ForegroundColor Yellow
+    }
 }
 
 # Inbound Anti-Spam Policy

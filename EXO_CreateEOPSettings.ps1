@@ -1,5 +1,6 @@
 <#
-    Optimized Security Configuration for Exchange Online Mailboxes
+   Script to setup Microsoft EOP Recommendation baselines. 
+   The script follows the settings mentioned by Microsoft in this article: https://learn.microsoft.com/en-us/defender-office-365/recommended-settings-for-eop-and-office365
 #>
 
 $ErrorActionPreference = "Stop"

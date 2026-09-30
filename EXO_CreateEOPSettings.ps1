@@ -66,7 +66,7 @@ foreach ($policy in $QuarantinePolicies) {
 if (Get-Command Get-SafeAttachmentPolicy -ErrorAction SilentlyContinue) {
     $SafeAttachmentName = 'ITM8 - Safe Attachments'
     if (-not (Get-SafeAttachmentPolicy -Identity $SafeAttachmentName -ErrorAction SilentlyContinue)) {
-        $null = New-SafeAttachmentPolicy -Name$SafeAttachmentName -Action Block -Enable $true 
+        $null = New-SafeAttachmentPolicy -Name $SafeAttachmentName -Action Block -Enable $true 
 		$null = New-SafeAttachmentRule -Name $SafeAttachmentName -SafeAttachmentPolicy $SafeAttachmentName -RecipientDomainIs $AcceptedDomains -Priority 0 -Enabled $false
         Write-Host "Created Safe Attachments Policy: $SafeAttachmentName" -ForegroundColor Green
     } else {
@@ -74,7 +74,7 @@ if (Get-Command Get-SafeAttachmentPolicy -ErrorAction SilentlyContinue) {
     }
 
     if (Get-Command Set-AtpPolicyForO365 -ErrorAction SilentlyContinue) {
-        $null = Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB$true -EnableSafeDocs $true -AllowSafeDocsOpen$false
+        $null = Set-AtpPolicyForO365 -EnableATPForSPOTeamsODB $true -EnableSafeDocs $true -AllowSafeDocsOpen $false
     }
 } else {
     Write-Warning "Tenant is not licensed for Safe Attachments (Microsoft Defender for Office 365 Plan 1/2 required). Skipping."
@@ -99,7 +99,7 @@ if (Get-Command Get-SafeLinksPolicy -ErrorAction SilentlyContinue) {
     }
 
     if (-not (Get-SafeLinksPolicy -Identity $SafeLinksName -ErrorAction SilentlyContinue)) {$null = New-SafeLinksPolicy @SafeLinksParams
-        $null = New-SafeLinksRule -Name $SafeLinksName -SafeLinksPolicy$SafeLinksName -RecipientDomainIs $AcceptedDomains -Priority 0 -Enabled $false
+        $null = New-SafeLinksRule -Name $SafeLinksName -SafeLinksPolicy $SafeLinksName -RecipientDomainIs $AcceptedDomains -Priority 0 -Enabled $false
         Write-Host "Created Safe Links Policy: $SafeLinksName" -ForegroundColor Green
     } else {
         Write-Host "Safe Links Policy already exists: $SafeLinksName" -ForegroundColor Yellow

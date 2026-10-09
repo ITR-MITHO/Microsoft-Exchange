@@ -200,7 +200,7 @@ $AntiSpamParams = @{
 }
 
 if (-not (Get-HostedContentFilterPolicy -Identity $InboundSpamName -ErrorAction SilentlyContinue)) {$null = New-HostedContentFilterPolicy @AntiSpamParams
-    $null = New-HostedContentFilterRule -Name $InboundSpamName -HostedContentFilterPolicy $InboundSpamName -RecipientDomainIs $AcceptedDomains -Enabled$false
+    $null = New-HostedContentFilterRule -Name $InboundSpamName -HostedContentFilterPolicy $InboundSpamName -RecipientDomainIs $AcceptedDomains -Enabled $false
     Write-Host "Created Inbound Anti-Spam Policy: $InboundSpamName" -ForegroundColor Green
 } else {
     Write-Host "Inbound Anti-Spam Policy already exists: $InboundSpamName" -ForegroundColor Yellow
@@ -220,7 +220,7 @@ $OutboundParams = @{
 }
 
 if (-not (Get-HostedOutboundSpamFilterPolicy -Identity $OutboundSpamName -ErrorAction SilentlyContinue)) {$null = New-HostedOutboundSpamFilterPolicy @OutboundParams
-    $null = New-HostedOutboundSpamFilterRule -Name $OutboundSpamName -HostedOutboundSpamFilterPolicy $OutboundSpamName -SenderDomainIs $AcceptedDomains -Enabled$false
+    $null = New-HostedOutboundSpamFilterRule -Name $OutboundSpamName -HostedOutboundSpamFilterPolicy $OutboundSpamName -SenderDomainIs $AcceptedDomains -Enabled $false
     Write-Host "Created Outbound Anti-Spam Policy: $OutboundSpamName" -ForegroundColor Green
 } else {
     Write-Host "Outbound Anti-Spam Policy already exists: $OutboundSpamName" -ForegroundColor Yellow

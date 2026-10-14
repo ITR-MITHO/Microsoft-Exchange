@@ -13,7 +13,17 @@ Invoke-WebRequest -Uri $url -OutFile $destinationPath -UseBasicParsing
 
 if (Test-Path -Path $destinationPath) {
     Write-Host "Download complete. Starting installer with elevated privileges..." -ForegroundColor Green    
-    Start-Process -FilePath $destinationPath -ArgumentList "/passive" -Verb RunAs -Wait
+    $process = Start-Process -FilePath $destinationPath -ArgumentList "/passive" -Verb RunAs -Wait -PassThru
+
+    if ($process.ExitCode -eq 0) {
+        Write-Host "Installation completed. Initiating server restart..." -ForegroundColor Yellow
+        Restart-Computer -Force
+    } elseif ($process.ExitCode -eq 3010) {
+        Write-Host "Installation completed (reboot required, exit code 3010). Initiating server restart..." -ForegroundColor Yellow
+        Restart-Computer -Force
+    } else {
+        Write-Error "Installation failed or returned unexpected exit code: $($process.ExitCode)"
+    }
 } else {
     Write-Error "Failed to locate downloaded file at $destinationPath"
 }

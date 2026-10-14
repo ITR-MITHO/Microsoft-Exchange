@@ -13,7 +13,7 @@ Invoke-WebRequest -Uri $url -OutFile $destinationPath -UseBasicParsing
 
 if (Test-Path -Path $destinationPath) {
     Write-Host "Download complete. Starting installer with elevated privileges..." -ForegroundColor Green    
-    Start-Process -FilePath $destinationPath -ArgumentList "/passive" -Verb RunAs -Wait
+    Start-Process -FilePath $destinationPath -ArgumentList "/passive /forcerestart" -Verb RunAs -Wait
 } else {
     Write-Error "Failed to locate downloaded file at $destinationPath"
 }

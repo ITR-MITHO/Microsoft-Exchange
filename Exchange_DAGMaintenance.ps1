@@ -117,7 +117,7 @@ while ($true) {
 
         "0" {
             Write-Host "Exiting maintenance script." -ForegroundColor DarkYellow
-            break
+            return
         }
 
         Default {
